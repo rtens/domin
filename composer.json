@@ -1,0 +1,11 @@
+{
+  "require-dev": {
+    "rtens/scrut": "^1.0",
+    "rtens/mockster": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "rtens\\domin\\": "src/"
+    }
+  }
+}
