@@ -12,6 +12,10 @@
       "homepage": "http://rtens.org"
     }
   ],
+  "require": {
+    "watoki/collections": "^1.0",
+    "watoki/reflect": "^0.3.0"
+  },
   "require-dev": {
     "rtens/scrut": "^1.0",
     "rtens/mockster": "^3.0"
