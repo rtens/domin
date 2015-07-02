@@ -1,7 +1,20 @@
 {
+  "name": "rtens/domin",
+  "description": "General purpose DDD-friendly administration interface",
+  "keywords": ["admin", "administration", "CMS", "DDD", "domain model"],
+  "homepage": "http://github.com/rtens/domin",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nikolas Martens",
+      "email": "Nikolas.M@rtens.org",
+      "homepage": "http://rtens.org"
+    }
+  ],
   "require-dev": {
     "rtens/scrut": "^1.0",
-    "rtens/mockster": "^3.0"
+    "rtens/domin": "^3.0"
   },
   "autoload": {
     "psr-4": {
