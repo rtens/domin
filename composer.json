@@ -14,7 +14,8 @@
   ],
   "require": {
     "watoki/collections": "^1.0",
-    "watoki/reflect": "^0.3.0"
+    "watoki/reflect": "^0.3.0",
+    "watoki/curir": "dev-master"
   },
   "require-dev": {
     "rtens/scrut": "^1.0",
