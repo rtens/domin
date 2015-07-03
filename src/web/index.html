@@ -9,8 +9,9 @@
 <h1>Actions</h1>
 
 <ul>
-    <li property="action"><a property="link" href="#"><span property="caption">Some Action</span></a></li>
-    <li property="action"><a property="link" href="#"><span property="caption">Another Action</span></a></li>
+    <? foreach ($action as $anAction) { ?>
+        <li><a href="<?= $anAction[link][href] ?>"><span><?= $anAction[caption] ?></span></a></li>
+    <? } ?>
 </ul>
 
 </body>

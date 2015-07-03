@@ -22,12 +22,20 @@ class IndexResource extends Container {
         $this->actions = $actions;
     }
 
+    /**
+     * @param WebRequest $request <-
+     * @return array
+     */
     public function doGet(WebRequest $request) {
         return [
-            'action' => $this->assembleActions($request->getContext())
+            'action' => $this->assembleActions($request->getContext())->toArray()
         ];
     }
 
+    /**
+     * @param Url $base
+     * @return \watoki\collections\Liste
+     */
     private function assembleActions(Url $base) {
         return $this->actions->getAllActions()->map(function (Action $action, $id) use ($base) {
             return [
