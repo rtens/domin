@@ -24,18 +24,15 @@ class IndexResource extends Container {
 
     public function doGet(WebRequest $request) {
         return [
-            'action' => $this->assembleActions($request->getContext()->copy())
+            'action' => $this->assembleActions($request->getContext())
         ];
     }
 
     private function assembleActions(Url $base) {
         return $this->actions->getAllActions()->map(function (Action $action, $id) use ($base) {
-            $newBase = $base->copy();
-            $newBase->append($id);
-
             return [
                 'caption' => $action->caption(),
-                'link' => ['href' => $newBase->toString()]
+                'link' => ['href' => $base->appended($id)->toString()]
             ];
         })->asList();
     }

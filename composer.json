@@ -1,7 +1,13 @@
 {
   "name": "rtens/domin",
   "description": "General purpose DDD-friendly administration interface",
-  "keywords": ["admin", "administration", "CMS", "DDD", "domain model"],
+  "keywords": [
+    "admin",
+    "administration",
+    "CMS",
+    "DDD",
+    "domain model"
+  ],
   "homepage": "http://github.com/rtens/domin",
   "type": "library",
   "license": "MIT",
@@ -24,6 +30,11 @@
   "autoload": {
     "psr-4": {
       "rtens\\domin\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "spec\\rtens\\domin\\": "spec/"
     }
   },
   "minimum-stability": "dev"
