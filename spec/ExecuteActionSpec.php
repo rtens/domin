@@ -117,26 +117,26 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheResultShouldBe('this is bar with bar');
     }
 
-    /** @var Mockster[]|Action[] */
+    /** @var Action[] */
     private $actions = [];
 
-    /** @var Mockster[]|Renderer[] */
+    /** @var Renderer[] */
     private $renderers = [];
 
-    /** @var Mockster[]|Field[] */
+    /** @var Field[] */
     private $fields = [];
 
     /** @var Map[] */
     private $params = [];
 
-    /** @var ParameterReader|Mockster */
+    /** @var ParameterReader */
     private $reader;
 
     /** @var ExecutionResult|RenderedResult|FailedResult */
     private $result;
 
     protected function before() {
-        $this->reader = new Mockster(ParameterReader::class);
+        $this->reader = Mockster::of(ParameterReader::class);
     }
 
     private function givenTheAction($id) {
@@ -144,7 +144,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function givenTheAction_Returning($id, $value) {
-        $this->actions[$id] = new Mockster(Action::class);
+        $this->actions[$id] = Mockster::of(Action::class);
 
         $this->params[$id] = new Map();
         Mockster::stub($this->actions[$id]->parameters())->will()->return_($this->params[$id]);
@@ -168,8 +168,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function givenAFieldHandling_InflatingWith($type, $callback) {
-        /** @var Field|Mockster $field */
-        $field = new Mockster(Field::class);
+        $field = Mockster::of(Field::class);
         $this->fields[] = $field;
 
         Mockster::stub($field->handles($type))->will()->return_(true);
@@ -182,12 +181,10 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function givenTheRenderer($callback) {
         $this->givenARendererFor_RenderingWith(Argument::any(), $callback);
-
     }
 
     private function givenARendererFor_RenderingWith($value, $callback) {
-        /** @var Mockster|Renderer $renderer */
-        $renderer = new Mockster(Renderer::class);
+        $renderer = Mockster::of(Renderer::class);
         $this->renderers[] = $renderer;
 
         Mockster::stub($renderer->handles($value))->will()->return_(true);
@@ -197,20 +194,20 @@ class ExecuteActionSpec extends StaticTestSuite {
     private function whenIExecute($id) {
         $actions = new ActionRegistry();
         foreach ($this->actions as $actionId => $action) {
-            $actions->add($actionId, $action->mock());
+            $actions->add($actionId, Mockster::mock($action));
         }
 
         $fields = new FieldRegistry();
         foreach ($this->fields as $field) {
-            $fields->add($field->mock());
+            $fields->add(Mockster::mock($field));
         }
 
         $renderers = new RendererRegistry();
         foreach ($this->renderers as $renderer) {
-            $renderers->add($renderer->mock());
+            $renderers->add(Mockster::mock($renderer));
         }
 
-        $this->result = (new Executor($actions, $fields, $renderers, $this->reader->mock()))->execute($id);
+        $this->result = (new Executor($actions, $fields, $renderers, Mockster::mock($this->reader)))->execute($id);
     }
 
     private function thenTheResultShouldBe($value) {

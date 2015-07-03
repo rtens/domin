@@ -1,16 +1,18 @@
 <?php
 namespace rtens\domin;
 
+use watoki\collections\Map;
+
 class ActionRegistry {
 
     /** @var array|Action[] indexed by ID */
     private $actions = [];
 
     /**
-     * @return array|Action[] indexed by ID
+     * @return Map|Action[] indexed by ID
      */
     public function getAllActions() {
-        return $this->actions;
+        return new Map($this->actions);
     }
 
     /**

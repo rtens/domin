@@ -41,7 +41,7 @@ class ListActionSpec extends StaticTestSuite {
     }
 
     private function givenIRegisteredTheAction($id) {
-        $this->registry->add($id, (new Mockster(Action::class))->mock());
+        $this->registry->add($id, Mockster::mock(Action::class));
     }
 
     private function whenIListTheActions() {

@@ -18,11 +18,12 @@
   },
   "require-dev": {
     "rtens/scrut": "^1.0",
-    "rtens/mockster": "^3.0"
+    "rtens/mockster": "dev-master"
   },
   "autoload": {
     "psr-4": {
       "rtens\\domin\\": "src/"
     }
-  }
+  },
+  "minimum-stability": "dev"
 }
