@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\web;
+namespace rtens\domin\web\root;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;

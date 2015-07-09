@@ -1,24 +1,25 @@
 <?php
 namespace spec\rtens\domin;
 
-use rtens\domin\Action;
-use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Field;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\ExecutionResult;
-use rtens\domin\execution\MissingParametersResult;
-use rtens\domin\Executor;
 use rtens\domin\execution\FailedResult;
+use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
+use rtens\domin\Executor;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\collections\Map;
 
+/**
+ * @property \spec\rtens\domin\fixtures\ActionFixture action <-
+ */
 class ExecuteActionSpec extends StaticTestSuite {
 
     function unregisteredAction() {
@@ -27,20 +28,20 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function emptyAction() {
-        $this->givenTheAction('foo');
+        $this->action->givenTheAction('foo');
 
         $this->whenIExecute('foo');
         $this->thenThereShouldBeNoResult();
     }
 
     function noMatchingRenderer() {
-        $this->givenTheAction_Returning('foo', 'bar');
+        $this->action->givenTheAction_Returning('foo', 'bar');
         $this->whenIExecute('foo');
         $this->thenTheResultShouldBeTheError("No Renderer found to handle 'bar'");
     }
 
     function renderResult() {
-        $this->givenTheAction_Returning('foo', 'this is foo');
+        $this->action->givenTheAction_Returning('foo', 'this is foo');
         $this->givenTheRenderer(function ($in) {
             return $in . ' rendered';
         });
@@ -50,8 +51,8 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function noMatchingField() {
-        $this->givenTheAction('foo');
-        $this->given_HasTheParameter('foo', 'one');
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
@@ -59,11 +60,11 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function inflateParameters() {
-        $this->givenTheAction('foo');
-        $this->given_ExecutesWith('foo', function (Map $params) {
+        $this->action->givenTheAction('foo');
+        $this->action->given_ExecutesWith('foo', function (Map $params) {
             return $params->asList()->join(' ');
         });
-        $this->given_HasTheParameter('foo', 'one');
+        $this->action->given_HasTheParameter('foo', 'one');
         $this->givenAFieldInflatingWith(function ($s) {
             return $s . '!';
         });
@@ -78,11 +79,11 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function checkForMissingParameters() {
-        $this->givenTheAction('foo');
-        $this->given_HasTheParameter('foo', 'one');
-        $this->given_HasTheRequiredParameter('foo', 'two');
-        $this->given_HasTheRequiredParameter('foo', 'three');
-        $this->given_HasTheRequiredParameter('foo', 'four');
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
+        $this->action->given_HasTheRequiredParameter('foo', 'two');
+        $this->action->given_HasTheRequiredParameter('foo', 'three');
+        $this->action->given_HasTheRequiredParameter('foo', 'four');
 
         $this->givenTheParameter_Is('three', 'tres');
         $this->givenAFieldHandling_InflatingWith('type of three', function ($s) {
@@ -94,12 +95,12 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function chooseFieldForParameterType() {
-        $this->givenTheAction('foo');
-        $this->given_ExecutesWith('foo', function (Map $params) {
+        $this->action->givenTheAction('foo');
+        $this->action->given_ExecutesWith('foo', function (Map $params) {
             return $params->asList()->join(' ');
         });
-        $this->given_HasTheParameter_OfType('foo', 'one', 'bar');
-        $this->given_HasTheParameter_OfType('foo', 'two', 'bas');
+        $this->action->given_HasTheParameter_OfType('foo', 'one', 'bar');
+        $this->action->given_HasTheParameter_OfType('foo', 'two', 'bas');
         $this->givenAFieldHandling_InflatingWith('bar', function ($s) {
             return $s . '?';
         });
@@ -118,8 +119,8 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function chooseRendererForReturnedValue() {
-        $this->givenTheAction_Returning('foo', 'this is foo');
-        $this->givenTheAction_Returning('bar', 'this is bar');
+        $this->action->givenTheAction_Returning('foo', 'this is foo');
+        $this->action->givenTheAction_Returning('bar', 'this is bar');
 
         $this->givenARendererFor_RenderingWith('this is foo', function ($s) {
             return $s . ' with foo';
@@ -135,17 +136,11 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheResultShouldBe('this is bar with bar');
     }
 
-    /** @var Action[] */
-    private $actions = [];
-
     /** @var Renderer[] */
     private $renderers = [];
 
     /** @var Field[] */
     private $fields = [];
-
-    /** @var Map[] */
-    private $params = [];
 
     /** @var ParameterReader */
     private $reader;
@@ -155,35 +150,6 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     protected function before() {
         $this->reader = Mockster::of(ParameterReader::class);
-    }
-
-    private function givenTheAction($id) {
-        $this->givenTheAction_Returning($id, null);
-    }
-
-    private function givenTheAction_Returning($id, $value) {
-        $this->actions[$id] = Mockster::of(Action::class);
-
-        $this->params[$id] = new Map();
-        Mockster::stub($this->actions[$id]->parameters())->will()->return_($this->params[$id]);
-        Mockster::stub($this->actions[$id]->execute(Argument::any()))->will()->return_($value);
-    }
-
-    private function given_ExecutesWith($id, $callback) {
-        Mockster::stub($this->actions[$id]->execute(Argument::any()))->will()->forwardTo($callback);
-    }
-
-    private function given_HasTheParameter($id, $name) {
-        $this->given_HasTheParameter_OfType($id, $name, "type of $name");
-    }
-
-    private function given_HasTheRequiredParameter($id, $name) {
-        $this->given_HasTheParameter($id, $name);
-        Mockster::stub($this->actions[$id]->isRequired($name))->will()->return_(true);
-    }
-
-    private function given_HasTheParameter_OfType($id, $name, $type) {
-        $this->params[$id]->set($name, $type);
     }
 
     private function givenAFieldInflatingWith($callback) {
@@ -215,11 +181,6 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function whenIExecute($id) {
-        $actions = new ActionRegistry();
-        foreach ($this->actions as $actionId => $action) {
-            $actions->add($actionId, Mockster::mock($action));
-        }
-
         $fields = new FieldRegistry();
         foreach ($this->fields as $field) {
             $fields->add(Mockster::mock($field));
@@ -230,7 +191,8 @@ class ExecuteActionSpec extends StaticTestSuite {
             $renderers->add(Mockster::mock($renderer));
         }
 
-        $this->result = (new Executor($actions, $fields, $renderers, Mockster::mock($this->reader)))->execute($id);
+        $executor = new Executor($this->action->registry, $fields, $renderers, Mockster::mock($this->reader));
+        $this->result = $executor->execute($id);
     }
 
     private function thenTheResultShouldBe($value) {
