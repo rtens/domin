@@ -9,15 +9,9 @@ interface Action {
     public function caption();
 
     /**
-     * @return mixed[]
+     * @return Parameter[]
      */
     public function parameters();
-
-    /**
-     * @param string $parameter Name of parameter
-     * @return boolean
-     */
-    public function isRequired($parameter);
 
     /**
      * @param mixed[] $parameters Values indexed by name

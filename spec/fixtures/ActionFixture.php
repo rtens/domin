@@ -3,6 +3,7 @@ namespace spec\rtens\domin\fixtures;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
+use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\Fixture;
@@ -12,7 +13,7 @@ class ActionFixture extends Fixture {
     /** @var ActionRegistry */
     public $registry;
 
-    /** @var array[] */
+    /** @var Parameter[][] */
     private $params = [];
 
     /** @var Action[] */
@@ -53,11 +54,10 @@ class ActionFixture extends Fixture {
     }
 
     public function given_HasTheRequiredParameter($id, $name) {
-        $this->given_HasTheParameter($id, $name);
-        Mockster::stub($this->actions[$id]->isRequired($name))->will()->return_(true);
+        $this->params[$id][] = new Parameter($name, "type of $name", true);
     }
 
     public function given_HasTheParameter_OfType($id, $name, $type) {
-        $this->params[$id][$name] = $type;
+        $this->params[$id][] = new Parameter($name, $type);
     }
 }

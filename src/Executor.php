@@ -65,12 +65,12 @@ class Executor {
     private function readParameters(Action $action) {
         $params = [];
         $missing = [];
-        foreach ($action->parameters() as $name => $type) {
-            $serialized = $this->paramReader->read($name);
+        foreach ($action->parameters() as $parameter) {
+            $serialized = $this->paramReader->read($parameter->getName());
             if (!is_null($serialized)) {
-                $params[$name] = $this->fields->getField($type)->inflate($serialized);
-            } else if ($action->isRequired($name)) {
-                $missing[] = $name;
+                $params[$parameter->getName()] = $this->fields->getField($parameter)->inflate($serialized);
+            } else if ($parameter->isRequired()) {
+                $missing[] = $parameter->getName();
             }
         }
         return [$params, $missing];

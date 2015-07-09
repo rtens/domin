@@ -1,13 +1,15 @@
 <?php
 namespace rtens\domin\delivery;
 
+use rtens\domin\Parameter;
+
 interface Field {
 
     /**
-     * @param string $type
+     * @param Parameter $parameter
      * @return bool
      */
-    public function handles($type);
+    public function handles(Parameter $parameter);
 
     /**
      * @param string $serialized

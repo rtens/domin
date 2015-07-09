@@ -12,6 +12,7 @@ use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
+use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -55,7 +56,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBeTheError('No field found to handle [type of one]');
+        $this->thenTheResultShouldBeTheError('No field found to handle [one:type of one]');
     }
 
     function inflateParameters() {
@@ -152,14 +153,16 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function givenAFieldInflatingWith($callback) {
-        $this->givenAFieldHandling_InflatingWith(Argument::any(), $callback);
+        $this->givenAFieldHandling_InflatingWith(null, $callback);
     }
 
     private function givenAFieldHandling_InflatingWith($type, $callback) {
         $field = Mockster::of(Field::class);
         $this->fields[] = $field;
 
-        Mockster::stub($field->handles($type))->will()->return_(true);
+        Mockster::stub($field->handles(Argument::any()))->will()->forwardTo(function (Parameter $p) use ($type) {
+            return $type == null || $p->getType() == $type;
+        });
         Mockster::stub($field->inflate(Argument::any()))->will()->forwardTo($callback);
     }
 

@@ -4,6 +4,7 @@ namespace spec\rtens\domin\web;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\Parameter;
 use rtens\domin\web\root\ExecuteResource;
 use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
@@ -45,8 +46,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheParameter('foo', 'one');
         $this->action->given_HasTheParameter('foo', 'two');
 
-        $this->givenAWebFieldRenderingWith(function ($name) {
-            return $name . ':';
+        $this->givenAWebFieldRenderingWith(function (Parameter $p) {
+            return $p->getName() . ':';
         });
 
         $this->whenIExecute('foo');
@@ -63,8 +64,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheParameter('foo', 'one');
         $this->action->given_HasTheParameter('foo', 'two');
 
-        $this->givenAWebFieldRenderingWith(function ($name, $value) {
-            return $name . ':' . $value;
+        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
+            return $p->getName() . ':' . $value;
         });
 
         $this->whenIExecute_With('foo', ['two' => 'dos']);
@@ -78,8 +79,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheParameter('foo', 'one');
         $this->action->given_HasTheRequiredParameter('foo', 'two');
 
-        $this->givenAWebFieldRenderingWith(function ($name, $value, $required) {
-            return $name . ($required ? '*' : '') . ':' . $value;
+        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
+            return $p->getName() . ($p->isRequired() ? '*' : '') . ':' . $value;
         });
 
         $this->whenIExecute_With('foo', ['three' => 'tres']);

@@ -75,20 +75,18 @@ class ExecuteResource {
 
     private function assembleFields(Action $action, ParameterReader $reader) {
         $fields = [];
-        foreach ($action->parameters() as $parameter => $type) {
-            $isRequired = $action->isRequired($parameter);
-
-            $field = $this->fields->getField($type);
-            $value = $field->inflate($reader->read($parameter));
+        foreach ($action->parameters() as $parameter) {
+            $field = $this->fields->getField($parameter);
+            $value = $field->inflate($reader->read($parameter->getName()));
 
             if (!($field instanceof WebField)) {
                 throw new \Exception("[$parameter] is not a WebField");
             }
 
             $fields[] = [
-                'name' => $parameter,
-                'required' => $isRequired,
-                'control' => $field->render($parameter, $value, $isRequired)
+                'name' => $parameter->getName(),
+                'required' => $parameter->isRequired(),
+                'control' => $field->render($parameter, $value)
             ];
         }
         return $fields;
