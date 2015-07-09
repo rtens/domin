@@ -7,6 +7,7 @@ use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\Fixture;
+use watoki\reflect\type\UnknownType;
 
 class ActionFixture extends Fixture {
 
@@ -50,14 +51,14 @@ class ActionFixture extends Fixture {
     }
 
     public function given_HasTheParameter($id, $name) {
-        $this->given_HasTheParameter_OfType($id, $name, "type of $name");
+        $this->given_HasTheParameter_OfType($id, $name, $name);
     }
 
     public function given_HasTheRequiredParameter($id, $name) {
-        $this->params[$id][] = new Parameter($name, "type of $name", true);
+        $this->params[$id][] = new Parameter($name, new UnknownType($name), true);
     }
 
     public function given_HasTheParameter_OfType($id, $name, $type) {
-        $this->params[$id][] = new Parameter($name, $type);
+        $this->params[$id][] = new Parameter($name, new UnknownType($type));
     }
 }

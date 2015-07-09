@@ -16,6 +16,7 @@ use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\reflect\type\UnknownType;
 
 /**
  * @property \spec\rtens\domin\fixtures\ActionFixture action <-
@@ -56,7 +57,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBeTheError('No field found to handle [one:type of one]');
+        $this->thenTheResultShouldBeTheError('No field found to handle [one]');
     }
 
     function inflateParameters() {
@@ -86,7 +87,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheRequiredParameter('foo', 'four');
 
         $this->givenTheParameter_Is('three', 'tres');
-        $this->givenAFieldHandling_InflatingWith('type of three', function ($s) {
+        $this->givenAFieldHandling_InflatingWith('three', function ($s) {
             return $s . '!';
         });
 
@@ -161,7 +162,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->fields[] = $field;
 
         Mockster::stub($field->handles(Argument::any()))->will()->forwardTo(function (Parameter $p) use ($type) {
-            return $type == null || $p->getType() == $type;
+            $pType = $p->getType();
+            return $type == null || ($pType instanceof UnknownType && $pType->getHint() == $type);
         });
         Mockster::stub($field->inflate(Argument::any()))->will()->forwardTo($callback);
     }

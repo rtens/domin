@@ -1,18 +1,20 @@
 <?php
 namespace rtens\domin;
 
+use watoki\reflect\Type;
+
 class Parameter {
 
     /** @var string */
     private $name;
 
-    /** @var string */
+    /** @var Type */
     private $type;
 
     /** @var boolean */
     private $required;
 
-    public function __construct($name, $type, $required = false) {
+    public function __construct($name, Type $type, $required = false) {
         $this->name = $name;
         $this->required = $required;
         $this->type = $type;
@@ -33,14 +35,14 @@ class Parameter {
     }
 
     /**
-     * @return string
+     * @return Type
      */
     public function getType() {
         return $this->type;
     }
 
     function __toString() {
-        return $this->name . ':' . $this->type;
+        return $this->name;
     }
 
 
