@@ -5,8 +5,10 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\FailedResult;
+use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
+use watoki\collections\Map;
 
 class Executor {
 
@@ -41,7 +43,15 @@ class Executor {
      */
     public function execute($id) {
         try {
-            $returned = $this->doExecute($id);
+            $action = $this->actions->getAction($id);
+
+            list($params, $missing) = $this->readParameters($action);
+
+            if ($missing) {
+                return new MissingParametersResult($missing);
+            }
+
+            $returned = $action->execute(new Map($params));
 
             if (is_null($returned)) {
                 return new NoResult();
@@ -53,14 +63,18 @@ class Executor {
         }
     }
 
-    private function doExecute($id) {
-        $action = $this->actions->getAction($id);
-
-        $params = $action->parameters()->map(function ($type, $name) {
-            return $this->fields->getField($type)->inflate($this->paramReader->read($name));
-        });
-
-        return $action->execute($params);
+    private function readParameters(Action $action) {
+        $params = [];
+        $missing = [];
+        foreach ($action->parameters() as $name => $type) {
+            $serialized = $this->paramReader->read($name);
+            if (!is_null($serialized)) {
+                $params[$name] = $this->fields->getField($type)->inflate($serialized);
+            } else if ($action->isRequired($name)) {
+                $missing[] = $name;
+            }
+        }
+        return [$params, $missing];
     }
 
     private function render($returned) {

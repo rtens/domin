@@ -9,6 +9,7 @@ use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\ExecutionResult;
+use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\Executor;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\NoResult;
@@ -22,7 +23,7 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     function unregisteredAction() {
         $this->whenIExecute('foo');
-        $this->thenItShouldResultInAnError('Action [foo] is not registered.');
+        $this->thenTheResultShouldBeTheError('Action [foo] is not registered.');
     }
 
     function emptyAction() {
@@ -35,7 +36,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     function noMatchingRenderer() {
         $this->givenTheAction_Returning('foo', 'bar');
         $this->whenIExecute('foo');
-        $this->thenItShouldResultInAnError("No Renderer found to handle 'bar'");
+        $this->thenTheResultShouldBeTheError("No Renderer found to handle 'bar'");
     }
 
     function renderResult() {
@@ -51,9 +52,10 @@ class ExecuteActionSpec extends StaticTestSuite {
     function noMatchingField() {
         $this->givenTheAction('foo');
         $this->given_HasTheParameter('foo', 'one');
+        $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenItShouldResultInAnError('No field found to handle [type of one]');
+        $this->thenTheResultShouldBeTheError('No field found to handle [type of one]');
     }
 
     function inflateParameters() {
@@ -73,6 +75,22 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
         $this->thenTheResultShouldBe('uno! rendered');
+    }
+
+    function checkForMissingParameters() {
+        $this->givenTheAction('foo');
+        $this->given_HasTheParameter('foo', 'one');
+        $this->given_HasTheRequiredParameter('foo', 'two');
+        $this->given_HasTheRequiredParameter('foo', 'three');
+        $this->given_HasTheRequiredParameter('foo', 'four');
+
+        $this->givenTheParameter_Is('three', 'tres');
+        $this->givenAFieldHandling_InflatingWith('type of three', function ($s) {
+            return $s . '!';
+        });
+
+        $this->whenIExecute('foo');
+        $this->thenTheResultShouldBeThatParameters_AreMissing(['two', 'four']);
     }
 
     function chooseFieldForParameterType() {
@@ -132,7 +150,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var ParameterReader */
     private $reader;
 
-    /** @var ExecutionResult|RenderedResult|FailedResult */
+    /** @var ExecutionResult|RenderedResult|FailedResult|MissingParametersResult */
     private $result;
 
     protected function before() {
@@ -157,6 +175,11 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function given_HasTheParameter($id, $name) {
         $this->given_HasTheParameter_OfType($id, $name, "type of $name");
+    }
+
+    private function given_HasTheRequiredParameter($id, $name) {
+        $this->given_HasTheParameter($id, $name);
+        Mockster::stub($this->actions[$id]->isRequired($name))->will()->return_(true);
     }
 
     private function given_HasTheParameter_OfType($id, $name, $type) {
@@ -219,8 +242,14 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->assert->isInstanceOf($this->result, NoResult::class);
     }
 
-    private function thenItShouldResultInAnError($message) {
+    private function thenTheResultShouldBeTheError($message) {
         $this->assert->isInstanceOf($this->result, FailedResult::class);
         $this->assert($this->result->getMessage(), $message);
+    }
+
+    private function thenTheResultShouldBeThatParameters_AreMissing($names) {
+        $this->assert->isInstanceOf($this->result, MissingParametersResult::class);
+        $this->assert($this->result->getParameters(), $names);
+
     }
 }

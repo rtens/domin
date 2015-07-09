@@ -16,6 +16,12 @@ interface Action {
     public function parameters();
 
     /**
+     * @param string $parameter Name of parameter
+     * @return boolean
+     */
+    public function isRequired($parameter);
+
+    /**
      * @param Map|mixed[] $parameters Values indexed by name
      * @return mixed the result of the execution
      * @throws \Exception if Action cannot be executed

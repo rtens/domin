@@ -5,7 +5,7 @@ interface ParameterReader {
 
     /**
      * @param string $name
-     * @return string The serialized paramater
+     * @return string|null The serialized paramater
      */
     public function read($name);
 }
