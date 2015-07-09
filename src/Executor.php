@@ -8,7 +8,6 @@ use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
-use watoki\collections\Map;
 
 class Executor {
 
@@ -51,7 +50,7 @@ class Executor {
                 return new MissingParametersResult($missing);
             }
 
-            $returned = $action->execute(new Map($params));
+            $returned = $action->execute($params);
 
             if (is_null($returned)) {
                 return new NoResult();

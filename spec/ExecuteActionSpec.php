@@ -15,7 +15,6 @@ use rtens\domin\Executor;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\collections\Map;
 
 /**
  * @property \spec\rtens\domin\fixtures\ActionFixture action <-
@@ -61,8 +60,8 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     function inflateParameters() {
         $this->action->givenTheAction('foo');
-        $this->action->given_ExecutesWith('foo', function (Map $params) {
-            return $params->asList()->join(' ');
+        $this->action->given_ExecutesWith('foo', function ($params) {
+            return implode(' ', $params);
         });
         $this->action->given_HasTheParameter('foo', 'one');
         $this->givenAFieldInflatingWith(function ($s) {
@@ -96,8 +95,8 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     function chooseFieldForParameterType() {
         $this->action->givenTheAction('foo');
-        $this->action->given_ExecutesWith('foo', function (Map $params) {
-            return $params->asList()->join(' ');
+        $this->action->given_ExecutesWith('foo', function ($params) {
+            return implode(' ', $params);
         });
         $this->action->given_HasTheParameter_OfType('foo', 'one', 'bar');
         $this->action->given_HasTheParameter_OfType('foo', 'two', 'bas');

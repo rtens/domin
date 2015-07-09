@@ -6,14 +6,13 @@ use rtens\domin\ActionRegistry;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\Fixture;
-use watoki\collections\Map;
 
 class ActionFixture extends Fixture {
 
     /** @var ActionRegistry */
     public $registry;
 
-    /** @var Map[] */
+    /** @var array[] */
     private $params = [];
 
     /** @var Action[] */
@@ -32,10 +31,12 @@ class ActionFixture extends Fixture {
         $this->actions[$id] = $action;
         $this->registry->add($id, Mockster::mock($action));
 
-        $this->params[$id] = new Map();
-        Mockster::stub($action->parameters())->will()->return_($this->params[$id]);
         Mockster::stub($action->execute(Argument::any()))->will()->return_($value);
         Mockster::stub($action->caption())->will()->return_(ucfirst($id));
+        $this->params[$id] = [];
+        Mockster::stub($action->parameters())->will()->forwardTo(function () use ($id) {
+            return $this->params[$id];
+        });
     }
 
     public function givenTheAction_FailingWith($id, $message) {
@@ -57,6 +58,6 @@ class ActionFixture extends Fixture {
     }
 
     public function given_HasTheParameter_OfType($id, $name, $type) {
-        $this->params[$id]->set($name, $type);
+        $this->params[$id][$name] = $type;
     }
 }

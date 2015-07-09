@@ -1,8 +1,6 @@
 <?php
 namespace rtens\domin;
 
-use watoki\collections\Map;
-
 interface Action {
 
     /**
@@ -11,7 +9,7 @@ interface Action {
     public function caption();
 
     /**
-     * @return Map|string[] Parameter types indexed by name
+     * @return mixed[]
      */
     public function parameters();
 
@@ -22,9 +20,9 @@ interface Action {
     public function isRequired($parameter);
 
     /**
-     * @param Map|mixed[] $parameters Values indexed by name
+     * @param mixed[] $parameters Values indexed by name
      * @return mixed the result of the execution
      * @throws \Exception if Action cannot be executed
      */
-    public function execute(Map $parameters);
+    public function execute(array $parameters);
 }

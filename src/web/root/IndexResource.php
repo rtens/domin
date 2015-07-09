@@ -1,7 +1,6 @@
 <?php
 namespace rtens\domin\web\root;
 
-use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use watoki\curir\Container;
 use watoki\curir\delivery\WebRequest;
@@ -28,20 +27,22 @@ class IndexResource extends Container {
      */
     public function doGet(WebRequest $request) {
         return [
-            'action' => $this->assembleActions($request->getContext())->toArray()
+            'action' => $this->assembleActions($request->getContext())
         ];
     }
 
     /**
      * @param Url $base
-     * @return \watoki\collections\Liste
+     * @return array
      */
     private function assembleActions(Url $base) {
-        return $this->actions->getAllActions()->map(function (Action $action, $id) use ($base) {
-            return [
+        $actions = [];
+        foreach ($this->actions->getAllActions() as $id => $action) {
+            $actions[] = [
                 'caption' => $action->caption(),
                 'link' => ['href' => $base->appended($id)->toString()]
             ];
-        })->asList();
+        }
+        return $actions;
     }
 }
