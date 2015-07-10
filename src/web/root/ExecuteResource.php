@@ -81,7 +81,7 @@ class ExecuteResource extends Resource {
         ];
 
         if ($result instanceof FailedResult) {
-            $model['error'] = $result->getMessage();
+            $model['error'] = htmlentities($result->getMessage());
         } else if ($result instanceof NoResult) {
             $model['success'] = [
                 'action' => $action->caption()
