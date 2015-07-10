@@ -28,7 +28,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     function showSuccessMessageIfNothingReturned() {
         $this->action->givenTheAction_Returning('foo', null);
         $this->whenIExecute('foo');
-        $this->thenTheSuccessMessageFor_ShouldBe('foo');
+        $this->thenThereShouldBeASuccessMessageFor('Foo');
     }
 
     function showRenderedResult() {
@@ -168,7 +168,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->assert($this->web->model['error'], $message);
     }
 
-    private function thenTheSuccessMessageFor_ShouldBe($actionId) {
+    private function thenThereShouldBeASuccessMessageFor($actionId) {
         $this->assert($this->web->model['success']['action'], $actionId);
     }
 

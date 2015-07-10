@@ -68,12 +68,12 @@ class ExecuteResource extends Resource {
         $result = $executor->execute($__action);
 
         return array_merge(
-            $this->assembleResult($result, $__action),
+            $this->assembleResult($result, $action),
             $this->assembleFields($action, $reader)
         );
     }
 
-    private function assembleResult(ExecutionResult $result, $actionId) {
+    private function assembleResult(ExecutionResult $result, Action $action) {
         $model = [
             'error' => null,
             'success' => null,
@@ -84,7 +84,7 @@ class ExecuteResource extends Resource {
             $model['error'] = $result->getMessage();
         } else if ($result instanceof NoResult) {
             $model['success'] = [
-                'action' => $actionId
+                'action' => $action->caption()
             ];
         } else if ($result instanceof RenderedResult) {
             $model['output'] = $result->getOutput();
