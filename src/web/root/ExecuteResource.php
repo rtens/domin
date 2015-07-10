@@ -47,6 +47,15 @@ class ExecuteResource extends Resource {
      * @param string $__action
      * @param WebRequest $request <-
      * @return array
+     */
+    public function doPost($__action, WebRequest $request) {
+        return $this->doGet($__action, $request);
+    }
+
+    /**
+     * @param string $__action
+     * @param WebRequest $request <-
+     * @return array
      * @throws \Exception
      */
     public function doGet($__action, WebRequest $request) {

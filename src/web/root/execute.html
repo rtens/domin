@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>domin | execute</title>
+</head>
+<body>
+
+<? if ($error) { ?>
+<div>Error: <?= $error ?></div>
+<? } ?>
+
+<? if ($success) { ?>
+<div>Action <?= $success[action] ?> was successfully executed</div>
+<? } ?>
+
+<? if ($output) { ?>
+<div><?= $output ?></div>
+<? } ?>
+
+<form method="post">
+    <? foreach ($fields as $field) { ?>
+    <?= $field ?>
+    <? } ?>
+    <input type="submit" value="execute">
+</form>
+
+</body>
+</html>
