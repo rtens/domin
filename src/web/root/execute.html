@@ -17,13 +17,10 @@
 <? } ?>
 
 <? if ($success) { ?>
-<div>Action "<?= $success[action] ?>" was successfully executed</div>
+<div>Action "<?= $action ?>" was successfully executed</div>
 <? } ?>
 
-<? if ($output) { ?>
-<div><?= $output ?></div>
-<? } ?>
-
+<h1><?= $action ?></h1>
 <form method="post">
     <? foreach ($fields as $field) { ?>
     <label>
@@ -33,6 +30,11 @@
     <? } ?>
     <input type="submit" value="execute">
 </form>
+
+<? if ($output) { ?>
+<h2>Result</h2>
+<div><?= $output ?></div>
+<? } ?>
 
 </body>
 </html>

@@ -169,7 +169,8 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function thenThereShouldBeASuccessMessageFor($actionId) {
-        $this->assert($this->web->model['success']['action'], $actionId);
+        $this->assert($this->web->model['success']);
+        $this->assert($this->web->model['action'], $actionId);
     }
 
     private function thenItShouldShow($value) {
