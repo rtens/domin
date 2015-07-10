@@ -105,9 +105,9 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute('foo');
 
         $this->thenThereShouldBe_HeadElements(3);
-        $this->thenHeadElement_ShouldBe(1, '<one />');
-        $this->thenHeadElement_ShouldBe(2, '<bar />');
-        $this->thenHeadElement_ShouldBe(3, '<bas />');
+        $this->thenHeadElement_ShouldBe(1, '<one/>');
+        $this->thenHeadElement_ShouldBe(2, '<bar/>');
+        $this->thenHeadElement_ShouldBe(3, '<bas/>');
     }
 
     /** @var RendererRegistry */

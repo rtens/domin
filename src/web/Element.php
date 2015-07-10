@@ -20,11 +20,11 @@ class Element {
 
         if ($this->children) {
             return
-                "<{$this->name} $attributes>\n" .
-                "   " . $this->makeChildren() . "\n" .
+                "<{$this->name}$attributes>" .
+                $this->makeChildren() .
                 "</{$this->name}>";
         }
-        return "<{$this->name} $attributes/>";
+        return "<{$this->name}$attributes/>";
     }
 
     function __toString() {
@@ -36,7 +36,12 @@ class Element {
         foreach ($this->attributes as $key => $value) {
             $attributes[] = $key . '="' . $value . '"';
         }
-        return implode(' ', $attributes);
+
+        if (!$attributes) {
+            return '';
+        }
+
+        return ' ' . implode(' ', $attributes);
     }
 
     private function makeChildren() {
@@ -44,6 +49,11 @@ class Element {
         foreach ($this->children as $child) {
             $children[] = (string)$child;
         }
-        return implode("\n", $children);
+
+        if (count($children) == 1) {
+            return $children[0];
+        }
+
+        return "\n" . implode("\n", $children) . "\n";
     }
 }
