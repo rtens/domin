@@ -5,18 +5,16 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\web\root\ExecuteResource;
+use rtens\domin\web\root\IndexResource;
 use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\collections\Map;
-use watoki\curir\delivery\WebRequest;
-use watoki\curir\protocol\Url;
-use watoki\deli\Path;
 
 /**
  * @property \spec\rtens\domin\fixtures\ActionFixture action <-
+ * @property \spec\rtens\domin\fixtures\WebFixture web <-
  */
 class ExecuteActionSpec extends StaticTestSuite {
 
@@ -97,8 +95,6 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var FieldRegistry */
     public $fields;
 
-    private $model;
-
     protected function before() {
         $this->renderers = new RendererRegistry();
         $this->fields = new FieldRegistry();
@@ -128,39 +124,43 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function whenIExecute_With($id, $parameters) {
-        $resource = new ExecuteResource($this->action->registry, $this->fields, $this->renderers);
-        $this->model = $resource->doGet($id, new WebRequest(Url::fromString('http://domin.dev/base'), new Path(), null, new Map($parameters)));
+        $this->web->factory->setSingleton($this->action->registry);
+        $this->web->factory->setSingleton($this->fields);
+        $this->web->factory->setSingleton($this->renderers);
+
+        $this->web->request = $this->web->request->withArguments(new Map($parameters));
+        $this->web->whenIGet_From($id, IndexResource::class, ['actions' => $this->action->registry]);
     }
 
     private function thenItShouldDisplayTheError($message) {
-        $this->assert($this->model['error'], $message);
+        $this->assert($this->web->model['error'], $message);
     }
 
     private function thenTheSuccessMessageFor_ShouldBe($actionId) {
-        $this->assert($this->model['success']['action'], $actionId);
+        $this->assert($this->web->model['success']['action'], $actionId);
     }
 
     private function thenItShouldShow($value) {
-        $this->assert($this->model['output'], $value);
+        $this->assert($this->web->model['output'], $value);
     }
 
     private function thenThereShouldBe_Fields($count) {
-        $this->assert->size($this->model['fields'], $count);
+        $this->assert->size($this->web->model['fields'], $count);
     }
 
     private function thenField_ShouldBe($pos, $name) {
-        $this->assert($this->model['fields'][$pos - 1]['name'], $name);
+        $this->assert($this->web->model['fields'][$pos - 1]['name'], $name);
     }
 
     private function thenField_ShouldBeRenderedAs($pos, $rendered) {
-        $this->assert($this->model['fields'][$pos - 1]['control'], $rendered);
+        $this->assert($this->web->model['fields'][$pos - 1]['control'], $rendered);
     }
 
     private function thenField_ShouldBeRequired($pos) {
-        $this->assert($this->model['fields'][$pos - 1]['required']);
+        $this->assert($this->web->model['fields'][$pos - 1]['required']);
     }
 
     private function thenField_ShouldNotBeRequired($pos) {
-        $this->assert->not($this->model['fields'][$pos - 1]['required']);
+        $this->assert->not($this->web->model['fields'][$pos - 1]['required']);
     }
 }

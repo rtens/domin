@@ -14,8 +14,12 @@ use rtens\domin\Executor;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
 use watoki\curir\delivery\WebRequest;
+use watoki\curir\Resource;
+use watoki\factory\Factory;
 
-class ExecuteResource {
+class ExecuteResource extends Resource {
+
+    const ACTION_ARG = '__action';
 
     /** @var ActionRegistry */
     private $actions;
@@ -26,7 +30,14 @@ class ExecuteResource {
     /** @var RendererRegistry */
     private $renderers;
 
-    function __construct(ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers) {
+    /**
+     * @param Factory $factory <-
+     * @param ActionRegistry $actions <-
+     * @param FieldRegistry $fields <-
+     * @param RendererRegistry $renderers <-
+     */
+    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers) {
+        parent::__construct($factory);
         $this->actions = $actions;
         $this->fields = $fields;
         $this->renderers = $renderers;
