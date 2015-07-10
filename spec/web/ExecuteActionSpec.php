@@ -5,6 +5,7 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Parameter;
+use rtens\domin\web\Element;
 use rtens\domin\web\root\IndexResource;
 use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
@@ -89,6 +90,26 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenField_ShouldBeRenderedAs(2, "two*:");
     }
 
+    function collectHeadElementsFromFields() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'bar');
+        $this->action->given_HasTheParameter('foo', 'bas');
+
+        $this->givenAWebFieldRequiringTheHeadElements(function (Parameter $parameter) {
+            return [
+                new Element('one'),
+                new Element($parameter->getName()),
+            ];
+        });
+
+        $this->whenIExecute('foo');
+
+        $this->thenThereShouldBe_HeadElements(3);
+        $this->thenHeadElement_ShouldBe(1, '<one />');
+        $this->thenHeadElement_ShouldBe(2, '<bar />');
+        $this->thenHeadElement_ShouldBe(3, '<bas />');
+    }
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -117,6 +138,17 @@ class ExecuteActionSpec extends StaticTestSuite {
             return $s ? $s . '(inflated)' : null;
         });
         Mockster::stub($field->render(Arg::any(), Arg::any(), Arg::any()))->will()->forwardTo($callback);
+    }
+
+    private function givenAWebFieldRequiringTheHeadElements($elements) {
+        $field = Mockster::of(WebField::class);
+        $this->fields->add(Mockster::mock($field));
+
+        Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
+        Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
+            return $s ? $s . '(inflated)' : null;
+        });
+        Mockster::stub($field->headElements(Arg::any()))->will()->forwardTo($elements);
     }
 
     private function whenIExecute($id) {
@@ -162,5 +194,13 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenField_ShouldNotBeRequired($pos) {
         $this->assert->not($this->web->model['fields'][$pos - 1]['required']);
+    }
+
+    private function thenThereShouldBe_HeadElements($int) {
+        $this->assert->size($this->web->model['headElements'], $int);
+    }
+
+    private function thenHeadElement_ShouldBe($pos, $string) {
+        $this->assert($this->web->model['headElements'][$pos - 1], $string);
     }
 }

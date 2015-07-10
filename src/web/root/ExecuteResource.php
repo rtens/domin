@@ -8,9 +8,11 @@ use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
+use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
+use rtens\domin\web\Element;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
 use watoki\curir\delivery\WebRequest;
@@ -67,9 +69,7 @@ class ExecuteResource extends Resource {
 
         return array_merge(
             $this->assembleResult($result, $__action),
-            [
-                'fields' => $this->assembleFields($action, $reader)
-            ]
+            $this->assembleFields($action, $reader)
         );
     }
 
@@ -88,12 +88,15 @@ class ExecuteResource extends Resource {
             ];
         } else if ($result instanceof RenderedResult) {
             $model['output'] = $result->getOutput();
+        } else if ($result instanceof MissingParametersResult) {
+            $model['error'] = "Missing parameters: " . implode(', ', $result->getParameters());
         }
 
         return $model;
     }
 
     private function assembleFields(Action $action, ParameterReader $reader) {
+        $headElements = [];
         $fields = [];
         foreach ($action->parameters() as $parameter) {
             $field = $this->fields->getField($parameter);
@@ -103,12 +106,19 @@ class ExecuteResource extends Resource {
                 throw new \Exception("[$parameter] is not a WebField");
             }
 
+            $headElements = array_merge($headElements, array_map(function (Element $element) {
+                return (string)$element;
+            }, $field->headElements($parameter)));
+
             $fields[] = [
                 'name' => $parameter->getName(),
                 'required' => $parameter->isRequired(),
                 'control' => $field->render($parameter, $value)
             ];
         }
-        return $fields;
+        return [
+            'headElements' => array_values(array_unique($headElements)),
+            'fields' => $fields
+        ];
     }
 }
