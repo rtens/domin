@@ -36,6 +36,10 @@ class ObjectRenderer implements Renderer {
 
         $reader = new PropertyReader($value);
         foreach ($reader->readInterface($value) as $property) {
+            if (!$property->canGet()) {
+                continue;
+            }
+
             $propertyValue = $property->get($value);
 
             $output[] = (string)new Element('div', [], [
