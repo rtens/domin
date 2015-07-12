@@ -1,0 +1,156 @@
+<?php
+namespace spec\rtens\domin\reflection;
+
+use rtens\domin\Action;
+use rtens\domin\reflfection\ObjectAction;
+use rtens\mockster\arguments\Argument;
+use rtens\mockster\Mockster;
+use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\reflect\type\BooleanType;
+use watoki\reflect\type\ClassType;
+use watoki\reflect\type\IntegerType;
+use watoki\reflect\type\NullableType;
+use watoki\reflect\type\StringType;
+
+class AnalyzeClassPropertiesSpec extends StaticTestSuite {
+
+    function captionIsClassName() {
+        $this->givenTheClass('class AFooClass2 {}');
+        $this->whenICreateAnObjectActionFrom('AFooClass2');
+        $this->thenItShouldHaveTheCaption('A Foo Class 2');
+        $this->thenItShouldHave_Parameters(0);
+    }
+
+    function writablePropertiesAreParameters() {
+        $this->givenTheClass('class ActionClass1 {
+            public $public;
+            private $private;
+            function __construct($constructor) {}
+            function setSetter($foo) {}
+            function getGetter() {}
+        }');
+        $this->whenICreateAnObjectActionFrom('ActionClass1');
+        $this->thenItShouldHave_Parameters(3);
+        $this->thenParameter_ShouldBe(1, 'constructor');
+        $this->thenParameter_ShouldBe(2, 'public');
+        $this->thenParameter_ShouldBe(3, 'setter');
+    }
+
+    function constructorArgumentsAreRequired() {
+        $this->givenTheClass('class ActionClass2 {
+            public $public;
+            function __construct($required, $optional = null) {}
+            function setSetter($foo) {}
+        }');
+        $this->whenICreateAnObjectActionFrom('ActionClass2');
+        $this->thenItShouldHave_Parameters(4);
+        $this->thenParameter_ShouldBeRequired(1);
+        $this->thenParameter_ShouldBeOptional(2);
+        $this->thenParameter_ShouldBeOptional(3);
+        $this->thenParameter_ShouldBeOptional(4);
+    }
+
+    function readTypesFromHints() {
+        $this->givenTheClass('class ActionClass3 {
+            /** @var int */
+            public $public;
+            /**
+             * @param string $two
+             */
+            function __construct(\DateTime $one, $two) {}
+            /**
+             * @param null|boolean $foo
+             */
+            function setSetter($foo) {}
+        }');
+        $this->whenICreateAnObjectActionFrom('ActionClass3');
+        $this->thenItShouldHave_Parameters(4);
+        $this->thenParameter_ShouldHaveTheType(1, new ClassType(\DateTime::class));
+        $this->thenParameter_ShouldHaveTheType(2, new StringType());
+        $this->thenParameter_ShouldHaveTheType(3, new IntegerType());
+        $this->thenParameter_ShouldHaveTheType(4, new NullableType(new BooleanType()));
+    }
+
+    function buildInstanceForExecution() {
+        $this->givenTheClass('class ClassAction4 {
+            public $public;
+            function __construct($one, $two, $three = null) {
+                $this->one = $one;
+                $this->two = $two;
+            }
+            function setSetter($foo) {
+                $this->foo = $foo;
+            }
+            function setNotGiven($foo) {}
+        }');
+        $this->whenICreateAnObjectActionFrom('ClassAction4');
+        $this->whenIExecuteThatActionWith([
+            'one' => 'hey',
+            'two' => 'ho',
+            'public' => 'lets',
+            'setter' => 'go'
+        ]);
+        $this->thenItShouldBeExecutedWithAnInstanceOf('ClassAction4');
+        $this->thenItsProperty_ShouldBe('one', 'hey');
+        $this->thenItsProperty_ShouldBe('two', 'ho');
+        $this->thenItsProperty_ShouldBe('public', 'lets');
+        $this->thenItsProperty_ShouldBe('foo', 'go');
+    }
+
+    /** @var Action */
+    private $uut;
+
+    /** @var ObjectAction|Mockster */
+    private $action;
+
+    private $instance;
+
+    private function givenTheClass($code) {
+        eval($code);
+    }
+
+    private function whenICreateAnObjectActionFrom($className) {
+        $this->action = Mockster::of(ObjectAction::class);
+        $this->uut = Mockster::uut($this->action, [$className]);
+    }
+
+    private function whenIExecuteThatActionWith($parameters) {
+        $this->action->__call('executeWith', [Argument::any()])->will()->forwardTo(function ($object) {
+            $this->instance = $object;
+        });
+
+        $this->uut->execute($parameters);
+    }
+
+    private function thenItShouldHaveTheCaption($string) {
+        $this->assert($this->uut->caption(), $string);
+    }
+
+    private function thenItShouldHave_Parameters($count) {
+        $this->assert->size($this->uut->parameters(), $count);
+    }
+
+    private function thenParameter_ShouldBe($pos, $name) {
+        $this->assert($this->uut->parameters()[$pos - 1]->getName(), $name);
+    }
+
+    private function thenParameter_ShouldBeRequired($pos) {
+        $this->assert($this->uut->parameters()[$pos - 1]->isRequired());
+    }
+
+    private function thenParameter_ShouldBeOptional($pos) {
+        $this->assert->not($this->uut->parameters()[$pos - 1]->isRequired());
+    }
+
+    private function thenParameter_ShouldHaveTheType($pos, $type) {
+        $this->assert($this->uut->parameters()[$pos - 1]->getType(), $type);
+    }
+
+    private function thenItShouldBeExecutedWithAnInstanceOf($class) {
+        $this->assert->isInstanceOf($this->instance, $class);
+    }
+
+    private function thenItsProperty_ShouldBe($key, $value) {
+        $this->assert($this->instance->$key, $value);
+    }
+}
