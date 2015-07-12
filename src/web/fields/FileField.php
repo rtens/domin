@@ -1,28 +1,33 @@
 <?php
 namespace rtens\domin\web\fields;
 
+use rtens\domin\files\File;
+use rtens\domin\files\SavedFile;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\WebField;
 use watoki\curir\protocol\UploadedFile;
 use watoki\reflect\type\ClassType;
 
-class UploadedFileField implements WebField {
+class FileField implements WebField {
 
     /**
      * @param Parameter $parameter
      * @return bool
      */
     public function handles(Parameter $parameter) {
-        return $parameter->getType() == new ClassType(UploadedFile::class);
+        return $parameter->getType() == new ClassType(File::class);
     }
 
     /**
-     * @param UploadedFile $serialized
-     * @return UploadedFile
+     * @param UploadedFile|null $serialized
+     * @return \rtens\domin\files\File|null
      */
     public function inflate($serialized) {
-        return $serialized;
+        if (!$serialized) {
+            return null;
+        }
+        return new SavedFile($serialized->getTemporaryName(), $serialized->getName(), $serialized->getType());
     }
 
     /**
