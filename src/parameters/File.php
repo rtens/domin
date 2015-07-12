@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\files;
+namespace rtens\domin\parameters;
 
 interface File {
 

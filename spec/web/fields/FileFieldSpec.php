@@ -1,8 +1,8 @@
 <?php
 namespace spec\rtens\domin\web\fields;
 
-use rtens\domin\files\File;
-use rtens\domin\files\SavedFile;
+use rtens\domin\parameters\File;
+use rtens\domin\parameters\SavedFile;
 use rtens\domin\Parameter;
 use rtens\domin\web\fields\FileField;
 use rtens\scrut\tests\statics\StaticTestSuite;

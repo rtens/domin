@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\domin\web\renderers;
 
-use rtens\domin\files\MemoryFile;
+use rtens\domin\parameters\MemoryFile;
 use rtens\domin\web\renderers\FileRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 

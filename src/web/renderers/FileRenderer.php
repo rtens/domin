@@ -2,7 +2,7 @@
 namespace rtens\domin\web\renderers;
 
 use rtens\domin\delivery\Renderer;
-use rtens\domin\files\File;
+use rtens\domin\parameters\File;
 use rtens\domin\web\Element;
 
 class FileRenderer implements Renderer {

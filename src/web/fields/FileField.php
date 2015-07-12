@@ -1,8 +1,8 @@
 <?php
 namespace rtens\domin\web\fields;
 
-use rtens\domin\files\File;
-use rtens\domin\files\SavedFile;
+use rtens\domin\parameters\File;
+use rtens\domin\parameters\SavedFile;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\WebField;
@@ -21,7 +21,7 @@ class FileField implements WebField {
 
     /**
      * @param UploadedFile|null $serialized
-     * @return \rtens\domin\files\File|null
+     * @return \rtens\domin\parameters\File|null
      */
     public function inflate($serialized) {
         if (!$serialized) {

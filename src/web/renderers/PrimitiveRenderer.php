@@ -18,6 +18,6 @@ class PrimitiveRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        return (string)$value;
+        return htmlentities((string)$value);
     }
 }

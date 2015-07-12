@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\files;
+namespace rtens\domin\parameters;
 
 class MemoryFile implements File {
 
