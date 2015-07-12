@@ -1,0 +1,53 @@
+<?php
+namespace rtens\domin\web\fields;
+
+use rtens\domin\Parameter;
+use rtens\domin\web\Element;
+use rtens\domin\web\WebField;
+use watoki\curir\protocol\UploadedFile;
+use watoki\reflect\type\ClassType;
+
+class UploadedFileField implements WebField {
+
+    /**
+     * @param Parameter $parameter
+     * @return bool
+     */
+    public function handles(Parameter $parameter) {
+        return $parameter->getType() == new ClassType(UploadedFile::class);
+    }
+
+    /**
+     * @param UploadedFile $serialized
+     * @return UploadedFile
+     */
+    public function inflate($serialized) {
+        return $serialized;
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @param mixed $value
+     * @return string
+     */
+    public function render(Parameter $parameter, $value) {
+        $attributes = [
+            "type" => "file",
+            "name" => $parameter->getName()
+        ];
+
+        if ($parameter->isRequired()) {
+            $attributes["required"] = 'true';
+        }
+
+        return (string) new Element("input", $attributes);
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return array|Element[]
+     */
+    public function headElements(Parameter $parameter) {
+        return [];
+    }
+}
