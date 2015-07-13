@@ -23,12 +23,12 @@
 <h1><?= $action ?></h1>
 <form method="post" enctype="multipart/form-data">
     <? foreach ($fields as $field) { ?>
-    <div>
+    <p>
     <label>
-        <?= $field[name] . ($field[required] ? '*' : '') ?>
+        <strong><?= $field[name] . ($field[required] ? '*' : '') ?></strong><br/>
         <?= $field[control] ?>
     </label>
-    </div>
+    </p>
     <? } ?>
     <input type="submit" value="execute">
 </form>
