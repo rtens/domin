@@ -20,7 +20,7 @@ class PrimitiveRendererSpec extends StaticTestSuite {
         $renderer = new PrimitiveRenderer();
 
         $this->assert($renderer->render(1) === '1');
-        $this->assert($renderer->render([]), 'Array');
+        $this->assert($renderer->render(true), '1');
     }
 
     function escapesHtml() {
