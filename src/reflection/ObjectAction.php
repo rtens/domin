@@ -7,6 +7,9 @@ use watoki\reflect\PropertyReader;
 
 abstract class ObjectAction implements Action {
 
+    /** @var PropertyReader */
+    private $reader;
+
     /** @var \ReflectionClass */
     protected $class;
 
@@ -14,6 +17,7 @@ abstract class ObjectAction implements Action {
      * @param string $class
      */
     public function __construct($class) {
+        $this->reader = new PropertyReader($class);
         $this->class = new \ReflectionClass($class);
     }
 
@@ -33,13 +37,26 @@ abstract class ObjectAction implements Action {
     }
 
     /**
+     * Fills out partially available parameters
+     *
+     * @param array $parameters Available values indexed by name
+     * @return array Filled values indexed by name
+     */
+    public function fill(array $parameters) {
+        foreach ($this->reader->readInterface() as $property) {
+            if (!array_key_exists($property->name(), $parameters) || is_null($parameters[$property->name()])) {
+                $parameters[$property->name()] = $property->defaultValue();
+            }
+        }
+        return $parameters;
+    }
+
+    /**
      * @return Parameter[]
      */
     public function parameters() {
-        $reader = new PropertyReader($this->class->getName());
-
         $parameters = [];
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->reader->readInterface() as $property) {
             if ($property->canSet()) {
                 $parameters[] = new Parameter($property->name(), $property->type(), $property->isRequired());
             }
@@ -57,9 +74,8 @@ abstract class ObjectAction implements Action {
     }
 
     protected function createInstance(array $parameters) {
-        $reader = new PropertyReader($this->class->getName());
         $instance = $this->class->newInstanceArgs($parameters);
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->reader->readInterface() as $property) {
             if ($property->canSet() && array_key_exists($property->name(), $parameters)) {
                 $property->set($instance, $parameters[$property->name()]);
             }

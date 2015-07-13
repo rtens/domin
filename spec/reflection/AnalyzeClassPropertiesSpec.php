@@ -97,6 +97,23 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
         $this->thenItsProperty_ShouldBe('foo', 'go');
     }
 
+    function fillParametersWithDefaultValues() {
+        $this->givenTheClass('class ClassAction5 {
+            public $public = "foo";
+            function __construct($required, $one = "bar", $two = "for") {}
+            function setSetter($foo = "bas") {}
+        }');
+        $this->whenICreateAnObjectActionFrom('ClassAction5');
+        $this->whenIFillTheParameters([
+            'one' => null,
+            'two' => 'me'
+        ]);
+        $this->thenFilledParameter_ShouldBe('one', "bar");
+        $this->thenFilledParameter_ShouldBe('two', "me");
+        $this->thenFilledParameter_ShouldBe('public', "foo");
+        $this->thenFilledParameter_ShouldBe('setter', null);
+    }
+
     /** @var Action */
     private $uut;
 
@@ -104,6 +121,9 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
     private $action;
 
     private $instance;
+
+    /** @var array */
+    private $filledParameters;
 
     private function givenTheClass($code) {
         eval($code);
@@ -120,6 +140,10 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
         });
 
         $this->uut->execute($parameters);
+    }
+
+    private function whenIFillTheParameters($parameters) {
+        $this->filledParameters = $this->uut->fill($parameters);
     }
 
     private function thenItShouldHaveTheCaption($string) {
@@ -152,5 +176,9 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
 
     private function thenItsProperty_ShouldBe($key, $value) {
         $this->assert($this->instance->$key, $value);
+    }
+
+    private function thenFilledParameter_ShouldBe($name, $value) {
+        $this->assert($this->filledParameters[$name], $value);
     }
 }
