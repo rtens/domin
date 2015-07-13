@@ -110,6 +110,26 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenHeadElement_ShouldBe(3, '<bas/>');
     }
 
+    function fillParametersByAction() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'bar');
+        $this->action->given_HasTheParameter('foo', 'bas');
+
+        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
+            return $p->getName() . ':' . $value;
+        });
+
+        $this->action->given_FillsParametersWith('foo', function ($params) {
+            $params['bas'] = $params['bar'] . '!';
+            return $params;
+        });
+
+        $this->whenIExecute_With('foo', ['bar' => 'hey']);
+
+        $this->thenField_ShouldBeRenderedAs(1, 'bar:hey(inflated)');
+        $this->thenField_ShouldBeRenderedAs(2, 'bas:hey(inflated)!');
+    }
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -135,7 +155,7 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
         Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
-            return $s ? $s . '(inflated)' : null;
+            return $s . '(inflated)';
         });
         Mockster::stub($field->render(Arg::any(), Arg::any(), Arg::any()))->will()->forwardTo($callback);
     }
@@ -146,7 +166,7 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
         Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
-            return $s ? $s . '(inflated)' : null;
+            return $s . '(inflated)';
         });
         Mockster::stub($field->headElements(Arg::any()))->will()->forwardTo($elements);
     }

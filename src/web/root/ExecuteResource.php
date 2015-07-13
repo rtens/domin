@@ -99,9 +99,11 @@ class ExecuteResource extends Resource {
     private function assembleFields(Action $action, ParameterReader $reader) {
         $headElements = [];
         $fields = [];
+
+        $values = $this->collectParameters($action, $reader);
+
         foreach ($action->parameters() as $parameter) {
             $field = $this->fields->getField($parameter);
-            $value = $field->inflate($reader->read($parameter->getName()));
 
             if (!($field instanceof WebField)) {
                 throw new \Exception("[$parameter] is not a WebField");
@@ -114,12 +116,27 @@ class ExecuteResource extends Resource {
             $fields[] = [
                 'name' => $parameter->getName(),
                 'required' => $parameter->isRequired(),
-                'control' => $field->render($parameter, $value)
+                'control' => $field->render($parameter, $values[$parameter->getName()]),
             ];
         }
         return [
             'headElements' => array_values(array_unique($headElements)),
             'fields' => $fields
         ];
+    }
+
+    private function collectParameters(Action $action, ParameterReader $reader) {
+        $values = [];
+
+        foreach ($action->parameters() as $parameter) {
+            $value = $reader->read($parameter->getName());
+
+            if (!is_null($value)) {
+                $field = $this->fields->getField($parameter);
+                $values[$parameter->getName()] = $field->inflate($value);
+            }
+        }
+
+        return $action->fill($values);
     }
 }

@@ -39,6 +39,13 @@ class ActionFixture extends Fixture {
         Mockster::stub($action->parameters())->will()->forwardTo(function () use ($id) {
             return $this->params[$id];
         });
+        Mockster::stub($action->fill(Argument::any()))->will()->forwardTo(function ($params) {
+            return $params;
+        });
+    }
+
+    public function given_FillsParametersWith($id, $filler) {
+        Mockster::stub($this->actions[$id]->fill(Argument::any()))->will()->forwardTo($filler);
     }
 
     public function givenTheAction_FailingWith($id, $message) {
