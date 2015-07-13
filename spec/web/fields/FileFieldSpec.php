@@ -39,6 +39,6 @@ class FileFieldSpec extends StaticTestSuite {
     function requiredField() {
         $field = new FileField();
         $this->assert($field->render(new Parameter('foo', new IntegerType(), true), null),
-            '<input type="file" name="foo" required="true"/>');
+            '<input type="file" name="foo" required="required"/>');
     }
 }

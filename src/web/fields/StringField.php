@@ -40,7 +40,7 @@ class StringField implements WebField {
         ];
 
         if ($parameter->isRequired()) {
-            $attributes["required"] = 'true';
+            $attributes["required"] = 'required';
         }
 
         return (string) new Element("input", $attributes);

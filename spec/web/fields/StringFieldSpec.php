@@ -39,7 +39,7 @@ class StringFieldSpec extends StaticTestSuite {
 
     function requiredField() {
         $this->assert($this->field->render(new Parameter('bar', new StringType(), true), null),
-            '<input type="text" name="bar" value="" required="true"/>');
+            '<input type="text" name="bar" value="" required="required"/>');
     }
 
     function withValue() {
