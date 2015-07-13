@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\reflfection;
+namespace rtens\domin\reflection;
 
 use rtens\domin\Action;
 use rtens\domin\Parameter;

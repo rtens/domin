@@ -2,7 +2,7 @@
 namespace spec\rtens\domin\reflection;
 
 use rtens\domin\Action;
-use rtens\domin\reflfection\ObjectAction;
+use rtens\domin\reflection\ObjectAction;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
