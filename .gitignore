@@ -1,5 +1,6 @@
 /.idea
 /sample
+/notes
 /vendor
 /composer.lock
 /dynamicReturnTypeMeta.json
