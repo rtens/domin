@@ -8,7 +8,7 @@ use watoki\reflect\PropertyReader;
 abstract class ObjectAction implements Action {
 
     /** @var \ReflectionClass */
-    private $class;
+    protected $class;
 
     /**
      * @param string $class
@@ -16,6 +16,14 @@ abstract class ObjectAction implements Action {
     public function __construct($class) {
         $this->class = new \ReflectionClass($class);
     }
+
+    /**
+     * Called by execute() with the instantiated object
+     *
+     * @param object $object
+     * @return mixed
+     */
+    abstract protected function executeWith($object);
 
     /**
      * @return string
@@ -48,9 +56,7 @@ abstract class ObjectAction implements Action {
         return $this->executeWith($this->createInstance($parameters));
     }
 
-    abstract protected function executeWith($object);
-
-    private function createInstance(array $parameters) {
+    protected function createInstance(array $parameters) {
         $reader = new PropertyReader($this->class->getName());
         $instance = $this->class->newInstanceArgs($parameters);
         foreach ($reader->readInterface() as $property) {
