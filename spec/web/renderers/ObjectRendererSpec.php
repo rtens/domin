@@ -22,7 +22,12 @@ class ObjectRendererSpec extends StaticTestSuite {
     function emptyObject() {
         $renderer = new ObjectRenderer(new RendererRegistry());
 
-        $this->assert($renderer->render(new \StdClass()), '<h3>stdClass</h3>');
+        $this->assert($renderer->render(new \StdClass()),
+            '<div class="panel panel-info">' . "\n" .
+            '<div class="panel-heading"><h3 class="panel-title">stdClass</h3></div>' . "\n" .
+            '<div class="panel-body"><dl class="dl-horizontal"></dl></div>' . "\n" .
+            '</div>'
+        );
     }
 
     function renderProperties() {
@@ -42,15 +47,17 @@ class ObjectRendererSpec extends StaticTestSuite {
         $object->bar = 'bas';
 
         $this->assert($renderer->render($object),
-            "<h3>stdClass</h3>" . "\n" .
-            "<div>" . "\n" .
-            "<h4>foo</h4>" . "\n" .
-            "<p>fos rendered</p>" . "\n" .
-            "</div>" . "\n" .
-            "<div>" . "\n" .
-            "<h4>bar</h4>" . "\n" .
-            "<p>bas rendered</p>" . "\n" .
-            "</div>"
+            '<div class="panel panel-info">' . "\n" .
+            '<div class="panel-heading"><h3 class="panel-title">stdClass</h3></div>' . "\n" .
+            '<div class="panel-body">' . "\n" .
+            '<dl class="dl-horizontal">' . "\n" .
+            '<dt>Foo</dt>' . "\n" .
+            '<dd>fos rendered</dd>' . "\n" .
+            '<dt>Bar</dt>' . "\n" .
+            '<dd>bas rendered</dd>' . "\n" .
+            '</dl>' . "\n" .
+            '</div>' . "\n" .
+            '</div>'
         );
     }
 
@@ -67,14 +74,17 @@ class ObjectRendererSpec extends StaticTestSuite {
         $class = new \ReflectionClass('NotOnlyReadableProperties');
 
         $renderer = new ObjectRenderer($renderers);
-        $this->assert($renderer->render($class->newInstance("uno")), '<h3>NotOnlyReadableProperties</h3>' . "\n" .
-            '<div>' . "\n" .
-            '<h4>public</h4>' . "\n" .
-            '<p></p>' . "\n" .
+        $this->assert($renderer->render($class->newInstance("uno")),
+            '<div class="panel panel-info">' . "\n" .
+            '<div class="panel-heading"><h3 class="panel-title">NotOnlyReadableProperties</h3></div>' . "\n" .
+            '<div class="panel-body">' . "\n" .
+            '<dl class="dl-horizontal">' . "\n" .
+            '<dt>Public</dt>' . "\n" .
+            '<dd></dd>' . "\n" .
+            '<dt>Getter</dt>' . "\n" .
+            '<dd></dd>' . "\n" .
+            '</dl>' . "\n" .
             '</div>' . "\n" .
-            '<div>' . "\n" .
-            '<h4>getter</h4>' . "\n" .
-            '<p></p>' . "\n" .
             '</div>');
     }
 } 

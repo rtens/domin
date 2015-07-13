@@ -17,7 +17,7 @@ class ArrayRendererSpec extends StaticTestSuite {
         $this->assert->not($renderer->handles(''));
         $this->assert->not($renderer->handles(new \StdClass()));
 
-        $this->assert($renderer->render([]), '<ul/>');
+        $this->assert($renderer->render([]), '<ul class="list-unstyled"></ul>');
     }
 
     function nonEmptyArray() {
@@ -34,7 +34,7 @@ class ArrayRendererSpec extends StaticTestSuite {
         $renderer = new ArrayRenderer($renderers);
 
         $this->assert($renderer->render(['one', 'two']),
-            "<ul>" . "\n" .
+            '<ul class="list-unstyled">' . "\n" .
             "<li>one rendered</li>" . "\n" .
             "<li>two rendered</li>" . "\n" .
             "</ul>"

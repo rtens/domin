@@ -28,11 +28,7 @@ class ObjectRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        $output = [
-            (string)new Element('h3', [], [
-                get_class($value)
-            ])
-        ];
+        $descriptions = [];
 
         $reader = new PropertyReader($value);
         foreach ($reader->readInterface($value) as $property) {
@@ -42,16 +38,23 @@ class ObjectRenderer implements Renderer {
 
             $propertyValue = $property->get($value);
 
-            $output[] = (string)new Element('div', [], [
-                new Element('h4', [], [
-                    $property->name()
-                ]),
-                new Element('p', [], [
-                    $this->renderers->getRenderer($propertyValue)->render($propertyValue)
-                ])
+            $descriptions[] = new Element('dt', [], [
+                htmlentities(ucfirst($property->name()))
+            ]);
+            $descriptions[] = new Element('dd', [], [
+                $this->renderers->getRenderer($propertyValue)->render($propertyValue)
             ]);
         }
 
-        return implode("\n", $output);
+        return (string)new Element('div', ['class' => 'panel panel-info'], [
+            new Element('div', ['class' => 'panel-heading'], [
+                new Element('h3', ['class' => 'panel-title'], [
+                    htmlentities((new \ReflectionClass($value))->getShortName())
+                ])
+            ]),
+            new Element('div', ['class' => 'panel-body'], [
+                new Element('dl', ['class' => 'dl-horizontal'], $descriptions)
+            ])
+        ]);
     }
 }

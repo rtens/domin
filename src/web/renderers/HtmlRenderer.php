@@ -3,6 +3,7 @@ namespace rtens\domin\web\renderers;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\parameters\Html;
+use rtens\domin\web\Element;
 
 class HtmlRenderer implements Renderer {
 
@@ -19,6 +20,8 @@ class HtmlRenderer implements Renderer {
      * @return string
      */
     public function render($value) {
-        return $value->getContent();
+        return (string)new Element('div', ['style' => 'border: 1px solid silver;'], [
+            $value->getContent()
+        ]);
     }
 }

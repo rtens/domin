@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>domin | execute</title>
+    <title>domin | <?= $action ?></title>
 
 <? foreach ($headElements as $element) { ?>
     <?= $element ?>
@@ -12,31 +12,57 @@
 </head>
 <body>
 
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">domin</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
 <? if ($error) { ?>
-<div>Error: <?= $error ?></div>
+<div class="alert alert-danger"><?= $error ?></div>
+<? } ?>
+
+<? if ($warning) { ?>
+<div class="alert alert-warning"><?= $warning ?></div>
 <? } ?>
 
 <? if ($success) { ?>
-<div>Action "<?= $action ?>" was successfully executed</div>
+<div class="alert alert-success">Action "<?= $action ?>" was successfully executed</div>
 <? } ?>
 
-<h1><?= $action ?></h1>
-<form method="post" enctype="multipart/form-data">
-    <? foreach ($fields as $field) { ?>
-    <p>
-    <label>
-        <strong><?= $field[name] . ($field[required] ? '*' : '') ?></strong><br/>
-        <span style="font-weight: normal"><?= $field[control] ?></span>
-    </label>
-    </p>
-    <? } ?>
-    <input type="submit" value="execute">
-</form>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h1 class="panel-title"><?= $action ?></h1>
+    </div>
+    <div class="panel-body">
+        <form method="post" enctype="multipart/form-data">
+            <? foreach ($fields as $field) { ?>
+            <div class="form-group">
+                <label><?= $field[caption] . ($field[required] ? '*' : '') ?></label>
+                <?= $field[control] ?>
+            </div>
+            <? } ?>
+            <input type="submit" class="btn btn-primary" value="execute">
+        </form>
+    </div>
+</div>
 
 <? if ($output) { ?>
-<h2>Result</h2>
 <div><?= $output ?></div>
 <? } ?>
+
+</div>
 
 </body>
 </html>

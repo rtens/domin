@@ -13,6 +13,7 @@ use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
 use rtens\domin\web\Element;
+use rtens\domin\web\HeadElements;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
 use watoki\curir\delivery\WebRequest;
@@ -79,6 +80,7 @@ class ExecuteResource extends Resource {
     private function assembleResult(ExecutionResult $result) {
         $model = [
             'error' => null,
+            'warning' => null,
             'success' => null,
             'output' => null
         ];
@@ -90,14 +92,16 @@ class ExecuteResource extends Resource {
         } else if ($result instanceof RenderedResult) {
             $model['output'] = $result->getOutput();
         } else if ($result instanceof MissingParametersResult) {
-            $model['error'] = "Missing parameters: " . implode(', ', $result->getParameters());
+            $model['warning'] = "Missing parameters: " . implode(', ', $result->getParameters());
         }
 
         return $model;
     }
 
     private function assembleFields(Action $action, ParameterReader $reader) {
-        $headElements = [];
+        $headElements = [
+            HeadElements::bootstrap()
+        ];
         $fields = [];
 
         $values = $this->collectParameters($action, $reader);
@@ -115,6 +119,7 @@ class ExecuteResource extends Resource {
 
             $fields[] = [
                 'name' => $parameter->getName(),
+                'caption' => ucfirst($parameter->getName()),
                 'required' => $parameter->isRequired(),
                 'control' => $field->render($parameter, $values[$parameter->getName()]),
             ];

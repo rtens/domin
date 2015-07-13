@@ -2,6 +2,7 @@
 namespace rtens\domin\web\root;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\web\HeadElements;
 use watoki\curir\Container;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
@@ -38,7 +39,10 @@ class IndexResource extends Container {
      */
     public function doGet(WebRequest $request) {
         return [
-            'action' => $this->assembleActions($request->getContext())
+            'action' => $this->assembleActions($request->getContext()),
+            'headElements' => [
+                (string)HeadElements::bootstrap()
+            ]
         ];
     }
 

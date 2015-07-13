@@ -29,10 +29,10 @@ class ArrayRenderer implements Renderer {
     public function render($value) {
         $items = [];
         foreach ($value as $item) {
-            $items[] = (string)new Element('li', [], [
+            $items[] = new Element('li', [], [
                 $this->renderers->getRenderer($item)->render($item)
             ]);
         }
-        return (string)new Element('ul', [], $items);
+        return (string)new Element('ul', ['class' => 'list-unstyled'], $items);
     }
 }

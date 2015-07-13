@@ -6,6 +6,7 @@ use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
+use rtens\domin\web\HeadElements;
 use rtens\domin\web\root\IndexResource;
 use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
@@ -104,10 +105,11 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
 
-        $this->thenThereShouldBe_HeadElements(3);
-        $this->thenHeadElement_ShouldBe(1, '<one/>');
-        $this->thenHeadElement_ShouldBe(2, '<bar/>');
-        $this->thenHeadElement_ShouldBe(3, '<bas/>');
+        $this->thenThereShouldBe_HeadElements(4);
+        $this->thenHeadElement_ShouldBe(1, HeadElements::bootstrap());
+        $this->thenHeadElement_ShouldBe(2, '<one></one>');
+        $this->thenHeadElement_ShouldBe(3, '<bar></bar>');
+        $this->thenHeadElement_ShouldBe(4, '<bas></bas>');
     }
 
     function fillParametersByAction() {

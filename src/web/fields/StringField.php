@@ -36,7 +36,8 @@ class StringField implements WebField {
         $attributes = [
             "type" => "text",
             "name" => $parameter->getName(),
-            "value" => $value
+            "value" => $value,
+            "class" => "form-control"
         ];
 
         if ($parameter->isRequired()) {
