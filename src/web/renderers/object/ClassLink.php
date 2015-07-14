@@ -7,14 +7,23 @@ class ClassLink implements Link {
     private $caption;
     private $parameters;
     private $class;
+    private $handles;
 
-    function __construct($actionId, $class, callable $parameters = null) {
+    function __construct($class, $actionId, callable $parameters = null) {
         $this->class = $class;
         $this->actionId = $actionId;
+        $this->caption = preg_replace('/(.)([A-Z])/', '$1 $2', ucfirst($this->actionId));
         $this->parameters = $parameters ?: function () {
             return [];
         };
-        $this->caption = preg_replace('/(.)([A-Z])/', '$1 $2', ucfirst($this->actionId));
+        $this->handles = function ($object) {
+            return is_a($object, $this->class);
+        };
+    }
+
+    public function setHandles(callable $handles) {
+        $this->handles = $handles;
+        return $this;
     }
 
     /**
@@ -22,7 +31,7 @@ class ClassLink implements Link {
      * @return boolean
      */
     public function handles($object) {
-        return is_a($object, $this->class);
+        return call_user_func($this->handles, $object);
     }
 
     /**

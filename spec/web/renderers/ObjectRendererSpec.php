@@ -175,7 +175,7 @@ class ObjectRendererSpec extends StaticTestSuite {
     }
 
     function useClassLink() {
-        $link = new ClassLink('fooBar', \DateTimeInterface::class, function (\DateTimeInterface $object) {
+        $link = new ClassLink(\DateTimeInterface::class, 'fooBar', function (\DateTimeInterface $object) {
             return [
                 'one' => $object->format('Y-m-d')
             ];
@@ -188,5 +188,11 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->assert($link->actionId(), 'fooBar');
         $this->assert($link->caption(new \DateTime()), 'Foo Bar');
         $this->assert($link->parameters(new \DateTime('13 December 2011')), ['one' => '2011-12-13']);
+
+        $link = $link->setHandles(function (\DateTime $object) {
+            return $object->format('Y') == '2011';
+        });
+        $this->assert($link->handles(new \DateTime('2011-12-13')));
+        $this->assert->not($link->handles(new \DateTime('2012-12-13')));
     }
 } 
