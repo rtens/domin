@@ -10,12 +10,14 @@ use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
+use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
 use rtens\domin\web\Element;
 use rtens\domin\web\HeadElements;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
+use watoki\collections\Map;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\Resource;
 use watoki\factory\Factory;
@@ -73,16 +75,17 @@ class ExecuteResource extends Resource {
                 'action' => $action->caption(),
                 'baseUrl' => $request->getContext()->appended('')->toString()
             ],
-            $this->assembleResult($result),
+            $this->assembleResult($result, $request),
             $this->assembleFields($action, $reader)
         );
     }
 
-    private function assembleResult(ExecutionResult $result) {
+    private function assembleResult(ExecutionResult $result, WebRequest $request) {
         $model = [
             'error' => null,
             'warning' => null,
             'success' => null,
+            'redirect' => null,
             'output' => null
         ];
 
@@ -94,6 +97,11 @@ class ExecuteResource extends Resource {
             $model['output'] = $result->getOutput();
         } else if ($result instanceof MissingParametersResult) {
             $model['warning'] = "Missing parameters: " . implode(', ', $result->getParameters());
+        } else if ($result instanceof RedirectResult) {
+            $model['success'] = true;
+            $model['redirect'] = $request->getContext()
+                ->appended($result->getActionId())
+                ->withParameters(new Map($result->getParameters()));
         }
 
         return $model;

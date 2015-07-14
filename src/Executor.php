@@ -4,6 +4,7 @@ namespace rtens\domin;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
@@ -38,7 +39,7 @@ class Executor {
 
     /**
      * @param $id
-     * @return \rtens\domin\execution\ExecutionResult
+     * @return ExecutionResult
      */
     public function execute($id) {
         try {
@@ -54,9 +55,11 @@ class Executor {
 
             if (is_null($returned)) {
                 return new NoResult();
+            } else if ($returned instanceof ExecutionResult) {
+                return $returned;
+            } else {
+                return new RenderedResult($this->render($returned));
             }
-
-            return new RenderedResult($this->render($returned));
         } catch (\Exception $e) {
             return new FailedResult($e);
         }

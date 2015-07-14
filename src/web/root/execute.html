@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>domin | <?= $action ?></title>
 
+    <? if ($redirect) { ?>
+    <meta http-equiv="refresh" content="2; URL=<?= $redirect ?>">
+    <? } ?>
+
 <? foreach ($headElements as $element) { ?>
     <?= $element ?>
 
@@ -39,6 +43,10 @@
 
 <? if ($success) { ?>
 <div class="alert alert-success">Action "<?= $action ?>" was successfully executed</div>
+<? } ?>
+
+<? if ($redirect) { ?>
+<div class="alert alert-info">Please wait or <a href="<?= $redirect ?>">click here</a></div>
 <? } ?>
 
 <div class="panel panel-primary">

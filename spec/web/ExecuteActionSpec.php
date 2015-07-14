@@ -4,6 +4,7 @@ namespace spec\rtens\domin\web;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\HeadElements;
@@ -132,6 +133,13 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenField_ShouldBeRenderedAs(2, 'bas:hey(inflated)!');
     }
 
+    function redirectResult() {
+        $this->action->givenTheAction_Returning('foo', new RedirectResult('bar', ['one' => 'two']));
+        $this->whenIExecute('foo');
+        $this->thenThereShouldBeASuccessMessageFor('Foo');
+        $this->thenIShouldBeRedirectedTo('http://example.com/base/bar?one=two');
+    }
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -225,5 +233,9 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenHeadElement_ShouldBe($pos, $string) {
         $this->assert($this->web->model['headElements'][$pos - 1], $string);
+    }
+
+    private function thenIShouldBeRedirectedTo($url) {
+        $this->assert($this->web->model['redirect'], $url);
     }
 }

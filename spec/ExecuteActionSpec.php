@@ -35,6 +35,13 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenThereShouldBeNoResult();
     }
 
+    function passOnResult() {
+        $this->action->givenTheAction_Returning('foo', new RenderedResult('hello'));
+
+        $this->whenIExecute('foo');
+        $this->thenTheResultShouldBe('hello');
+    }
+
     function noMatchingRenderer() {
         $this->action->givenTheAction_Returning('foo', 'bar');
         $this->whenIExecute('foo');
