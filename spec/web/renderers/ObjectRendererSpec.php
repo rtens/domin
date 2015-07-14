@@ -174,6 +174,22 @@ class ObjectRendererSpec extends StaticTestSuite {
             '</small>');
     }
 
+    function confirmActions() {
+        $this->renderers->add(new PrimitiveRenderer());
+
+        $link = Mockster::of(Link::class);
+        $this->links->add(Mockster::mock($link));
+
+        Mockster::stub($link->handles(Argument::any()))->will()->return_(true);
+        Mockster::stub($link->confirm())->will()->return_('Foo?');
+
+        $object = new \StdClass();
+        $object->foo = 'bar';
+
+        $this->assert->contains($this->renderer->render($object),
+            '<a class="btn btn-xs btn-primary" href="baser/url/" onclick="return confirm(\'Foo?\');"></a>');
+    }
+
     function useClassLink() {
         $link = new ClassLink(\DateTimeInterface::class, 'fooBar', function (\DateTimeInterface $object) {
             return [
@@ -194,5 +210,9 @@ class ObjectRendererSpec extends StaticTestSuite {
         });
         $this->assert($link->handles(new \DateTime('2011-12-13')));
         $this->assert->not($link->handles(new \DateTime('2012-12-13')));
+
+        $this->assert->isNull($link->confirm());
+        $link->setConfirmation('Foo?');
+        $this->assert($link->confirm(), 'Foo?');
     }
 } 

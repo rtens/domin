@@ -76,7 +76,11 @@ class ObjectRenderer implements Renderer {
     protected function getLinkedActions($object) {
         return array_map(function (Link $link) use ($object) {
             $url = $this->baseUrl->appended($link->actionId())->withParameters(new Map($link->parameters($object)));
-            return new Element('a', ['class' => 'btn btn-xs btn-primary', 'href' => $url], [
+            $attributes = ['class' => 'btn btn-xs btn-primary', 'href' => $url];
+            if ($link->confirm()) {
+                $attributes['onclick'] = "return confirm('{$link->confirm()}');";
+            }
+            return new Element('a', $attributes, [
                 $link->caption($object)
             ]);
         }, $this->links->getLinks($object));

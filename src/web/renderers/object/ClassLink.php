@@ -8,6 +8,7 @@ class ClassLink implements Link {
     private $parameters;
     private $class;
     private $handles;
+    private $confirmation;
 
     function __construct($class, $actionId, callable $parameters = null) {
         $this->class = $class;
@@ -55,5 +56,23 @@ class ClassLink implements Link {
      */
     public function parameters($object) {
         return call_user_func($this->parameters, $object);
+    }
+
+    /**
+     * Message that needs to be confirmed before the action can be executed
+     * @param string|null $confirmation
+     * @return $this
+     */
+    public function setConfirmation($confirmation) {
+        $this->confirmation = $confirmation;
+        return $this;
+    }
+
+    /**
+     * A message that needs to be confirmed before the action can be executed (or null if not required)
+     * @return string|null
+     */
+    public function confirm() {
+        return $this->confirmation;
     }
 }

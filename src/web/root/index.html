@@ -49,7 +49,9 @@
 
 <ul class="list-group">
     <? foreach ($action as $anAction) { ?>
-        <li class="list-group-item"><a href="<?= $anAction[link][href] ?>"><span><?= $anAction[caption] ?></span></a></li>
+        <li class="list-group-item">
+            <a href="<?= $anAction[link][href] ?>"><?= $anAction[caption] ?></a>
+        </li>
     <? } ?>
 </ul>
 
