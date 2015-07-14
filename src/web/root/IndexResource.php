@@ -5,6 +5,8 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\web\HeadElements;
 use rtens\domin\web\menu\Menu;
 use watoki\curir\Container;
+use watoki\curir\cookie\Cookie;
+use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\deli\Path;
@@ -19,15 +21,20 @@ class IndexResource extends Container {
     /** @var Menu */
     private $menu;
 
+    /** @var CookieStore */
+    private $cookies;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
      * @param Menu $menu <-
+     * @param CookieStore $cookies <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, Menu $menu) {
+    function __construct(Factory $factory, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
         parent::__construct($factory);
         $this->actions = $actions;
         $this->menu = $menu;
+        $this->cookies = $cookies;
     }
 
     public function respond(Request $request) {
@@ -44,6 +51,7 @@ class IndexResource extends Container {
      * @return array
      */
     public function doGet(WebRequest $request) {
+        $this->resetBreadCrumbs();
         return [
             'menuItems' => $this->menu->assembleModel($request),
             'action' => $this->assembleActions($request->getContext()),
@@ -68,5 +76,9 @@ class IndexResource extends Container {
             ];
         }
         return $actions;
+    }
+
+    private function resetBreadCrumbs() {
+        $this->cookies->create(new Cookie([]), ExecuteResource::BREADCRUMB_COOKIE);
     }
 }

@@ -12,6 +12,7 @@ use rtens\domin\web\root\ExecuteResource;
 use rtens\domin\web\root\IndexResource;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\deli\Path;
@@ -33,7 +34,7 @@ class ShowMenuSpec extends StaticTestSuite {
     protected function before() {
         $this->actions = new ActionRegistry();
         $this->menu = new Menu($this->actions);
-        $this->resource = new IndexResource(new Factory(), $this->actions, $this->menu);
+        $this->resource = new IndexResource(new Factory(), $this->actions, $this->menu, Mockster::mock(CookieStore::class));
     }
 
     function emptyMenuOnOverview() {
@@ -90,7 +91,8 @@ class ShowMenuSpec extends StaticTestSuite {
             'two' => 'dos'
         ]));
 
-        $this->resource = new ExecuteResource(new Factory(), $this->actions, new FieldRegistry(), new RendererRegistry(), $this->menu);
+        $this->resource = new ExecuteResource(new Factory(), $this->actions, new FieldRegistry(), new RendererRegistry(),
+            $this->menu, Mockster::mock(CookieStore::class));
 
         $this->model = $this->resource->doGet('foo', new WebRequest(Url::fromString('http://example.com/base'), new Path()));
         $this->assert($this->model['menuItems'], [

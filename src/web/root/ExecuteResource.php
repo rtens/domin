@@ -19,6 +19,8 @@ use rtens\domin\web\menu\Menu;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
 use watoki\collections\Map;
+use watoki\curir\cookie\Cookie;
+use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\Resource;
 use watoki\factory\Factory;
@@ -26,6 +28,7 @@ use watoki\factory\Factory;
 class ExecuteResource extends Resource {
 
     const ACTION_ARG = '__action';
+    const BREADCRUMB_COOKIE = 'domin_trail';
 
     /** @var ActionRegistry */
     private $actions;
@@ -39,19 +42,25 @@ class ExecuteResource extends Resource {
     /** @var Menu */
     private $menu;
 
+    /** @var CookieStore */
+    private $cookies;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
      * @param RendererRegistry $renderers <-
      * @param Menu $menu <-
+     * @param CookieStore $cookies <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers, Menu $menu) {
+    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
+                         RendererRegistry $renderers, Menu $menu, CookieStore $cookies) {
         parent::__construct($factory);
         $this->actions = $actions;
         $this->fields = $fields;
         $this->renderers = $renderers;
         $this->menu = $menu;
+        $this->cookies = $cookies;
     }
 
     /**
@@ -76,9 +85,12 @@ class ExecuteResource extends Resource {
         $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
         $result = $executor->execute($__action);
 
+        $crumbs = $this->updateCrumbs($__action, $result,$request, $reader);
+
         return array_merge(
             [
                 'menuItems' => $this->menu->assembleModel($request),
+                'breadcrumbs' => array_slice($crumbs, 0, -1),
                 'action' => $action->caption(),
                 'baseUrl' => $request->getContext()->appended('')->toString()
             ],
@@ -100,6 +112,7 @@ class ExecuteResource extends Resource {
             $model['error'] = htmlentities($result->getMessage());
         } else if ($result instanceof NoResult) {
             $model['success'] = true;
+            $model['redirect'] = $this->getLastCrumb();
         } else if ($result instanceof RenderedResult) {
             $model['output'] = $result->getOutput();
         } else if ($result instanceof MissingParametersResult) {
@@ -149,6 +162,10 @@ class ExecuteResource extends Resource {
     }
 
     private function collectParameters(Action $action, ParameterReader $reader) {
+        return $action->fill($this->readParameters($action, $reader));
+    }
+
+    private function readParameters(Action $action, ParameterReader $reader) {
         $values = [];
 
         foreach ($action->parameters() as $parameter) {
@@ -159,7 +176,49 @@ class ExecuteResource extends Resource {
                 $values[$parameter->getName()] = $field->inflate($value);
             }
         }
+        return $values;
+    }
 
-        return $action->fill($values);
+    private function updateCrumbs($actionId, ExecutionResult $result, WebRequest $request, ParameterReader $reader) {
+        $action = $this->actions->getAction($actionId);
+        $crumbs = $this->readCrumbs();
+
+        $current = [
+            'target' => (string)$request->getContext()
+                ->appended($actionId)
+                ->withParameters(new Map($this->readParameters($action, $reader))),
+            'caption' => $action->caption()
+        ];
+        $newCrumbs = [];
+        foreach ($crumbs as $crumb) {
+            if ($crumb == $current) {
+                break;
+            }
+            $newCrumbs[] = $crumb;
+        }
+        $newCrumbs[] = $current;
+        if ($result instanceof RenderedResult) {
+            $this->saveCrumbs($newCrumbs);
+        }
+        return $newCrumbs;
+    }
+
+    private function getLastCrumb() {
+        $crumbs = $this->readCrumbs();
+        if (!$crumbs) {
+            return null;
+        }
+        return end($crumbs)['target'];
+    }
+
+    private function readCrumbs() {
+        if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
+            return $this->cookies->read(self::BREADCRUMB_COOKIE)->payload;
+        }
+        return [];
+    }
+
+    private function saveCrumbs($crumbs) {
+        $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
     }
 }
