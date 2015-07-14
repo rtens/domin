@@ -3,6 +3,7 @@ namespace rtens\domin\web\root;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\web\HeadElements;
+use rtens\domin\web\menu\Menu;
 use watoki\curir\Container;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
@@ -15,13 +16,18 @@ class IndexResource extends Container {
     /** @var ActionRegistry */
     private $actions;
 
+    /** @var Menu */
+    private $menu;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
+     * @param Menu $menu <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions) {
+    function __construct(Factory $factory, ActionRegistry $actions, Menu $menu) {
         parent::__construct($factory);
         $this->actions = $actions;
+        $this->menu = $menu;
     }
 
     public function respond(Request $request) {
@@ -39,9 +45,12 @@ class IndexResource extends Container {
      */
     public function doGet(WebRequest $request) {
         return [
+            'menuItems' => $this->menu->assembleModel($request),
             'action' => $this->assembleActions($request->getContext()),
             'headElements' => [
-                (string)HeadElements::bootstrap()
+                (string)HeadElements::jquery(),
+                (string)HeadElements::bootstrap(),
+                (string)HeadElements::bootstrapJs(),
             ]
         ];
     }

@@ -1,6 +1,7 @@
 <?php
 namespace spec\rtens\domin\web;
 
+use rtens\domin\web\menu\Menu;
 use rtens\domin\web\root\IndexResource;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
@@ -28,6 +29,7 @@ class ListActionsSpec extends StaticTestSuite {
 
     private function whenIListTheActions() {
         $this->web->factory->setSingleton($this->action->registry);
+        $this->web->factory->setSingleton(new Menu($this->action->registry));
         $this->web->whenIGet_From('', IndexResource::class);
     }
 

@@ -15,6 +15,7 @@ use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
 use rtens\domin\web\Element;
 use rtens\domin\web\HeadElements;
+use rtens\domin\web\menu\Menu;
 use rtens\domin\web\RequestParameterReader;
 use rtens\domin\web\WebField;
 use watoki\collections\Map;
@@ -35,17 +36,22 @@ class ExecuteResource extends Resource {
     /** @var RendererRegistry */
     private $renderers;
 
+    /** @var Menu */
+    private $menu;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
      * @param RendererRegistry $renderers <-
+     * @param Menu $menu <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers) {
+    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers, Menu $menu) {
         parent::__construct($factory);
         $this->actions = $actions;
         $this->fields = $fields;
         $this->renderers = $renderers;
+        $this->menu = $menu;
     }
 
     /**
@@ -72,6 +78,7 @@ class ExecuteResource extends Resource {
 
         return array_merge(
             [
+                'menuItems' => $this->menu->assembleModel($request),
                 'action' => $action->caption(),
                 'baseUrl' => $request->getContext()->appended('')->toString()
             ],
@@ -109,7 +116,9 @@ class ExecuteResource extends Resource {
 
     private function assembleFields(Action $action, ParameterReader $reader) {
         $headElements = [
-            HeadElements::bootstrap()
+            (string)HeadElements::jquery(),
+            (string)HeadElements::bootstrap(),
+            (string)HeadElements::bootstrapJs(),
         ];
         $fields = [];
 

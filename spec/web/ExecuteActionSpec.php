@@ -8,6 +8,7 @@ use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\HeadElements;
+use rtens\domin\web\menu\Menu;
 use rtens\domin\web\root\IndexResource;
 use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
@@ -106,11 +107,13 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
 
-        $this->thenThereShouldBe_HeadElements(4);
-        $this->thenHeadElement_ShouldBe(1, HeadElements::bootstrap());
-        $this->thenHeadElement_ShouldBe(2, '<one></one>');
-        $this->thenHeadElement_ShouldBe(3, '<bar></bar>');
-        $this->thenHeadElement_ShouldBe(4, '<bas></bas>');
+        $this->thenThereShouldBe_HeadElements(6);
+        $this->thenHeadElement_ShouldBe(1, HeadElements::jquery());
+        $this->thenHeadElement_ShouldBe(2, HeadElements::bootstrap());
+        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrapJs());
+        $this->thenHeadElement_ShouldBe(4, '<one></one>');
+        $this->thenHeadElement_ShouldBe(5, '<bar></bar>');
+        $this->thenHeadElement_ShouldBe(6, '<bas></bas>');
     }
 
     function fillParametersByAction() {
@@ -189,6 +192,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->web->factory->setSingleton($this->action->registry);
         $this->web->factory->setSingleton($this->fields);
         $this->web->factory->setSingleton($this->renderers);
+        $this->web->factory->setSingleton(new Menu($this->action->registry));
 
         $this->web->request = $this->web->request->withArguments(new Map($parameters));
         $this->web->whenIGet_From($id, IndexResource::class, ['actions' => $this->action->registry]);
