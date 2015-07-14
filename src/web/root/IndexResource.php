@@ -25,7 +25,7 @@ class IndexResource extends Container {
     }
 
     public function respond(Request $request) {
-        if (!$request->getTarget()->isEmpty()) {
+        if (!$this->isContainerTarget($request)) {
             $request = $request
                 ->withTarget(Path::fromString('execute'))
                 ->withArgument(ExecuteResource::ACTION_ARG, $request->getTarget()->toString());

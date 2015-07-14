@@ -70,7 +70,8 @@ class ExecuteResource extends Resource {
 
         return array_merge(
             [
-                'action' => $action->caption()
+                'action' => $action->caption(),
+                'baseUrl' => $request->getContext()->appended('')->toString()
             ],
             $this->assembleResult($result),
             $this->assembleFields($action, $reader)
