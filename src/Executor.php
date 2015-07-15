@@ -71,7 +71,7 @@ class Executor {
         foreach ($action->parameters() as $parameter) {
             $serialized = $this->paramReader->read($parameter->getName());
             if (!is_null($serialized)) {
-                $params[$parameter->getName()] = $this->fields->getField($parameter)->inflate($serialized);
+                $params[$parameter->getName()] = $this->fields->getField($parameter)->inflate($parameter, $serialized);
             } else if ($parameter->isRequired()) {
                 $missing[] = $parameter->getName();
             }

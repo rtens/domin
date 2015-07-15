@@ -88,7 +88,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute_With('foo', ['two' => 'dos']);
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldBeRenderedAs(1, "one:");
-        $this->thenField_ShouldBeRenderedAs(2, "two:dos(inflated)");
+        $this->thenField_ShouldBeRenderedAs(2, "two:two_dos(inflated)");
     }
 
     function markRequiredFields() {
@@ -147,8 +147,8 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute_With('foo', ['bar' => 'hey']);
 
-        $this->thenField_ShouldBeRenderedAs(1, 'bar:hey(inflated)');
-        $this->thenField_ShouldBeRenderedAs(2, 'bas:hey(inflated)!');
+        $this->thenField_ShouldBeRenderedAs(1, 'bar:bar_hey(inflated)');
+        $this->thenField_ShouldBeRenderedAs(2, 'bas:bar_hey(inflated)!');
     }
 
     function redirectResult() {
@@ -182,8 +182,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->fields->add(Mockster::mock($field));
 
         Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
-        Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
-            return $s . '(inflated)';
+        Mockster::stub($field->inflate(Arg::any(), Arg::any()))->will()->forwardTo(function (Parameter $p, $s) {
+            return $p->getName() . '_' . $s . '(inflated)';
         });
         Mockster::stub($field->render(Arg::any(), Arg::any()))->will()->forwardTo($callback);
     }
@@ -193,7 +193,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->fields->add(Mockster::mock($field));
 
         Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
-        Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
+        Mockster::stub($field->inflate(Arg::any(), Arg::any()))->will()->forwardTo(function ($s) {
             return $s . '(inflated)';
         });
         Mockster::stub($field->headElements(Arg::any()))->will()->forwardTo($elements);

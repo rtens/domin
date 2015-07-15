@@ -27,10 +27,11 @@ class ArrayField implements WebField {
     }
 
     /**
+     * @param Parameter $parameter
      * @param Liste $serialized
      * @return array
      */
-    public function inflate($serialized) {
+    public function inflate(Parameter $parameter, $serialized) {
         return $serialized->toArray();
     }
 

@@ -20,10 +20,11 @@ class FileField implements WebField {
     }
 
     /**
+     * @param Parameter $parameter
      * @param UploadedFile|null $serialized
-     * @return \rtens\domin\parameters\File|null
+     * @return null|File
      */
-    public function inflate($serialized) {
+    public function inflate(Parameter $parameter, $serialized) {
         if (!$serialized) {
             return null;
         }

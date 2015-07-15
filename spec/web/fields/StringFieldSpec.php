@@ -24,8 +24,9 @@ class StringFieldSpec extends StaticTestSuite {
     }
 
     function inflatesNonEmptyStrings() {
-        $this->assert($this->field->inflate('foo'), 'foo');
-        $this->assert($this->field->inflate(''), null);
+        $param = new Parameter('foo', new StringType);
+        $this->assert($this->field->inflate($param, 'foo'), 'foo');
+        $this->assert($this->field->inflate($param, ''), null);
     }
 
     function hasNoHeadElements() {

@@ -73,8 +73,8 @@ class ExecuteActionSpec extends StaticTestSuite {
             return implode(' ', $params);
         });
         $this->action->given_HasTheParameter('foo', 'one');
-        $this->givenAFieldInflatingWith(function ($s) {
-            return $s . '!';
+        $this->givenAFieldInflatingWith(function (Parameter $p, $s) {
+            return $p->getName() . ':' . $s . '!';
         });
         $this->givenTheRenderer(function ($in) {
             return $in . ' rendered';
@@ -83,7 +83,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('uno! rendered');
+        $this->thenTheResultShouldBe('one:uno! rendered');
     }
 
     function checkForMissingParameters() {
@@ -109,11 +109,11 @@ class ExecuteActionSpec extends StaticTestSuite {
         });
         $this->action->given_HasTheParameter_OfType('foo', 'one', 'bar');
         $this->action->given_HasTheParameter_OfType('foo', 'two', 'bas');
-        $this->givenAFieldHandling_InflatingWith('bar', function ($s) {
-            return $s . '?';
+        $this->givenAFieldHandling_InflatingWith('bar', function (Parameter $p, $s) {
+            return $p->getName() . '_' . $s . '?';
         });
-        $this->givenAFieldHandling_InflatingWith('bas', function ($s) {
-            return $s . '!';
+        $this->givenAFieldHandling_InflatingWith('bas', function (Parameter $p, $s) {
+            return $p->getName() . '_' . $s . '!';
         });
         $this->givenTheRenderer(function ($in) {
             return $in . ' rendered';
@@ -123,7 +123,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('two', 'dos');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('uno? dos! rendered');
+        $this->thenTheResultShouldBe('one_uno? two_dos! rendered');
     }
 
     function chooseRendererForReturnedValue() {
@@ -172,7 +172,7 @@ class ExecuteActionSpec extends StaticTestSuite {
             $pType = $p->getType();
             return $type == null || ($pType instanceof UnknownType && $pType->getHint() == $type);
         });
-        Mockster::stub($field->inflate(Argument::any()))->will()->forwardTo($callback);
+        Mockster::stub($field->inflate(Argument::any(), Argument::any()))->will()->forwardTo($callback);
     }
 
     private function givenTheParameter_Is($key, $value) {

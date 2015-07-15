@@ -17,10 +17,11 @@ class BooleanField implements WebField {
     }
 
     /**
+     * @param Parameter $parameter
      * @param string $serialized
      * @return mixed
      */
-    public function inflate($serialized) {
+    public function inflate(Parameter $parameter, $serialized) {
         return !!$serialized;
     }
 

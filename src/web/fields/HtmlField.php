@@ -19,10 +19,11 @@ class HtmlField implements WebField {
     }
 
     /**
+     * @param Parameter $parameter
      * @param string $serialized
      * @return Html
      */
-    public function inflate($serialized) {
+    public function inflate(Parameter $parameter, $serialized) {
         return new Html($serialized);
     }
 

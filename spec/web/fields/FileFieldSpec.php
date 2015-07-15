@@ -9,6 +9,7 @@ use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\curir\protocol\UploadedFile;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IntegerType;
+use watoki\reflect\type\StringType;
 use watoki\reflect\type\UnknownType;
 
 class FileFieldSpec extends StaticTestSuite {
@@ -21,12 +22,14 @@ class FileFieldSpec extends StaticTestSuite {
 
     function doNotInflateNull() {
         $field = new FileField();
-        $this->assert($field->inflate(null), null);
+        $param = new Parameter('foo', new StringType());
+        $this->assert($field->inflate($param, null), null);
     }
 
     function inflateUploadedFile() {
         $field = new FileField();
-        $this->assert($field->inflate(new UploadedFile('foo', 'foo/type', 'tmp/name', 0, 100)),
+        $param = new Parameter('foo', new StringType());
+        $this->assert($field->inflate($param, new UploadedFile('foo', 'foo/type', 'tmp/name', 0, 100)),
             new SavedFile('tmp/name', 'foo', 'foo/type'));
     }
 

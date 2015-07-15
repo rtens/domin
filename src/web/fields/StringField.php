@@ -17,11 +17,12 @@ class StringField implements WebField {
     }
 
     /**
+     * @param Parameter $parameter
      * @param string $serialized
      * @return mixed
      */
-    public function inflate($serialized) {
-        return $serialized ?: null;
+    public function inflate(Parameter $parameter, $serialized) {
+        return $serialized;
     }
 
     /**

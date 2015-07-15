@@ -25,7 +25,8 @@ class HtmlFieldSpec extends StaticTestSuite {
     }
 
     function inflatesToHtmlObject() {
-        $this->assert($this->field->inflate('some <html/>'), new Html('some <html/>'));
+        $this->assert($this->field->inflate(new Parameter('foo', new StringType()), 'some <html/>'),
+            new Html('some <html/>'));
     }
 
     function rendersTextArea() {

@@ -22,8 +22,9 @@ class BooleanFieldSpec extends StaticTestSuite {
     }
 
     function inflatesToBoolean() {
-        $this->assert($this->field->inflate(1) === true);
-        $this->assert($this->field->inflate('') === false);
+        $param = new Parameter('foo', new BooleanType());
+        $this->assert($this->field->inflate($param, 1) === true);
+        $this->assert($this->field->inflate($param, '') === false);
     }
 
     function noHeadElements() {

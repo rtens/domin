@@ -193,7 +193,7 @@ class ExecuteResource extends Resource {
 
             if (!is_null($value)) {
                 $field = $this->fields->getField($parameter);
-                $values[$parameter->getName()] = $field->inflate($value);
+                $values[$parameter->getName()] = $field->inflate($parameter, $value);
             }
         }
         return $values;

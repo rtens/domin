@@ -37,7 +37,8 @@ class ArrayFieldSpec extends StaticTestSuite {
     }
 
     function inflatesList() {
-        $this->assert($this->field->inflate(new Liste(['one', 'two'])), ['one', 'two']);
+        $param = new Parameter('foo', new ArrayType(new StringType()));
+        $this->assert($this->field->inflate($param, new Liste(['one', 'two'])), ['one', 'two']);
     }
 
     function requiredScripts() {

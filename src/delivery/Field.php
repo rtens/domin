@@ -12,8 +12,9 @@ interface Field {
     public function handles(Parameter $parameter);
 
     /**
+     * @param Parameter $parameter
      * @param string $serialized
      * @return mixed
      */
-    public function inflate($serialized);
+    public function inflate(Parameter $parameter, $serialized);
 }
