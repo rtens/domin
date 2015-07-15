@@ -22,6 +22,11 @@ use watoki\collections\Map;
  */
 class ExecuteActionSpec extends StaticTestSuite {
 
+    function unregisteredAction() {
+        $this->whenIExecute('foo');
+        $this->thenItShouldDisplayTheError('Action [foo] is not registered.');
+    }
+
     function showError() {
         $this->action->givenTheAction_FailingWith('foo', 'Kaboom');
         $this->whenIExecute('foo');
@@ -41,6 +46,16 @@ class ExecuteActionSpec extends StaticTestSuite {
         });
         $this->whenIExecute('foo');
         $this->thenItShouldShow('bar!');
+    }
+
+    function noMatchingField() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
+
+        $this->whenIExecute('foo');
+        $this->thenItShouldDisplayTheError('No field found to handle [one:type of one]');
+        $this->thenThereShouldBe_Fields(0);
+        $this->thenThereShouldBe_HeadElements(3);
     }
 
     function showFields() {

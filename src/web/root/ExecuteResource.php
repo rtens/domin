@@ -63,6 +63,14 @@ class ExecuteResource extends Resource {
         $this->cookies = $cookies;
     }
 
+    private static function baseHeadElements() {
+        return [
+            (string)HeadElements::jquery(),
+            (string)HeadElements::bootstrap(),
+            (string)HeadElements::bootstrapJs(),
+        ];
+    }
+
     /**
      * @param string $__action
      * @param WebRequest $request <-
@@ -79,23 +87,39 @@ class ExecuteResource extends Resource {
      * @throws \Exception
      */
     public function doGet($__action, WebRequest $request) {
+        $fields = [
+            'headElements' => self::baseHeadElements(),
+            'fields' => []
+        ];
+        $caption = 'Error';
+        $crumbs = [];
+
         $reader = new RequestParameterReader($request);
-        $action = $this->actions->getAction($__action);
 
-        $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
-        $result = $executor->execute($__action);
+        try {
+            $action = $this->actions->getAction($__action);
+            $caption = $action->caption();
 
-        $crumbs = $this->updateCrumbs($__action, $result,$request, $reader);
+            $fields = $this->assembleFields($action, $reader);
 
+            $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
+            $result = $executor->execute($__action);
+
+            $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
+        } catch (\Exception $e) {
+            $result = new FailedResult($e);
+        }
+
+        $resultModel = $this->assembleResult($result, $request);
         return array_merge(
             [
                 'menuItems' => $this->menu->assembleModel($request),
-                'breadcrumbs' => array_slice($crumbs, 0, -1),
-                'action' => $action->caption(),
+                'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
+                'action' => $caption,
                 'baseUrl' => $request->getContext()->appended('')->toString()
             ],
-            $this->assembleResult($result, $request),
-            $this->assembleFields($action, $reader)
+            $resultModel,
+            $fields
         );
     }
 
@@ -128,11 +152,7 @@ class ExecuteResource extends Resource {
     }
 
     private function assembleFields(Action $action, ParameterReader $reader) {
-        $headElements = [
-            (string)HeadElements::jquery(),
-            (string)HeadElements::bootstrap(),
-            (string)HeadElements::bootstrapJs(),
-        ];
+        $headElements = self::baseHeadElements();
         $fields = [];
 
         $values = $this->collectParameters($action, $reader);
