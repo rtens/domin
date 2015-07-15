@@ -4,6 +4,7 @@ namespace rtens\domin\reflection;
 use rtens\domin\Action;
 use rtens\domin\Parameter;
 use watoki\reflect\PropertyReader;
+use watoki\reflect\TypeFactory;
 
 abstract class ObjectAction implements Action {
 
@@ -15,9 +16,10 @@ abstract class ObjectAction implements Action {
 
     /**
      * @param string $class
+     * @param TypeFactory $types
      */
-    public function __construct($class) {
-        $this->reader = new PropertyReader($class);
+    public function __construct($class, TypeFactory $types) {
+        $this->reader = new PropertyReader($types, $class);
         $this->class = new \ReflectionClass($class);
     }
 

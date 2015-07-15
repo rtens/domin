@@ -170,7 +170,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         Mockster::stub($field->inflate(Arg::any()))->will()->forwardTo(function ($s) {
             return $s . '(inflated)';
         });
-        Mockster::stub($field->render(Arg::any(), Arg::any(), Arg::any()))->will()->forwardTo($callback);
+        Mockster::stub($field->render(Arg::any(), Arg::any()))->will()->forwardTo($callback);
     }
 
     private function givenAWebFieldRequiringTheHeadElements($elements) {
@@ -195,7 +195,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->web->factory->setSingleton(new Menu($this->action->registry));
 
         $this->web->request = $this->web->request->withArguments(new Map($parameters));
-        $this->web->whenIGet_From($id, IndexResource::class, ['actions' => $this->action->registry]);
+        $this->web->whenIGet_From($id, IndexResource::class);
     }
 
     private function thenItShouldDisplayTheError($message) {

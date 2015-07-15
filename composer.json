@@ -19,11 +19,11 @@
     }
   ],
   "require": {
-    "watoki/reflect": "^0.3.0",
+    "watoki/reflect": "dev-master",
     "watoki/curir": "dev-master"
   },
   "require-dev": {
-    "rtens/scrut": "^1.0",
+    "rtens/scrut": "dev-master",
     "rtens/mockster": "dev-master"
   },
   "autoload": {

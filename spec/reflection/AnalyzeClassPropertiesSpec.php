@@ -11,6 +11,7 @@ use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
+use watoki\reflect\TypeFactory;
 
 class AnalyzeClassPropertiesSpec extends StaticTestSuite {
 
@@ -131,7 +132,7 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
 
     private function whenICreateAnObjectActionFrom($className) {
         $this->action = Mockster::of(ObjectAction::class);
-        $this->uut = Mockster::uut($this->action, [$className]);
+        $this->uut = Mockster::uut($this->action, [$className, new TypeFactory()]);
     }
 
     private function whenIExecuteThatActionWith($parameters) {

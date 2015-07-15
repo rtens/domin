@@ -7,6 +7,7 @@ use rtens\domin\web\Element;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;
 use watoki\reflect\PropertyReader;
+use watoki\reflect\TypeFactory;
 
 class ObjectRenderer implements Renderer {
 
@@ -19,10 +20,14 @@ class ObjectRenderer implements Renderer {
     /** @var \watoki\curir\protocol\Url */
     private $baseUrl;
 
-    function __construct(RendererRegistry $renderers, LinkRegistry $links, Url $baseUrl) {
+    /** @var TypeFactory */
+    private $types;
+
+    function __construct(RendererRegistry $renderers, LinkRegistry $links, Url $baseUrl, TypeFactory $types) {
         $this->renderers = $renderers;
         $this->links = $links;
         $this->baseUrl = $baseUrl;
+        $this->types = $types;
     }
 
     /**
@@ -40,7 +45,7 @@ class ObjectRenderer implements Renderer {
     public function render($value) {
         $descriptions = [];
 
-        $reader = new PropertyReader($value);
+        $reader = new PropertyReader($this->types, $value);
         foreach ($reader->readInterface($value) as $property) {
             if (!$property->canGet()) {
                 continue;
