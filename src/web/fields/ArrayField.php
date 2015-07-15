@@ -4,6 +4,7 @@ namespace rtens\domin\web\fields;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
+use rtens\domin\web\HeadElements;
 use rtens\domin\web\WebField;
 use watoki\collections\Liste;
 use watoki\reflect\type\ArrayType;
@@ -39,6 +40,8 @@ class ArrayField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
+        $id = str_replace('[]', '-', $parameter->getName());
+
         /** @var ArrayType $type */
         $type = $parameter->getType();
         $innerParameter = new Parameter($parameter->getName() . '[]', $type->getItemType());
@@ -46,35 +49,44 @@ class ArrayField implements WebField {
         /** @var WebField $innerField */
         $innerField = $this->fields->getField($innerParameter);
 
-        $id = $parameter->getName();
-
         $items = [];
         foreach ($value as $item) {
-            $items[] = $this->makeInputGroup($innerField, $innerParameter, $item);
+            $items[] = $this->makeInputGroup($innerField, $innerParameter, $id, $item);
+        }
+
+        $newItems = [];
+        for ($i = 0; $i < $this->numberOfNewItems(); $i++) {
+            $newItems[] = $this->makeInputGroup($innerField, $innerParameter, $id);
         }
 
         return (string)new Element('div', [], [
-            new Element('div', [
-                'id' => "$id-container"
-            ], $items),
+            new Element('div', [], [
+                new Element('div', [
+                    'id' => "$id-items"
+                ], $items),
 
-            new Element('button', [
-                'class' => 'btn btn-success',
-                'onclick' => "document.getElementById('$id-container').appendChild(document.getElementById('$id-inner').getElementsByTagName('p')[0].cloneNode(true)); return false;"
-            ], ['Add']),
+                new Element('button', [
+                    'class' => 'btn btn-success',
+                    'onclick' => "$('#$id-new-items').children().first().detach().appendTo('#$id-items'); return false;"
+                ], ['Add']),
 
-            new Element('div', [
-                'id' => "$id-inner",
-                'class' => 'hidden'
-            ], [
-                $this->makeInputGroup($innerField, $innerParameter, null)
+                new Element('div', [
+                    'id' => "$id-new-items",
+                    'class' => 'hidden'
+                ], $newItems),
+
+                new Element('script', [], [
+                    "$(function () {
+                        $('#$id-new-items').detach().appendTo('body');
+                    });"
+                ])
             ])
         ]);
     }
 
-    private function makeInputGroup(WebField $field, Parameter $parameter, $value) {
-        return new Element('p', [
-            'class' => 'input-group'
+    private function makeInputGroup(WebField $field, Parameter $parameter, $id, $value = null) {
+        return new Element('div', [
+            'class' => 'array-item form-group input-group'
         ], [
             $field->render($parameter, $value),
             new Element('span', [
@@ -82,7 +94,7 @@ class ArrayField implements WebField {
             ], [
                 new Element('button', [
                     'class' => 'btn btn-danger',
-                    'onclick' => 'var me = this.parentElement.parentElement; console.log(me.parentElement.removeChild(me)); return false;'
+                    'onclick' => "$(this).parents('.array-item').detach().prependTo('#$id-new-items'); return false;"
                 ], ['X'])
             ])
         ]);
@@ -93,6 +105,12 @@ class ArrayField implements WebField {
      * @return array|Element[]
      */
     public function headElements(Parameter $parameter) {
-        return [];
+        return [
+            HeadElements::jquery()
+        ];
+    }
+
+    protected function numberOfNewItems() {
+        return 30;
     }
 }
