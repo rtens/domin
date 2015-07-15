@@ -31,7 +31,7 @@ class ArrayField implements WebField {
      * @return array
      */
     public function inflate($serialized) {
-        return array_slice($serialized->toArray(), 0, -1);
+        return $serialized->toArray();
     }
 
     /**
@@ -72,14 +72,8 @@ class ArrayField implements WebField {
 
                 new Element('div', [
                     'id' => "$id-new-items",
-                    'class' => 'hidden'
-                ], $newItems),
-
-                new Element('script', [], [
-                    "$(function () {
-                        $('#$id-new-items').detach().appendTo('body');
-                    });"
-                ])
+                    'class' => 'array-new-items hidden'
+                ], $newItems)
             ])
         ]);
     }
@@ -106,7 +100,12 @@ class ArrayField implements WebField {
      */
     public function headElements(Parameter $parameter) {
         return [
-            HeadElements::jquery()
+            HeadElements::jquery(),
+            new Element('script', [], [
+                "$(function () {
+                    $('.array-new-items').detach().appendTo('body');
+                });"
+            ])
         ];
     }
 
