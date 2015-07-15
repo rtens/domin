@@ -64,7 +64,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBeTheError('No field found to handle [one]');
+        $this->thenTheResultShouldBeTheError('No field found to handle [one:type of one]');
     }
 
     function inflateParameters() {

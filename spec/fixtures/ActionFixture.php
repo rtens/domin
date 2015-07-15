@@ -58,7 +58,7 @@ class ActionFixture extends Fixture {
     }
 
     public function given_HasTheParameter($id, $name) {
-        $this->given_HasTheParameter_OfType($id, $name, $name);
+        $this->given_HasTheParameter_OfType($id, $name, 'type of ' . $name);
     }
 
     public function given_HasTheRequiredParameter($id, $name) {
