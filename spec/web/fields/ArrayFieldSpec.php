@@ -17,7 +17,7 @@ use watoki\reflect\type\UnknownType;
 
 class ArrayFieldSpec extends StaticTestSuite {
 
-    /** @var ArrayField */
+    /** @var WebField */
     public $mockster;
 
     /** @var ArrayField */
