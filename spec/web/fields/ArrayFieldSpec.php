@@ -84,6 +84,12 @@ class ArrayFieldSpec extends StaticTestSuite {
             '</div>');
     }
 
+    function convertNameForUsageAsId() {
+        $parameter = new Parameter('foo[bar]', new ArrayType(new StringType()));
+        $rendered = $this->field->render($parameter, []);
+        $this->assert->contains($rendered, 'id="foo-bar--new-items"');
+    }
+
     function renderArrayWithItems() {
         Mockster::stub($this->mockster->render(Argument::any(), Argument::any()))->will()->forwardTo(function (Parameter $parameter, $value) {
             return '-- ' . $parameter->getName() . ': ' . $value . ' --';

@@ -45,7 +45,7 @@ class ArrayField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
-        $id = str_replace('[]', '-', $parameter->getName());
+        $id = str_replace(['[', ']'], '-', $parameter->getName());
         $innerParameter = $this->makeInnerParameter($parameter);
 
         /** @var WebField $innerField */
