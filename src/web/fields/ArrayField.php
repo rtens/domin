@@ -101,14 +101,20 @@ class ArrayField implements WebField {
      * @return array|Element[]
      */
     public function headElements(Parameter $parameter) {
-        return [
+        return array_merge([
             HeadElements::jquery(),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
                 });"
             ])
-        ];
+        ], $this->itemHeadElements($this->makeInnerParameter($parameter)));
+    }
+
+    private function itemHeadElements(Parameter $itemParameter) {
+        /** @var WebField $field */
+        $field = $this->fields->getField($itemParameter);
+        return $field->headElements($itemParameter);
     }
 
     protected function numberOfNewItems() {
