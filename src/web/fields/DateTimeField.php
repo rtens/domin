@@ -21,10 +21,14 @@ class DateTimeField implements WebField {
     /**
      * @param Parameter $parameter
      * @param string $serialized
-     * @return \DateTimeImmutable
+     * @return \DateTime|\DateTimeImmutable
      */
     public function inflate(Parameter $parameter, $serialized) {
-        return $serialized ? new \DateTimeImmutable($serialized) : null;
+        /** @var ClassType $type */
+        $type = $parameter->getType();
+        $class = $type->getClass();
+
+        return $serialized ? new $class($serialized) : null;
     }
 
     /**
@@ -39,19 +43,21 @@ class DateTimeField implements WebField {
         ], [
             new Element('span', [
                 'class' => 'input-group-addon',
-                'onclick' => "$(this).parents('.datetimepicker').datetimepicker(); $(this).siblings('.hidden').toggleClass('hidden'); $(this).remove(); return false;"
+                'onclick' => "$(this).parents('.datetimepicker').datetimepicker(dateTimePickerSettings); $(this).siblings('.hidden').toggleClass('hidden'); $(this).remove(); return false;"
             ], [
                 new Element('span', ['class' => 'glyphicon glyphicon-calendar', 'style' => 'opacity: 0.5'])
             ]),
             new Element('span', ['class' => 'input-group-addon hidden'], [
                 new Element('span', ['class' => 'glyphicon glyphicon-calendar'])
             ]),
-            new Element('input', [
+            new Element('input', array_merge([
                 'type' => 'text',
                 'name' => $parameter->getName(),
                 'class' => 'form-control',
-                'value' => $value ? $value->format('Y-m-d H:i:s') : null
-            ])
+                'value' => $value ? $this->serialize($value) : null
+            ], $parameter->isRequired() ? [
+                'required' => 'required'
+            ] : []))
         ]);
     }
 
@@ -67,14 +73,27 @@ class DateTimeField implements WebField {
             new Element('script', ['src' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js']),
             new Element('script', ['src' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js']),
             new Element('link', ['rel' => 'stylesheet', 'href' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css']),
-            new Element('script', [], [
-                'var dateTimePickerSettings = {
-                    format: "dddd, D MMMM YYYY, HH:mm:ss",
-                    extraFormats: ["YYYY-MM-DD HH:mm:ss"],
-                    showTodayButton: true,
-                    showClear: true
-                };'
-            ])
+            new Element('script', [], ['var dateTimePickerSettings = ' . json_encode($this->getOptions()) . ';'])
         ];
+    }
+
+    /**
+     * @return array Of options as documented on https://eonasdan.github.io/bootstrap-datetimepicker/Options/
+     */
+    protected function getOptions() {
+        return [
+            'format' => 'dddd, D MMMM YYYY, HH:mm:ss',
+            'extraFormats' => ['YYYY-MM-DD HH:mm:ss'],
+            'showTodayButton' => true,
+            'showClear' => true
+        ];
+    }
+
+    /**
+     * @param $dateTime
+     * @return string
+     */
+    protected function serialize(\DateTimeInterface $dateTime) {
+        return $dateTime->format('Y-m-d H:i:s');
     }
 }
