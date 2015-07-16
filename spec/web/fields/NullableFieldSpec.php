@@ -10,7 +10,6 @@ use rtens\domin\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster as M;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\collections\Map;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\UnknownType;
 
@@ -41,9 +40,9 @@ class NullableFieldSpec extends StaticTestSuite {
             return $p->getName() . '!';
         });
 
-        $this->assert($this->field->render($this->param('foo'), null),
-            '<input type="checkbox" name="foo[null]" onchange="$(this).siblings(\'.nullable\').toggle();"/>' . "\n" .
-            '<div class="nullable" style="display: none;">foo[value]!</div>');
+        $this->assert($this->field->render($this->param('foo[bar]'), null),
+            '<input type="checkbox" onchange="var control = $(\'#foo-bar--control\').detach(); $(this).is(\':checked\') ? control.show().insertAfter($(this)) : control.hide().appendTo(\'body\');"/>' . "\n" .
+            '<div id="foo-bar--control" class="null-nullable">foo[bar]!</div>');
     }
 
     function rendersInnerFieldWithValue() {
@@ -51,9 +50,9 @@ class NullableFieldSpec extends StaticTestSuite {
             return $p->getName() . ':' . $v;
         });
 
-        $this->assert($this->field->render($this->param('foo'), 'bar'),
-            '<input type="checkbox" name="foo[null]" onchange="$(this).siblings(\'.nullable\').toggle();" checked="checked"/>' . "\n" .
-            '<div class="nullable">foo[value]:bar</div>');
+        $this->assert->contains($this->field->render($this->param('foo'), 'bar'),
+            'checked="checked"/>' . "\n" .
+            '<div id="foo-control">foo:bar</div>');
     }
 
     function inflateValues() {
@@ -61,8 +60,8 @@ class NullableFieldSpec extends StaticTestSuite {
             return $p->getName() . '_' . $v;
         });
 
-        $this->assert($this->field->inflate($this->param('foo'), new Map(['null' => 'not', 'value' => 'foo'])), 'foo_foo');
-        $this->assert->isNull($this->field->inflate($this->param('foo'), new Map(['value' => 'foo'])));
+        $this->assert($this->field->inflate($this->param('foo'), 'bar'), 'foo_bar');
+        $this->assert($this->field->inflate($this->param('foo'), null), 'foo_');
     }
 
     function requireHeadElementsOfInnerField() {

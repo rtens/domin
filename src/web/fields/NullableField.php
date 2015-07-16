@@ -30,16 +30,13 @@ class NullableField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param \watoki\collections\Map $serialized
+     * @param mixed $serialized
      * @return mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
-        if (!$serialized->has('null')) {
-            return null;
-        }
         $innerParameter = $this->getInnerParameter($parameter);
         return $this->fields->getField($innerParameter)
-            ->inflate($innerParameter, $serialized->get('value'));
+            ->inflate($innerParameter, $serialized);
     }
 
     /**
@@ -48,21 +45,22 @@ class NullableField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
+        $id = str_replace(['[', ']'], '-', $parameter->getName());
+
         return implode("\n", [
             new Element('input', array_merge([
                 'type' => 'checkbox',
-                'name' => $parameter->getName() . "[null]",
-                'onchange' => "$(this).siblings('.nullable').toggle();"
+                'onchange' => "var control = $('#$id-control').detach(); $(this).is(':checked') ? control.show().insertAfter($(this)) : control.hide().appendTo('body');"
             ], is_null($value) ? [] : [
                 'checked' => 'checked'
             ])),
             new Element('div', array_merge([
-                'class' => 'nullable',
+                'id' => "$id-control"
             ], is_null($value) ? [
-                'style' => 'display: none;'
+                'class' => 'null-nullable'
             ] : []), [
                 $this->getInnerField($this->getInnerParameter($parameter))
-                    ->render($this->getInnerParameter($parameter, '[value]'), $value)
+                    ->render($this->getInnerParameter($parameter), $value)
             ])
         ]);
     }
@@ -74,17 +72,20 @@ class NullableField implements WebField {
     public function headElements(Parameter $parameter) {
         $innerParameter = $this->getInnerParameter($parameter);
         return array_merge($this->getInnerField($innerParameter)->headElements($innerParameter), [
-            HeadElements::jquery()
+            HeadElements::jquery(),
+            new Element('script', [], ["$(function () {
+                    $('.null-nullable').hide().detach().appendTo('body');
+                });"])
         ]);
     }
 
-    private function getInnerParameter(Parameter $parameter, $suffix = '') {
+    private function getInnerParameter(Parameter $parameter) {
         $type = $parameter->getType();
         if (!($type instanceof NullableType)) {
             throw new \InvalidArgumentException("[$type] is not a NullableType");
         }
 
-        return new Parameter($parameter->getName() . $suffix, $type->getType());
+        return new Parameter($parameter->getName(), $type->getType());
     }
 
     /**
