@@ -6,7 +6,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\StringField;
+use rtens\domin\web\fields\PrimitiveField;
 use rtens\domin\web\menu\Menu;
 use rtens\domin\web\root\ExecuteResource;
 use rtens\domin\web\root\IndexResource;
@@ -43,7 +43,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
             Mockster::mock($fields), Mockster::mock(RendererRegistry::class),
             Mockster::mock(Menu::class), Mockster::mock($this->cookies));
 
-        Mockster::stub($fields->getField(Arg::any()))->will()->return_(new StringField());
+        Mockster::stub($fields->getField(Arg::any()))->will()->return_(new PrimitiveField());
     }
 
     function addCrumbIfActionRendered() {
