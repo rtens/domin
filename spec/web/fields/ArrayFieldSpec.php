@@ -26,6 +26,9 @@ class ArrayFieldSpec extends StaticTestSuite {
         Mockster::stub($field->render(Argument::any(), Argument::any()))->will()->forwardTo(function (Parameter $parameter, $value) {
             return '-- ' . $parameter->getName() . ': ' . $value . ' --';
         });
+        Mockster::stub($field->inflate(Argument::any(), Argument::any()))->will()->forwardTo(function (Parameter $p, $v) {
+            return $p->getName() . '_' . $v;
+        });
 
         $fields->add(Mockster::mock($field));
         $this->field = new ArrayField($fields);
@@ -38,7 +41,8 @@ class ArrayFieldSpec extends StaticTestSuite {
 
     function inflatesList() {
         $param = new Parameter('foo', new ArrayType(new StringType()));
-        $this->assert($this->field->inflate($param, new Liste(['one', 'two'])), ['one', 'two']);
+        $this->assert($this->field->inflate($param, new Liste(['one', 'two'])),
+            ['foo[]_one', 'foo[]_two']);
     }
 
     function requiredScripts() {

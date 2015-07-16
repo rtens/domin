@@ -32,7 +32,11 @@ class ArrayField implements WebField {
      * @return array
      */
     public function inflate(Parameter $parameter, $serialized) {
-        return $serialized->toArray();
+        $itemParameter = $this->makeInnerParameter($parameter);
+
+        return $serialized->map(function ($item) use ($itemParameter) {
+            return $this->fields->getField($itemParameter)->inflate($itemParameter, $item);
+        })->toArray();
     }
 
     /**
@@ -42,10 +46,7 @@ class ArrayField implements WebField {
      */
     public function render(Parameter $parameter, $value) {
         $id = str_replace('[]', '-', $parameter->getName());
-
-        /** @var ArrayType $type */
-        $type = $parameter->getType();
-        $innerParameter = new Parameter($parameter->getName() . '[]', $type->getItemType());
+        $innerParameter = $this->makeInnerParameter($parameter);
 
         /** @var WebField $innerField */
         $innerField = $this->fields->getField($innerParameter);
@@ -112,5 +113,15 @@ class ArrayField implements WebField {
 
     protected function numberOfNewItems() {
         return 30;
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return Parameter
+     */
+    private function makeInnerParameter(Parameter $parameter) {
+        /** @var ArrayType $type */
+        $type = $parameter->getType();
+        return new Parameter($parameter->getName() . '[]', $type->getItemType());
     }
 }
