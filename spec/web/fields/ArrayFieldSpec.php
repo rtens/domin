@@ -44,7 +44,7 @@ class ArrayFieldSpec extends StaticTestSuite {
 
         $param = new Parameter('foo', new ArrayType(new StringType()));
         $this->assert($this->field->inflate($param, new Liste(['one', 'two'])),
-            ['foo[]_one', 'foo[]_two']);
+            ['foo_one', 'foo_two']);
     }
 
     function requiredScripts() {
@@ -79,7 +79,7 @@ class ArrayFieldSpec extends StaticTestSuite {
             '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().detach().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .
-            '-- foo[] --' . "\n" .
+            '-- foo[0] --' . "\n" .
             '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).parents(\'.array-item\').detach().prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
             '</div>');
     }
@@ -99,9 +99,9 @@ class ArrayFieldSpec extends StaticTestSuite {
         $rendered = $this->field->render($parameter, ['one', 'two']);
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
-            '-- foo[]: one --');
+            '-- foo[0]: one --');
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
-            '-- foo[]: two --');
+            '-- foo[1]: two --');
     }
 } 

@@ -46,19 +46,19 @@ class ArrayField implements WebField {
      */
     public function render(Parameter $parameter, $value) {
         $id = str_replace(['[', ']'], '-', $parameter->getName());
-        $innerParameter = $this->makeInnerParameter($parameter);
+        $index = 0;
 
         /** @var WebField $innerField */
-        $innerField = $this->fields->getField($innerParameter);
+        $innerField = $this->fields->getField($this->makeInnerParameter($parameter));
 
         $items = [];
         foreach ($value as $item) {
-            $items[] = $this->makeInputGroup($innerField, $innerParameter, $id, $item);
+            $items[] = $this->makeInputGroup($innerField, $this->makeInnerParameter($parameter, '[' . $index++ . ']'), $id, $item);
         }
 
         $newItems = [];
         for ($i = 0; $i < $this->numberOfNewItems(); $i++) {
-            $newItems[] = $this->makeInputGroup($innerField, $innerParameter, $id);
+            $newItems[] = $this->makeInputGroup($innerField, $this->makeInnerParameter($parameter, '[' . $index++ . ']'), $id);
         }
 
         return (string)new Element('div', [], [
@@ -123,11 +123,12 @@ class ArrayField implements WebField {
 
     /**
      * @param Parameter $parameter
+     * @param string $suffix
      * @return Parameter
      */
-    private function makeInnerParameter(Parameter $parameter) {
+    private function makeInnerParameter(Parameter $parameter, $suffix = '') {
         /** @var ArrayType $type */
         $type = $parameter->getType();
-        return new Parameter($parameter->getName() . '[]', $type->getItemType());
+        return new Parameter($parameter->getName() . $suffix, $type->getItemType());
     }
 }
