@@ -80,7 +80,7 @@
             <h1 class="panel-title"><?= $action ?></h1>
         </div>
         <div class="panel-body">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" action="?" enctype="multipart/form-data">
                 <? foreach ($fields as $field) { ?>
                 <div class="form-group">
                     <label><?= $field[caption] . ($field[required] ? '*' : '') ?></label>
