@@ -47,13 +47,11 @@
 
 <div class="container">
 
-<ul class="list-group">
+<div class="list-group">
     <? foreach ($action as $anAction) { ?>
-        <li class="list-group-item">
-            <a href="<?= $anAction[link][href] ?>"><?= $anAction[caption] ?></a>
-        </li>
+        <a href="<?= $anAction[link][href] ?>" class="list-group-item"><?= $anAction[caption] ?></a>
     <? } ?>
-</ul>
+</div>
 
 </div>
 
