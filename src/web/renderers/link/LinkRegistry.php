@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\web\renderers\object;
+namespace rtens\domin\web\renderers\link;
 
 class LinkRegistry {
 

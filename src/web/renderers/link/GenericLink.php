@@ -1,24 +1,20 @@
 <?php
-namespace rtens\domin\web\renderers\object;
+namespace rtens\domin\web\renderers\link;
 
-class ClassLink implements Link {
+class GenericLink implements Link {
 
     private $actionId;
     private $caption;
     private $parameters;
-    private $class;
     private $handles;
     private $confirmation;
 
-    function __construct($class, $actionId, callable $parameters = null) {
-        $this->class = $class;
+    function __construct($actionId, callable $handles, callable $parameters = null) {
         $this->actionId = $actionId;
         $this->caption = preg_replace('/(.)([A-Z])/', '$1 $2', ucfirst($this->actionId));
+        $this->handles = $handles;
         $this->parameters = $parameters ?: function () {
             return [];
-        };
-        $this->handles = function ($object) {
-            return is_a($object, $this->class);
         };
     }
 
@@ -40,6 +36,15 @@ class ClassLink implements Link {
      */
     public function actionId() {
         return $this->actionId;
+    }
+
+    /**
+     * @param mixed $caption
+     * @return $this
+     */
+    public function setCaption($caption) {
+        $this->caption = $caption;
+        return $this;
     }
 
     /**
@@ -75,4 +80,5 @@ class ClassLink implements Link {
     public function confirm() {
         return $this->confirmation;
     }
+
 }

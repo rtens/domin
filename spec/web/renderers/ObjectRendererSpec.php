@@ -3,10 +3,12 @@ namespace spec\rtens\domin\web\renderers;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\web\renderers\object\ClassLink;
-use rtens\domin\web\renderers\object\Link;
-use rtens\domin\web\renderers\object\LinkRegistry;
-use rtens\domin\web\renderers\object\ObjectRenderer;
+use rtens\domin\reflection\TypeFactory;
+use rtens\domin\web\renderers\link\ClassLink;
+use rtens\domin\web\renderers\link\Link;
+use rtens\domin\web\renderers\link\LinkPrinter;
+use rtens\domin\web\renderers\link\LinkRegistry;
+use rtens\domin\web\renderers\ObjectRenderer;
 use rtens\domin\web\renderers\PrimitiveRenderer;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
@@ -27,7 +29,8 @@ class ObjectRendererSpec extends StaticTestSuite {
     protected function before() {
         $this->renderers = new RendererRegistry();
         $this->links = new LinkRegistry();
-        $this->renderer = new ObjectRenderer($this->renderers, $this->links, Url::fromString('baser/url'));
+        $this->renderer = new ObjectRenderer($this->renderers, new TypeFactory(),
+            new LinkPrinter(Url::fromString('baser/url'), $this->links));
     }
 
     function handlesObjects() {
