@@ -32,10 +32,13 @@ class PrimitiveFieldSpec extends StaticTestSuite {
         $this->assert->not($this->field->handles(new Parameter('foo', new BooleanType())));
     }
 
-    function inflatesNonEmptyStrings() {
+    function inflatesPrimitiveValues() {
         $param = new Parameter('foo', new StringType);
         $this->assert($this->field->inflate($param, 'foo'), 'foo');
         $this->assert($this->field->inflate($param, ''), null);
+        $this->assert($this->field->inflate($param, 'some <html>'), 'some &lt;html&gt;');
+
+        $this->assert($this->field->inflate(new Parameter('foo', new IntegerType()), '123A'), 123);
     }
 
     function useNumberInput() {

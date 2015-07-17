@@ -36,7 +36,7 @@ class PrimitiveField implements WebField {
             case FloatType::class:
                 return (float)$serialized;
             default:
-                return $serialized;
+                return htmlentities($serialized);
         }
     }
 
