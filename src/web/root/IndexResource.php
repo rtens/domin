@@ -4,6 +4,7 @@ namespace rtens\domin\web\root;
 use rtens\domin\ActionRegistry;
 use rtens\domin\web\HeadElements;
 use rtens\domin\web\menu\Menu;
+use rtens\domin\web\WebApplication;
 use watoki\curir\Container;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -24,20 +25,28 @@ class IndexResource extends Container {
     /** @var CookieStore */
     private $cookies;
 
+    /** @var WebApplication  */
+    private $app;
+
     /**
      * @param Factory $factory <-
+     * @param WebApplication $app <-
      * @param ActionRegistry $actions <-
      * @param Menu $menu <-
      * @param CookieStore $cookies <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
+    function __construct(Factory $factory, WebApplication $app, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
         parent::__construct($factory);
         $this->actions = $actions;
         $this->menu = $menu;
         $this->cookies = $cookies;
+        $this->app = $app;
     }
 
     public function respond(Request $request) {
+        $this->app->registerRenderers($request->getContext());
+        $this->app->registerFields();
+
         if (!$this->isContainerTarget($request)) {
             $request = $request
                 ->withTarget(Path::fromString('execute'))
