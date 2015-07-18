@@ -8,22 +8,16 @@ use rtens\domin\web\HeadElements;
 use rtens\domin\web\WebField;
 use watoki\collections\Map;
 use watoki\reflect\type\MultiType;
-use watoki\reflect\TypeFactory;
 
 class MultiField implements WebField {
-
-    /** @var TypeFactory */
-    private $types;
 
     /** @var FieldRegistry */
     private $fields;
 
     /**
-     * @param TypeFactory $types
      * @param FieldRegistry $fields
      */
-    public function __construct(TypeFactory $types, FieldRegistry $fields) {
-        $this->types = $types;
+    public function __construct(FieldRegistry $fields) {
         $this->fields = $fields;
     }
 

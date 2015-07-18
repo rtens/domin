@@ -7,12 +7,8 @@ use rtens\domin\reflection\IdentifiersProvider;
 use rtens\domin\reflection\IdentifierType;
 use rtens\domin\web\Element;
 use rtens\domin\web\WebField;
-use watoki\reflect\TypeFactory;
 
 class IdentifierField implements WebField {
-
-    /** @var TypeFactory */
-    private $types;
 
     /** @var FieldRegistry */
     private $fields;
@@ -21,12 +17,10 @@ class IdentifierField implements WebField {
     private $identifiers;
 
     /**
-     * @param TypeFactory $types
      * @param FieldRegistry $fields
      * @param IdentifiersProvider $identifiers
      */
-    public function __construct(TypeFactory $types, FieldRegistry $fields, IdentifiersProvider $identifiers) {
-        $this->types = $types;
+    public function __construct(FieldRegistry $fields, IdentifiersProvider $identifiers) {
         $this->fields = $fields;
         $this->identifiers = $identifiers;
     }
