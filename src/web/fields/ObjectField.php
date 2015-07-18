@@ -51,7 +51,11 @@ class ObjectField implements WebField {
         }
 
         $class = new \ReflectionClass($this->getClass($parameter));
-        $instance = $class->newInstanceArgs($properties);
+        if ($class->getConstructor()) {
+            $instance = $class->newInstanceArgs($properties);
+        } else {
+            $instance = $class->newInstanceWithoutConstructor();
+        }
 
         foreach ($reader->readInterface() as $property) {
             $value = $properties[$property->name()];
