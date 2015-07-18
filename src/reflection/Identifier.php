@@ -19,4 +19,8 @@ class Identifier {
     public function getTarget() {
         return $this->target;
     }
+
+    function __toString() {
+        return $this->id . ':' . $this->target;
+    }
 }
