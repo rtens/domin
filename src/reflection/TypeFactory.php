@@ -16,7 +16,11 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
 
         } else if (strpos($hint, '::') && substr($hint, -1) == '_') {
             list($container, $constant) = explode('::', $hint);
-            $reflection = new \ReflectionClass($resolver->resolve($container));
+            if ($container == 'self') {
+                $reflection = $class;
+            } else {
+                $reflection = new \ReflectionClass($resolver->resolve($container));
+            }
 
             $options = [];
             foreach ($reflection->getConstants() as $name => $value) {
