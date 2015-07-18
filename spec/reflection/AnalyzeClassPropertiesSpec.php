@@ -75,9 +75,10 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
     function buildInstanceForExecution() {
         $this->givenTheClass('class ClassAction4 {
             public $public;
-            function __construct($one, $two, $three = null) {
+            function __construct($one, $two, $three = null, $four = null) {
                 $this->one = $one;
                 $this->two = $two;
+                $this->four = $four;
             }
             function setSetter($foo) {
                 $this->foo = $foo;
@@ -88,12 +89,14 @@ class AnalyzeClassPropertiesSpec extends StaticTestSuite {
         $this->whenIExecuteThatActionWith([
             'one' => 'hey',
             'two' => 'ho',
+            'four' => 'foo',
             'public' => 'lets',
             'setter' => 'go'
         ]);
         $this->thenItShouldBeExecutedWithAnInstanceOf('ClassAction4');
         $this->thenItsProperty_ShouldBe('one', 'hey');
         $this->thenItsProperty_ShouldBe('two', 'ho');
+        $this->thenItsProperty_ShouldBe('four', 'foo');
         $this->thenItsProperty_ShouldBe('public', 'lets');
         $this->thenItsProperty_ShouldBe('foo', 'go');
     }

@@ -3,6 +3,8 @@ namespace rtens\domin\reflection;
 
 use rtens\domin\Action;
 use rtens\domin\Parameter;
+use watoki\factory\Factory;
+use watoki\factory\Injector;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\TypeFactory as BaseTypeFactory;
 
@@ -76,7 +78,11 @@ abstract class ObjectAction implements Action {
     }
 
     protected function createInstance(array $parameters) {
-        $instance = $this->class->newInstanceArgs($parameters);
+        $injector = new Injector(new Factory());
+        $instance = $injector->injectConstructor($this->class->getName(), $parameters, function () {
+            return false;
+        });
+
         foreach ($this->reader->readInterface() as $property) {
             if ($property->canSet() && array_key_exists($property->name(), $parameters)) {
                 $property->set($instance, $parameters[$property->name()]);

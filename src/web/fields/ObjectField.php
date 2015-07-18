@@ -5,6 +5,8 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\WebField;
+use watoki\factory\Factory;
+use watoki\factory\Injector;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\TypeFactory;
@@ -50,12 +52,10 @@ class ObjectField implements WebField {
             }
         }
 
-        $class = new \ReflectionClass($this->getClass($parameter));
-        if ($class->getConstructor()) {
-            $instance = $class->newInstanceArgs($properties);
-        } else {
-            $instance = $class->newInstanceWithoutConstructor();
-        }
+        $injector = new Injector(new Factory());
+        $instance = $injector->injectConstructor($this->getClass($parameter), $properties, function () {
+            return false;
+        });
 
         foreach ($reader->readInterface() as $property) {
             $value = $properties[$property->name()];
