@@ -25,10 +25,10 @@ class Executor {
     private $paramReader;
 
     /**
-     * @param ActionRegistry $actions
-     * @param FieldRegistry $fields
-     * @param RendererRegistry $renderers
-     * @param ParameterReader $reader
+     * @param ActionRegistry $actions <-
+     * @param FieldRegistry $fields <-
+     * @param RendererRegistry $renderers <-
+     * @param ParameterReader $reader <-
      */
     public function __construct(ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers, ParameterReader $reader) {
         $this->actions = $actions;
@@ -69,7 +69,7 @@ class Executor {
         $params = [];
         $missing = [];
         foreach ($action->parameters() as $parameter) {
-            $serialized = $this->paramReader->read($parameter->getName());
+            $serialized = $this->paramReader->read($parameter);
             if (!is_null($serialized)) {
                 $params[$parameter->getName()] = $this->fields->getField($parameter)->inflate($parameter, $serialized);
             } else if ($parameter->isRequired()) {

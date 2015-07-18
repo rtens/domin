@@ -156,8 +156,16 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var ExecutionResult|RenderedResult|FailedResult|MissingParametersResult */
     private $result;
 
+    private $parameters = [];
+
     protected function before() {
         $this->reader = Mockster::of(ParameterReader::class);
+        Mockster::stub($this->reader->read(Argument::any()))->will()->forwardTo(function (Parameter $parameter) {
+            if (!array_key_exists($parameter->getName(), $this->parameters)) {
+                return null;
+            }
+            return $this->parameters[$parameter->getName()];
+        });
     }
 
     private function givenAFieldInflatingWith($callback) {
@@ -176,7 +184,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function givenTheParameter_Is($key, $value) {
-        Mockster::stub($this->reader->read($key))->will()->return_($value);
+        $this->parameters[$key] = $value;
     }
 
     private function givenTheRenderer($callback) {

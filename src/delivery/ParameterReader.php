@@ -1,11 +1,13 @@
 <?php
 namespace rtens\domin\delivery;
 
+use rtens\domin\Parameter;
+
 interface ParameterReader {
 
     /**
-     * @param string $name
-     * @return string|null The serialized paramater
+     * @param Parameter $parameter
+     * @return null|string The serialized paramater
      */
-    public function read($name);
+    public function read(Parameter $parameter);
 }

@@ -2,6 +2,7 @@
 namespace rtens\domin\web;
 
 use rtens\domin\delivery\ParameterReader;
+use rtens\domin\Parameter;
 use watoki\curir\delivery\WebRequest;
 
 class RequestParameterReader implements ParameterReader {
@@ -14,14 +15,14 @@ class RequestParameterReader implements ParameterReader {
     }
 
     /**
-     * @param string $name
-     * @return string|null The serialized paramater
+     * @param Parameter $parameter
+     * @return null|string The serialized paramater
      */
-    public function read($name) {
+    public function read(Parameter $parameter) {
         $args = $this->request->getArguments();
-        if (!$args->has($name)) {
+        if (!$args->has($parameter->getName())) {
             return null;
         }
-        return $args->get($name);
+        return $args->get($parameter->getName());
     }
 }
