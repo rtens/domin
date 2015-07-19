@@ -3,6 +3,7 @@ namespace spec\rtens\domin\reflection;
 
 use rtens\domin\Action;
 use rtens\domin\reflection\ObjectAction;
+use rtens\domin\reflection\TypeFactory;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -11,7 +12,6 @@ use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
-use watoki\reflect\TypeFactory;
 
 class AnalyzeClassPropertiesSpec extends StaticTestSuite {
 

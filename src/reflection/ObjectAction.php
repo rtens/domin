@@ -6,7 +6,6 @@ use rtens\domin\Parameter;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\reflect\PropertyReader;
-use watoki\reflect\TypeFactory as BaseTypeFactory;
 
 abstract class ObjectAction implements Action {
 
@@ -18,9 +17,9 @@ abstract class ObjectAction implements Action {
 
     /**
      * @param string $class
-     * @param BaseTypeFactory $types
+     * @param TypeFactory $types
      */
-    public function __construct($class, BaseTypeFactory $types) {
+    public function __construct($class, TypeFactory $types) {
         $this->reader = new PropertyReader($types, $class);
         $this->class = new \ReflectionClass($class);
     }
