@@ -97,7 +97,7 @@ With a generic way to execute actions, you can use the `ObjectActionGenerator` t
 all classes in a folder automatically.
 
 ```php
-(new ObjectActionGenerator($actionRegistry))->fromFolder('model/commands', function ($object) {
+(new ObjectActionGenerator($actionRegistry, $typeFactory))->fromFolder('model/commands', function ($object) {
     $bus->handle($object);
 });
 ```
@@ -108,9 +108,9 @@ If you don't feel like creating a class for every command, you can use the `Meth
 from a method signature.
 
 ```php
-$actionRegistry->add('my', new MethodAction($handler, 'handleMyCommand'));
-$actionRegistry->add('your', new MethodAction($handler, 'handleYourCommand'));
-$actionRegistry->add('their', new MethodAction($handler, 'handleTheirCommand'));
+$actionRegistry->add('my', new MethodAction($handler, 'handleMyCommand', $typeFactory));
+$actionRegistry->add('your', new MethodAction($handler, 'handleYourCommand', $typeFactory));
+$actionRegistry->add('their', new MethodAction($handler, 'handleTheirCommand', $typeFactory));
 ```
 
 #### Generating `MethodActions` ####
@@ -118,7 +118,7 @@ $actionRegistry->add('their', new MethodAction($handler, 'handleTheirCommand'));
 There is also a `MethodActionGenerator` to register all methods of an object.
 
 ```php
-(new MethodActionGenerator($actionRegistry))->fromObject($handler);
+(new MethodActionGenerator($actionRegistry, $typeFactory))->fromObject($handler);
 ```
 
 
