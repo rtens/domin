@@ -5,16 +5,18 @@ the [Command Object pattern].
 
 For an example of how to use use, check out the [sample application].
 
+[Domain Models]: https://en.wikipedia.org/wiki/Domain-driven_design#Concepts
+[Command Object pattern]: http://c2.com/cgi/wiki?CommandObject
 [sample application]: https://github.com/rtens/domin-sample
 
 ## Model ##
 
-Every *ability* of a system is represented by an `Action` which specifies how to execute it and what parameters it
-requires. Therefore *domin* can take care of getting missing parameters from the user using `Field`s. Actions may return
-values which are presented using `Renderer`s.
+Every *ability* of a system is represented by an [`Action`] which specifies how to execute it and what [`Parameters`] it requires. Therefore *domin* can take care of getting missing parameters from the user using [`Fields`]. Actions may return values which are presented using [`Renderers`].
 
-[Command Object pattern]: http://c2.com/cgi/wiki?CommandObject
-[Domain Models]: https://en.wikipedia.org/wiki/Domain-driven_design#Concepts
+[`Action`]: https://github.com/rtens/domin/blob/master/src/Action.php
+[`Parameters`]: https://github.com/rtens/domin/blob/master/src/Parameter.php
+[`Fields`]: https://github.com/rtens/domin/blob/master/src/delivery/Field.php
+[`Renderers`]: https://github.com/rtens/domin/blob/master/src/delivery/Renderer.php
 
 ## Installation ##
 
