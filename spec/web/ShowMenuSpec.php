@@ -10,6 +10,7 @@ use rtens\domin\web\menu\MenuGroup;
 use rtens\domin\web\menu\MenuItem;
 use rtens\domin\web\root\ExecuteResource;
 use rtens\domin\web\root\IndexResource;
+use rtens\domin\web\WebApplication;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\curir\cookie\CookieStore;
@@ -34,7 +35,8 @@ class ShowMenuSpec extends StaticTestSuite {
     protected function before() {
         $this->actions = new ActionRegistry();
         $this->menu = new Menu($this->actions);
-        $this->resource = new IndexResource(new Factory(), $this->actions, $this->menu, Mockster::mock(CookieStore::class));
+        $this->resource = new IndexResource(new Factory(), Mockster::mock(WebApplication::class),
+            $this->actions, $this->menu, Mockster::mock(CookieStore::class));
     }
 
     function emptyMenuOnOverview() {

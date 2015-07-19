@@ -10,6 +10,7 @@ use rtens\domin\web\fields\PrimitiveField;
 use rtens\domin\web\menu\Menu;
 use rtens\domin\web\root\ExecuteResource;
 use rtens\domin\web\root\IndexResource;
+use rtens\domin\web\WebApplication;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -188,8 +189,12 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     private function whenIListAllActions() {
-        $resource = new IndexResource(new Factory(), $this->actions,
-            Mockster::mock(Menu::class), Mockster::mock($this->cookies));
+        $resource = new IndexResource(
+            new Factory(),
+            Mockster::mock(WebApplication::class),
+            $this->actions,
+            Mockster::mock(Menu::class),
+            Mockster::mock($this->cookies));
 
         $resource->doGet($this->makeRequest());
     }
