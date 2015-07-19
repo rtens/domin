@@ -25,7 +25,10 @@ return values which are presented using [`Renderers`].
 ## Action! ##
 
 [`Actions`] decide what [`Parameters`] they need, how to `fill()` them with default values and how to `execute()` them. 
-So in order to use *domin*, you need to put all action into the [`ActionRegistry`]. This can be done in several ways:
+And the way that *domin* knows what actions there are is through the [`ActionRegistry`] with which all available
+actions need to be registered.
+
+There are several ways to register actions:
 
 [`Actions`]: https://github.com/rtens/domin/blob/master/src/Action.php
 [`Parameters`]: https://github.com/rtens/domin/blob/master/src/Parameter.php
