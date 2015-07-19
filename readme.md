@@ -3,6 +3,10 @@
 *domin* ( **do**main **m**odel **in**terface ) is an administration interface for abstract [Domain Models] using 
 the [Command Object pattern].
 
+For an example of how to use use, check out the [sample application].
+
+[sample application]: https://github.com/rtens/domin-sample
+
 ## Model ##
 
 Every *ability* of a system is represented by an `Action` which specifies how to execute it and what parameters it
