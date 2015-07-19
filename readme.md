@@ -11,7 +11,9 @@ For an example of how to use use, check out the [sample application].
 
 ## Model ##
 
-Every *ability* of a system is represented by an [`Action`] which specifies how to execute it and what [`Parameters`] it requires. Therefore *domin* can take care of getting missing parameters from the user using [`Fields`]. Actions may return values which are presented using [`Renderers`].
+Every *ability* of a system is represented by an [`Action`] which specifies how to execute it and what [`Parameters`] 
+it requires. Therefore *domin* can take care of getting missing parameters from the user using [`Fields`]. Actions may 
+return values which are presented using [`Renderers`].
 
 [`Action`]: https://github.com/rtens/domin/blob/master/src/Action.php
 [`Parameters`]: https://github.com/rtens/domin/blob/master/src/Parameter.php
@@ -22,7 +24,8 @@ Every *ability* of a system is represented by an [`Action`] which specifies how 
 
 ## Action! ##
 
-The core concept of *domin* are [`Actions`], which decide what [`Parameters`] it needs, how to `fill()` them with default values and how to `execute()` it. So in order to use *domin*, you need to put all action into the [`ActionRegistry`]. This can be done in several ways:
+[`Actions`] decide what [`Parameters`] they need, how to `fill()` them with default values and how to `execute()` them. 
+So in order to use *domin*, you need to put all action into the [`ActionRegistry`]. This can be done in several ways:
 
 [`Actions`]: https://github.com/rtens/domin/blob/master/src/Action.php
 [`Parameters`]: https://github.com/rtens/domin/blob/master/src/Parameter.php
@@ -30,7 +33,8 @@ The core concept of *domin* are [`Actions`], which decide what [`Parameters`] it
 
 #### Implementing `Action` ####
 
-The most straight-forward although probably not most convenient way is to create an implementation of `Action` for every ability of the system.
+The most straight-forward although probably not most convenient way is to create an implementation of `Action` for 
+every ability of the system.
 
 ```php
 class MyAction implements Action {
@@ -61,7 +65,9 @@ $actionRegistry->add('my', new MyAction());
 
 #### Extending `ObjectAction` ####
 
-If you represent abilities with [DTOs], you can extend you actions from the `ObjectAction` to infer `Parameters` from the properties of these classes using reflection. This sub-class can then be made generic for example by using a [Command Bus].
+If you represent abilities with [DTOs], you can extend you actions from the `ObjectAction` to infer `Parameters` from 
+the properties of these classes using reflection. This sub-class can then be made generic for example by using 
+a [Command Bus].
 
 ```php
 class MyAction extends ObjectAction {
@@ -87,7 +93,8 @@ $actionRegistry->add('their', new MyAction(TheirCommand::class, $types, $bus));
 
 #### Generating `ObjectActions` ####
 
-With a generic way to execute actions, you can use the `ObjectActionGenerator` to generate and register actions from all classes in a folder automatically.
+With a generic way to execute actions, you can use the `ObjectActionGenerator` to generate and register actions from 
+all classes in a folder automatically.
 
 ```php
 (new ObjectActionGenerator($actionRegistry))->fromFolder('model/commands', function ($object) {
