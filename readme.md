@@ -28,7 +28,7 @@ return values which are presented using [`Renderers`].
 And the way that *domin* knows what actions there are is through the [`ActionRegistry`] with which all available
 actions need to be registered.
 
-There are several ways to register actions:
+There are several ways to create actions:
 
 [`Actions`]: https://github.com/rtens/domin/blob/master/src/Action.php
 [`Parameters`]: https://github.com/rtens/domin/blob/master/src/Parameter.php
