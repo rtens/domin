@@ -104,7 +104,8 @@ all classes in a folder automatically.
 
 #### Using `MethodAction` ####
 
-If you don't feel like creating a class for every command, the `MethodAction` can infer parameters from a method signature.
+If you don't feel like creating a class for every command, you can use the `MethodAction` to infer parameters 
+from a method signature.
 
 ```php
 $actionRegistry->add('my', new MethodAction($handler, 'handleMyCommand'));

@@ -13,7 +13,7 @@ use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
 
-class AnalyzeClassPropertiesSpec extends StaticTestSuite {
+class DeriveActionFromClassSpec extends StaticTestSuite {
 
     function captionIsClassName() {
         $this->givenTheClass('class AFooClass2 {}');
