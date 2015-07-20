@@ -57,7 +57,7 @@ class FileField implements WebField {
         $output = (string)new Element("input", $attributes);
 
         if ($value) {
-            return new Element('div', [], [
+            return new Element('p', [], [
                     new Element('input', [
                         'type' => 'hidden',
                         'name' => $parameter->getName() . '[name]',
