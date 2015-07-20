@@ -81,6 +81,6 @@ class MethodAction implements Action {
     }
 
     private function notIn(\ReflectionParameter $parameter, array $parameters) {
-        return !array_key_exists($parameter->name, $parameters) || is_null($parameters[$parameter->getName()]);
+        return !array_key_exists($parameter->name, $parameters) || is_null($parameters[$parameter->name]);
     }
 }
