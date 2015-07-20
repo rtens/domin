@@ -47,7 +47,7 @@ class Executor {
 
             list($params, $missing) = $this->readParameters($action);
 
-            if ($missing) {
+            if (!empty($missing)) {
                 return new MissingParametersResult($missing);
             }
 

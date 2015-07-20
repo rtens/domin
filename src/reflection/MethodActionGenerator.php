@@ -20,11 +20,11 @@ class MethodActionGenerator {
         $class = new \ReflectionClass($object);
 
         foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->isStatic() || substr($method->getName(), 0, 1) == '_') {
+            if ($method->isStatic() || substr($method->name, 0, 1) == '_') {
                 continue;
             }
             $this->actions->add(self::getId($method),
-                new GenericMethodAction($object, $method->getName(), $this->types));
+                new GenericMethodAction($object, $method->name, $this->types));
         }
 
         return $this;
@@ -41,7 +41,7 @@ class MethodActionGenerator {
     }
 
     private static function getId(\ReflectionMethod $method) {
-        return $method->getDeclaringClass()->getShortName() . ':' . $method->getName();
+        return $method->getDeclaringClass()->getShortName() . ':' . $method->name;
     }
 
     public static function actionId($class, $method) {

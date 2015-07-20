@@ -78,7 +78,7 @@ abstract class ObjectAction implements Action {
 
     protected function createInstance(array $parameters) {
         $injector = new Injector(new Factory());
-        $instance = $injector->injectConstructor($this->class->getName(), $parameters, function () {
+        $instance = $injector->injectConstructor($this->class->name, $parameters, function () {
             return false;
         });
 

@@ -7,6 +7,11 @@ use watoki\reflect\type\StringType;
 
 class TypeFactory extends \watoki\reflect\TypeFactory {
 
+    /**
+     * @param string $hint
+     * @param \ReflectionClass $class
+     * @return Type
+     */
     public function fromTypeHint($hint, \ReflectionClass $class) {
         $resolver = new ClassResolver($class);
 

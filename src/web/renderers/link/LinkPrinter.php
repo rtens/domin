@@ -26,7 +26,7 @@ class LinkPrinter {
         return array_map(function (Link $link) use ($object) {
             $url = $this->baseUrl->appended($link->actionId())->withParameters(new Map($link->parameters($object)));
             $attributes = ['class' => 'btn btn-xs btn-primary', 'href' => $url];
-            if ($link->confirm()) {
+            if ($link->confirm() !== null) {
                 $attributes['onclick'] = "return confirm('{$link->confirm()}');";
             }
             return new Element('a', $attributes, [

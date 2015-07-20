@@ -40,7 +40,7 @@ class ObjectRenderer implements Renderer {
     public function render($value) {
         $descriptions = [];
 
-        $reader = new PropertyReader($this->types, $value);
+        $reader = new PropertyReader($this->types, get_class($value));
         foreach ($reader->readInterface($value) as $property) {
             if (!$property->canGet()) {
                 continue;

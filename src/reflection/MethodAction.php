@@ -31,7 +31,7 @@ class MethodAction implements Action {
      * @return string
      */
     public function caption() {
-        return ucfirst(preg_replace('/(.)([A-Z0-9])/', '$1 $2', $this->method->getName()));
+        return ucfirst(preg_replace('/(.)([A-Z0-9])/', '$1 $2', $this->method->name));
     }
 
     /**
@@ -42,7 +42,7 @@ class MethodAction implements Action {
         $parameters = [];
         foreach ($this->method->getParameters() as $parameter) {
             $type = $analyzer->getType($parameter, $this->types);
-            $parameters[] = new Parameter($parameter->getName(), $type, !$parameter->isDefaultValueAvailable());
+            $parameters[] = new Parameter($parameter->name, $type, !$parameter->isDefaultValueAvailable());
         }
         return $parameters;
     }
@@ -56,7 +56,7 @@ class MethodAction implements Action {
     public function fill(array $parameters) {
         foreach ($this->method->getParameters() as $parameter) {
             if ($parameter->isDefaultValueAvailable() && $this->notIn($parameter, $parameters)) {
-                $parameters[$parameter->getName()] = $parameter->getDefaultValue();
+                $parameters[$parameter->name] = $parameter->getDefaultValue();
             }
         }
         return $parameters;
@@ -81,6 +81,6 @@ class MethodAction implements Action {
     }
 
     private function notIn(\ReflectionParameter $parameter, array $parameters) {
-        return !array_key_exists($parameter->getName(), $parameters) || is_null($parameters[$parameter->getName()]);
+        return !array_key_exists($parameter->name, $parameters) || is_null($parameters[$parameter->getName()]);
     }
 }

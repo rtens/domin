@@ -57,7 +57,7 @@ class Element {
             $attributes[] = $key . '="' . $value . '"';
         }
 
-        if (!$attributes) {
+        if (empty($attributes)) {
             return '';
         }
 
@@ -70,7 +70,7 @@ class Element {
             $children[] = (string)$child;
         }
 
-        if (!$children) {
+        if (empty($children)) {
             return '';
         } else if (count($children) == 1 && strpos($children[0], "\n") === false) {
             return $children[0];
