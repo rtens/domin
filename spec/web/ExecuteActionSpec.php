@@ -153,9 +153,16 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     function redirectResult() {
         $this->action->givenTheAction_Returning('foo', new RedirectResult('bar', ['one' => 'two']));
+        $this->action->given_HasTheParameter('foo', 'one');
+
+        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
+            return $p->getName() . ($p->isRequired() ? '*' : '') . ':' . $value;
+        });
+
         $this->whenIExecute('foo');
         $this->thenThereShouldBeASuccessMessageFor('Foo');
         $this->thenIShouldBeRedirectedTo('http://example.com/base/bar?one=two');
+        $this->thenThereShouldBe_Fields(0);
     }
 
     /** @var RendererRegistry */

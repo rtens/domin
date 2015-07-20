@@ -101,12 +101,13 @@ class ExecuteResource extends Resource {
             $action = $this->actions->getAction($__action);
             $caption = $action->caption();
 
-            $fields = $this->assembleFields($action, $reader);
-
             $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
             $result = $executor->execute($__action);
 
-            $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
+            if (!($result instanceof RedirectResult)) {
+                $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
+                $fields = $this->assembleFields($action, $reader);
+            }
         } catch (\Exception $e) {
             $result = new FailedResult($e);
         }

@@ -71,7 +71,7 @@
 
     <? if ($redirect) { ?>
     <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $redirect ?>">click here</a></div>
-    <? } ?>
+    <? } else { ?>
 
     <div class="panel panel-primary">
         <div class="panel-heading">
@@ -93,6 +93,7 @@
             </form>
         </div>
     </div>
+    <? } ?>
 
     <? if ($output) { ?>
     <div><?= $output ?></div>
