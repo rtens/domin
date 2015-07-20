@@ -20,20 +20,20 @@ class FileRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        $child = $value->getName();
-
         if ($this->isImage($value)) {
             return (string)new Element('img', [
+                'title' => $value->getName(),
                 'src' => $this->createUrl($value),
                 'style' => 'max-height:' . $this->maxHeight(),
             ]);
         }
 
         return (string)new Element('a', [
+            'download' => $value->getName(),
             'href' => $this->createUrl($value),
             'target' => '_blank'
         ], [
-            $child
+            $value->getName()
         ]);
     }
 

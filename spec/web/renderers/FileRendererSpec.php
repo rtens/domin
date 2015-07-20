@@ -21,12 +21,12 @@ class FileRendererSpec extends StaticTestSuite {
     }
 
     function renderLinkToDataUrl() {
-        $this->assert($this->renderer->render(new MemoryFile('foo', 'foo/type', 'foo')),
-            '<a href="data:foo/type;base64,Zm9v" target="_blank">foo</a>');
+        $this->assert($this->renderer->render(new MemoryFile('foo.file', 'foo/type', 'foo')),
+            '<a download="foo.file" href="data:foo/type;base64,Zm9v" target="_blank">foo.file</a>');
     }
 
     function renderImageWithDataUrl() {
-        $this->assert($this->renderer->render(new MemoryFile('foo', 'image/type', 'foo')),
-            '<img src="data:image/type;base64,Zm9v" style="max-height:10em"/>');
+        $this->assert($this->renderer->render(new MemoryFile('foo.img', 'image/type', 'foo')),
+            '<img title="foo.img" src="data:image/type;base64,Zm9v" style="max-height:10em"/>');
     }
 }
