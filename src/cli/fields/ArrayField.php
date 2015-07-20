@@ -42,7 +42,7 @@ class ArrayField implements CliField {
 
             $prompt = $i;
             $description = $field->getDescription($itemParameter);
-            if ($description) {
+            if ($description !== null) {
                 $prompt .= ' ' . $description;
             }
 

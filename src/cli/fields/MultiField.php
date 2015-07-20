@@ -79,7 +79,7 @@ class MultiField implements CliField {
 
         $field = $this->getField($parameter);
         $description = $field->getDescription($parameter);
-        if ($description) {
+        if ($description !== null) {
             $prompt .= ' ' . $description;
         }
 

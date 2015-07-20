@@ -47,7 +47,7 @@ class NullableField implements CliField {
 
         $prompt = $parameter->getName();
         $description = $field->getDescription($parameter);
-        if ($description) {
+        if ($description !== null) {
             $prompt .= ' ' . $description;
         }
 

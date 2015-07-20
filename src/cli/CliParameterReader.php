@@ -27,7 +27,7 @@ class CliParameterReader implements ParameterReader {
 
         $field = $this->getField($parameter);
         $description = $field->getDescription($parameter);
-        if ($description) {
+        if ($description !== null) {
             $prompt .= ' ' . $description;
         }
 

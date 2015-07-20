@@ -60,7 +60,7 @@ class ObjectField implements CliField {
             $field = $this->getField($param);
 
             $description = $field->getDescription($param);
-            if ($description) {
+            if ($description !== null) {
                 $prompt .= ' ' . $description;
             }
 
