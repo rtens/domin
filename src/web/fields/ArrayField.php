@@ -64,7 +64,8 @@ class ArrayField implements WebField {
         return (string)new Element('div', [], [
             new Element('div', [], [
                 new Element('div', [
-                    'id' => "$id-items"
+                    'id' => "$id-items",
+                    'class' => 'array-items'
                 ], $items),
 
                 new Element('button', [
@@ -84,6 +85,9 @@ class ArrayField implements WebField {
         return new Element('div', [
             'class' => 'array-item form-group input-group'
         ], [
+            new Element('span', ['class' => 'input-group-addon'], [
+                new Element('span', ['class' => 'glyphicon glyphicon-sort'])
+            ]),
             $field->render($parameter, $value),
             new Element('span', [
                 'class' => 'input-group-btn'
@@ -103,9 +107,11 @@ class ArrayField implements WebField {
     public function headElements(Parameter $parameter) {
         return array_merge([
             HeadElements::jquery(),
+            HeadElements::jqueryUi(),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
+                    $('.array-items').sortable().disableSelection();
                 });"
             ])
         ], $this->itemHeadElements($this->makeInnerParameter($parameter)));

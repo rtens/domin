@@ -50,9 +50,11 @@ class ArrayFieldSpec extends StaticTestSuite {
     function requiredScripts() {
         $this->assert($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))), [
             HeadElements::jquery(),
+            HeadElements::jqueryUi(),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
+                    $('.array-items').sortable().disableSelection();
                 });"
             ])
         ]);
@@ -75,10 +77,11 @@ class ArrayFieldSpec extends StaticTestSuite {
         $parameter = new Parameter('foo', new ArrayType(new StringType()));
         $rendered = $this->field->render($parameter, []);
         $this->assert->contains($rendered,
-            '<div id="foo-items"></div>' . "\n" .
+            '<div id="foo-items" class="array-items"></div>' . "\n" .
             '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().detach().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .
+            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[0] --' . "\n" .
             '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).parents(\'.array-item\').detach().prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
             '</div>');
@@ -99,9 +102,11 @@ class ArrayFieldSpec extends StaticTestSuite {
         $rendered = $this->field->render($parameter, ['one', 'two']);
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
+            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[0]: one --');
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
+            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[1]: two --');
     }
 } 

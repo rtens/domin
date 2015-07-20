@@ -6,7 +6,13 @@ class HeadElements {
     public static function jquery() {
         return new Element('script', [
             'src' => '//code.jquery.com/jquery-2.1.4.min.js'
-        ], ['']);
+        ]);
+    }
+
+    public static function jqueryUi() {
+        return new Element('script', [
+            'src' => '//code.jquery.com/ui/1.11.4/jquery-ui.js'
+        ]);
     }
 
     public static function bootstrap() {
@@ -19,7 +25,7 @@ class HeadElements {
     public static function bootstrapJs() {
         return new Element('script', [
             'src' => '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js'
-        ], ['']);
+        ]);
     }
 
     public static function fontAwesome() {
