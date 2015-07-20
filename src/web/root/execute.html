@@ -65,10 +65,6 @@
     <div class="alert alert-danger"><?= $error ?></div>
     <? } ?>
 
-    <? if ($warning) { ?>
-    <div class="alert alert-warning"><?= $warning ?></div>
-    <? } ?>
-
     <? if ($success) { ?>
     <div class="alert alert-success">Action "<?= $action ?>" was successfully executed</div>
     <? } ?>
@@ -89,7 +85,11 @@
                     <?= $field[control] ?>
                 </div>
                 <? } ?>
-                <input type="submit" class="btn btn-primary" value="execute">
+                <input type="submit" class="btn btn-primary" value="Execute">
+
+                <? if ($missing) { ?>
+                <a href="javascript:history.back()" class="btn btn-default">Back</a>
+                <? } ?>
             </form>
         </div>
     </div>
@@ -98,6 +98,18 @@
     <div><?= $output ?></div>
     <? } ?>
 
+    <? if ($missing) { ?>
+    <script property="isPreparing">
+        document.onkeyup = function () {
+            window.onbeforeunload = function () {
+                return "If you close this page, you will lose unsaved changes.";
+            };
+        };
+        document.onsubmit = function () {
+            window.onbeforeunload = function () {};
+        };
+    </script>
+    <? } ?>
 </div>
 
 </body>

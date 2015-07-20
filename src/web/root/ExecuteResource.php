@@ -126,7 +126,7 @@ class ExecuteResource extends Resource {
     private function assembleResult(ExecutionResult $result, WebRequest $request) {
         $model = [
             'error' => null,
-            'warning' => null,
+            'missing' => null,
             'success' => null,
             'redirect' => null,
             'output' => null
@@ -140,7 +140,7 @@ class ExecuteResource extends Resource {
         } else if ($result instanceof RenderedResult) {
             $model['output'] = $result->getOutput();
         } else if ($result instanceof MissingParametersResult) {
-            $model['warning'] = "Missing parameters: " . implode(', ', $result->getParameters());
+            $model['missing'] = $result->getParameters();
         } else if ($result instanceof RedirectResult) {
             $model['success'] = true;
             $model['redirect'] = $request->getContext()
