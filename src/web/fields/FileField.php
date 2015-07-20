@@ -57,27 +57,31 @@ class FileField implements WebField {
         $output = (string)new Element("input", $attributes);
 
         if ($value) {
-            return new Element('p', [], [
-                    new Element('input', [
-                        'type' => 'hidden',
-                        'name' => $parameter->getName() . '[name]',
-                        'value' => $value->getName()
-                    ]),
-                    new Element('input', [
-                        'type' => 'hidden',
-                        'name' => $parameter->getName() . '[type]',
-                        'value' => $value->getType()
-                    ]),
-                    new Element('input', [
-                        'type' => 'hidden',
-                        'name' => $parameter->getName() . '[data]',
-                        'value' => base64_encode($value->getContent())
-                    ]),
-                    (new FileRenderer())->render($value)
-                ]) . $output;
+            return $this->renderImagePreservation($parameter, $value) . $output;
         }
 
         return $output;
+    }
+
+    private function renderImagePreservation(Parameter $parameter, File $file) {
+        return new Element('p', [], [
+            new Element('input', [
+                'type' => 'hidden',
+                'name' => $parameter->getName() . '[name]',
+                'value' => $file->getName()
+            ]),
+            new Element('input', [
+                'type' => 'hidden',
+                'name' => $parameter->getName() . '[type]',
+                'value' => $file->getType()
+            ]),
+            new Element('input', [
+                'type' => 'hidden',
+                'name' => $parameter->getName() . '[data]',
+                'value' => base64_encode($file->getContent())
+            ]),
+            (new FileRenderer())->render($file)
+        ]);
     }
 
     /**
