@@ -9,6 +9,7 @@ For an example of how to use use, check out the [sample application].
 [Command Object pattern]: http://c2.com/cgi/wiki?CommandObject
 [sample application]: https://github.com/rtens/domin-sample
 
+
 ## Model ##
 
 Every *ability* of a system is represented by an [`Action`] which specifies how to execute it and what [`Parameters`] 
@@ -21,12 +22,60 @@ return values which are presented using [`Renderers`].
 [`Renderers`]: https://github.com/rtens/domin/blob/master/src/delivery/Renderer.php
 
 
+## Installation ##
+
+To use *domin* in your project, require it with [Composer]
+
+    composer require rtens/domin
+    
+If you would like to develop on *domin*, download it with [Composer] and execute the specification with [scrut]
+
+    composer create-project rtens/domin
+    cd domin
+    vendor/bin/scrut
+
+[Composer]: http://getcomposer.org/download/
+[scrut]: https://github.com/rtens/scrut
+[git]: https://git-scm.com/
+
+
+## Quick Start ##
+
+To run *domin* as a web application, paste the following code into `index.php`
+
+```php
+use rtens\domin\web\root\IndexResource;
+use rtens\domin\web\WebApplication;
+use watoki\curir\WebDelivery;
+
+WebDelivery::quickResponse(IndexResource::class,
+    WebDelivery::init(null,
+        WebApplication::init(function (WebApplication $app) {
+            // Set-up $app here (e.g. $app->actions->add('foo', ...))
+        })));
+```
+
+And then start a development server to access the application on http://localhost:8000
+
+    $ php -S localhost:8000 index.php
+    
+To get the CLI application running, paste this code into `cli.php`
+
+```php
+CliApplication::run(CliApplication::init(function (CliApplication $app) {
+    // Set-up $app here (e.g. $app->actions->add('foo', ...))
+}));
+```
+
+and run it with
+
+    $ php cli.php
+
 
 ## Action! ##
 
 [`Actions`] decide what [`Parameters`] they need, how to `fill()` them with default values and how to `execute()` them. 
-And the way that *domin* knows what actions there are is through the [`ActionRegistry`] with which all available
-actions need to be registered.
+The way *domin* knows what actions there are is through the [`ActionRegistry`], so all actions need to be added to it.
 
 There are several ways to create actions:
 
@@ -123,20 +172,3 @@ There is also a `MethodActionGenerator` to register all methods of an object.
 ```php
 (new MethodActionGenerator($actionRegistry, $typeFactory))->fromObject($handler);
 ```
-
-
-## Installation ##
-
-To use *domin* in your project, require it with [Composer]
-
-    composer require rtens/domin
-    
-If you would like to develop on *domin*, download it with [Composer] and execute the specification with [scrut]
-
-    composer create-project rtens/domin
-    cd domin
-    vendor/bin/scrut
-
-[Composer]: http://getcomposer.org/download/
-[scrut]: https://github.com/rtens/scrut
-[git]: https://git-scm.com/
