@@ -2,6 +2,7 @@
 namespace spec\rtens\domin\web\fields;
 
 use rtens\domin\parameters\File;
+use rtens\domin\parameters\MemoryFile;
 use rtens\domin\parameters\SavedFile;
 use rtens\domin\Parameter;
 use rtens\domin\web\fields\FileField;
@@ -20,28 +21,44 @@ class FileFieldSpec extends StaticTestSuite {
         $this->assert($field->handles(new Parameter('foo', new ClassType(File::class))));
     }
 
-    function doNotInflateNull() {
-        $field = new FileField();
-        $param = new Parameter('foo', new StringType());
-        $this->assert($field->inflate($param, null), null);
-    }
-
     function inflateUploadedFile() {
         $field = new FileField();
         $param = new Parameter('foo', new StringType());
-        $this->assert($field->inflate($param, new UploadedFile('foo', 'foo/type', 'tmp/name', 0, 100)),
+        $this->assert($field->inflate($param, ['file' => new UploadedFile('foo', 'foo/type', 'tmp/name', 0, 100)]),
             new SavedFile('tmp/name', 'foo', 'foo/type'));
+    }
+
+    function inflatePreservedFile() {
+        $field = new FileField();
+        $param = new Parameter('foo', new StringType());
+        $this->assert($field->inflate($param, [
+            'file' => new UploadedFile('', '', '', 1, 0),
+            'name' => 'foo.file',
+            'type' => 'foo/type',
+            'data' => 'Zm9v'
+        ]), new MemoryFile('foo.file', 'foo/type', 'foo'));
     }
 
     function optionalField() {
         $field = new FileField();
         $this->assert($field->render(new Parameter('foo', new UnknownType('file')), null),
-            '<input type="file" name="foo"/>');
+            '<input type="file" name="foo[file]"/>');
     }
 
     function requiredField() {
         $field = new FileField();
         $this->assert($field->render(new Parameter('foo', new IntegerType(), true), null),
-            '<input type="file" name="foo" required="required"/>');
+            '<input type="file" name="foo[file]" required="required"/>');
+    }
+
+    function withValue() {
+        $field = new FileField();
+        $param = new Parameter('foo', new UnknownType('file'));
+        $file = new MemoryFile('foo.file', 'foo/type', 'foo');
+        $this->assert->contains($field->render($param, $file),
+            '<input type="hidden" name="foo[name]" value="foo.file"/>' . "\n" .
+            '<input type="hidden" name="foo[type]" value="foo/type"/>' . "\n" .
+            '<input type="hidden" name="foo[data]" value="Zm9v"/>' . "\n" .
+            '<a download="foo.file" href="data:foo/type;base64,Zm9v" target="_blank">foo.file</a>');
     }
 }
