@@ -13,7 +13,9 @@ class DateTimeField implements CliField {
      */
     public function handles(Parameter $parameter) {
         $type = $parameter->getType();
-        return $type instanceof ClassType && is_subclass_of($type->getClass(), \DateTimeInterface::class);
+        return
+            $type instanceof ClassType
+            && (new \ReflectionClass($type->getClass()))->implementsInterface(\DateTimeInterface::class);
     }
 
     /**
