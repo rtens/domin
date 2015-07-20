@@ -62,6 +62,8 @@ And then start a development server to access the application on http://localhos
 To get the CLI application running, paste this code into `cli.php`
 
 ```php
+use rtens\domin\cli\CliApplication;
+
 CliApplication::run(CliApplication::init(function (CliApplication $app) {
     // Set-up $app here (e.g. $app->actions->add('foo', ...))
 }));
@@ -108,7 +110,7 @@ class MyAction implements Action {
     }
 
     public function execute(array $parameters) {
-        var_dump("Make it so!", $parameters);
+        return "Make it so! " . json_encode($parameters);
     }
 }
 
