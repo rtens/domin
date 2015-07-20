@@ -30,9 +30,9 @@ To use *domin* in your project, require it with [Composer]
     
 If you would like to develop on *domin*, download it with [Composer] and execute the specification with [scrut]
 
-    composer create-project rtens/domin
+    composer create-project -sdev rtens/domin
     cd domin
-    vendor/bin/scrut
+    vendor/bin/scrut spec
 
 [Composer]: http://getcomposer.org/download/
 [scrut]: https://github.com/rtens/scrut
