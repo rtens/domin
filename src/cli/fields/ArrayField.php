@@ -15,7 +15,7 @@ class ArrayField implements CliField {
     /** @var Console */
     private $console;
 
-    function __construct(FieldRegistry $fields, Console $console) {
+    public function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
         $this->console = $console;
     }

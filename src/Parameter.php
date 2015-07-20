@@ -41,7 +41,7 @@ class Parameter {
         return $this->type;
     }
 
-    function __toString() {
+    public function __toString() {
         return $this->name . ':' . $this->type;
     }
 } 

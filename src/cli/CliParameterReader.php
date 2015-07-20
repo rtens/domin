@@ -14,7 +14,7 @@ class CliParameterReader implements ParameterReader {
      * @param FieldRegistry $fields <-
      * @param Console $console
      */
-    function __construct(FieldRegistry $fields, Console $console) {
+    public function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
         $this->console = $console;
     }

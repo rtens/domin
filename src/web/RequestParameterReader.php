@@ -10,7 +10,7 @@ class RequestParameterReader implements ParameterReader {
     /** @var WebRequest */
     private $request;
 
-    function __construct(WebRequest $request) {
+    public function __construct(WebRequest $request) {
         $this->request = $request;
     }
 

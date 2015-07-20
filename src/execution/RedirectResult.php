@@ -10,7 +10,7 @@ class RedirectResult implements ExecutionResult {
      * @param string $actionId
      * @param array $parameters
      */
-    function __construct($actionId, $parameters = []) {
+    public function __construct($actionId, $parameters = []) {
         $this->actionId = $actionId;
         $this->parameters = $parameters;
     }

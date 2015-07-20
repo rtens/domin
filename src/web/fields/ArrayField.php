@@ -14,7 +14,7 @@ class ArrayField implements WebField {
     /** @var FieldRegistry */
     private $fields;
 
-    function __construct(FieldRegistry $fields) {
+    public function __construct(FieldRegistry $fields) {
         $this->fields = $fields;
     }
 

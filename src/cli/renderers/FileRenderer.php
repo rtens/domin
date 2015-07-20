@@ -8,7 +8,7 @@ class FileRenderer implements Renderer {
 
     private $fileDir;
 
-    function __construct($fileDir) {
+    public function __construct($fileDir) {
         $this->fileDir = $fileDir;
     }
 

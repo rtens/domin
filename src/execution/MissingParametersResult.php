@@ -8,7 +8,7 @@ class MissingParametersResult implements ExecutionResult {
     /**
      * @param array $parameters Names of missing parameters
      */
-    function __construct(array $parameters) {
+    public function __construct(array $parameters) {
         $this->parameters = $parameters;
     }
 

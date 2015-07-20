@@ -36,7 +36,7 @@ class IndexResource extends Container {
      * @param Menu $menu <-
      * @param CookieStore $cookies <-
      */
-    function __construct(Factory $factory, WebApplication $app, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
+    public function __construct(Factory $factory, WebApplication $app, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
         parent::__construct($factory);
         $this->actions = $actions;
         $this->menu = $menu;

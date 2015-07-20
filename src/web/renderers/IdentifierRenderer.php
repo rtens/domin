@@ -10,7 +10,7 @@ class IdentifierRenderer implements Renderer {
     /** @var \rtens\domin\web\renderers\link\LinkPrinter */
     private $links;
 
-    function __construct($links) {
+    public function __construct($links) {
         $this->links = $links;
     }
 

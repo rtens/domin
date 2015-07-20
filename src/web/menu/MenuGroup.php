@@ -6,7 +6,7 @@ class MenuGroup {
     private $caption;
     private $items = [];
 
-    function __construct($caption) {
+    public function __construct($caption) {
         $this->caption = $caption;
     }
 

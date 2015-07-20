@@ -10,8 +10,8 @@ class IdentifierLink extends GenericLink {
      * @param string $actionId
      * @param string $identifierKey
      */
-    function __construct($target, $actionId, $identifierKey) {
-        return parent::__construct($actionId, function ($object) {
+    public function __construct($target, $actionId, $identifierKey) {
+        parent::__construct($actionId, function ($object) {
             return $object instanceof Identifier;
         }, function (Identifier $object) use ($identifierKey) {
             return [$identifierKey => $object->getId()];

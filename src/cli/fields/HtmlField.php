@@ -12,7 +12,7 @@ class HtmlField implements CliField {
     /** @var Console */
     private $console;
 
-    function __construct(Console $console) {
+    public function __construct(Console $console) {
         $this->console = $console;
     }
 

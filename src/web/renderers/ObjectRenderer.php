@@ -19,7 +19,7 @@ class ObjectRenderer implements Renderer {
     /** @var TypeFactory */
     private $types;
 
-    function __construct(RendererRegistry $renderers, TypeFactory $types, LinkPrinter $links) {
+    public function __construct(RendererRegistry $renderers, TypeFactory $types, LinkPrinter $links) {
         $this->renderers = $renderers;
         $this->types = $types;
         $this->links = $links;

@@ -15,7 +15,7 @@ class Menu {
     /**
      * @param ActionRegistry $actions <-
      */
-    function __construct(ActionRegistry $actions) {
+    public function __construct(ActionRegistry $actions) {
         $this->actions = $actions;
     }
 

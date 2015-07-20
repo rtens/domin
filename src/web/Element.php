@@ -28,7 +28,7 @@ class Element {
 
     private $children;
 
-    function __construct($name, $attributes = [], $children = []) {
+    public function __construct($name, $attributes = [], $children = []) {
         $this->name = $name;
         $this->attributes = $attributes;
         $this->children = $children;
@@ -47,7 +47,7 @@ class Element {
             "</{$this->name}>";
     }
 
-    function __toString() {
+    public function __toString() {
         return $this->toString();
     }
 

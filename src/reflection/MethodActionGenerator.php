@@ -11,7 +11,7 @@ class MethodActionGenerator {
     /** @var TypeFactory */
     private $types;
 
-    function __construct(ActionRegistry $actions, TypeFactory $types) {
+    public function __construct(ActionRegistry $actions, TypeFactory $types) {
         $this->actions = $actions;
         $this->types = $types;
     }

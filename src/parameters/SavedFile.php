@@ -17,7 +17,7 @@ class SavedFile implements File {
      * @param string $name
      * @param string $type
      */
-    function __construct($path, $name, $type) {
+    public function __construct($path, $name, $type) {
         $this->path = $path;
         $this->name = $name;
         $this->type = $type;

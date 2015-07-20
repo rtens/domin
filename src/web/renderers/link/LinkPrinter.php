@@ -13,7 +13,7 @@ class LinkPrinter {
     /** @var LinkRegistry */
     private $links;
 
-    function __construct(Url $baseUrl, LinkRegistry $links) {
+    public function __construct(Url $baseUrl, LinkRegistry $links) {
         $this->baseUrl = $baseUrl;
         $this->links = $links;
     }

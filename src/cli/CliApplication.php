@@ -51,7 +51,7 @@ class CliApplication {
      * @param RendererRegistry $renderers <-
      * @param TypeFactory $types <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
+    public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                          RendererRegistry $renderers, TypeFactory $types) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);

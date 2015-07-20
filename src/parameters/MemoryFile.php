@@ -17,7 +17,7 @@ class MemoryFile implements File {
      * @param string $type
      * @param string $content
      */
-    function __construct($name, $type, $content = '') {
+    public function __construct($name, $type, $content = '') {
         $this->name = $name;
         $this->content = $content;
         $this->type = $type;

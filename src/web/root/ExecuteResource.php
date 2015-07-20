@@ -54,7 +54,7 @@ class ExecuteResource extends Resource {
      * @param Menu $menu <-
      * @param CookieStore $cookies <-
      */
-    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
+    public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                          RendererRegistry $renderers, Menu $menu, CookieStore $cookies) {
         parent::__construct($factory);
         $this->actions = $actions;

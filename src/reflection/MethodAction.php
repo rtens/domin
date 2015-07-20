@@ -21,7 +21,7 @@ class MethodAction implements Action {
      * @param string $method
      * @param TypeFactory $types
      */
-    function __construct($object, $method, TypeFactory $types) {
+    public function __construct($object, $method, TypeFactory $types) {
         $this->object = $object;
         $this->method = new \ReflectionMethod(get_class($object), $method);
         $this->types = $types;

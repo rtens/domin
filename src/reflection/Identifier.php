@@ -7,7 +7,7 @@ class Identifier {
 
     private $id;
 
-    function __construct($target, $id) {
+    public function __construct($target, $id) {
         $this->target = $target;
         $this->id = $id;
     }
@@ -20,7 +20,7 @@ class Identifier {
         return $this->target;
     }
 
-    function __toString() {
+    public function __toString() {
         return $this->id . ':' . $this->target;
     }
 }

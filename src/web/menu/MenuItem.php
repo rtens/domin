@@ -6,7 +6,7 @@ class MenuItem {
     private $actionId;
     private $parameters;
 
-    function __construct($actionId, $parameters = []) {
+    public function __construct($actionId, $parameters = []) {
         $this->actionId = $actionId;
         $this->parameters = $parameters;
     }

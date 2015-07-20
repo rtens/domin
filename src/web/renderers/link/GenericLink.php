@@ -9,7 +9,7 @@ class GenericLink implements Link {
     private $handles;
     private $confirmation;
 
-    function __construct($actionId, callable $handles, callable $parameters = null) {
+    public function __construct($actionId, callable $handles, callable $parameters = null) {
         $this->actionId = $actionId;
         $this->caption = preg_replace('/(.)([A-Z])/', '$1 $2', ucfirst($this->actionId));
         $this->handles = $handles;

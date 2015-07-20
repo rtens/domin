@@ -9,7 +9,7 @@ class ArrayRenderer implements Renderer {
     /** @var RendererRegistry */
     private $renderers;
 
-    function __construct(RendererRegistry $renderers) {
+    public function __construct(RendererRegistry $renderers) {
         $this->renderers = $renderers;
     }
 
