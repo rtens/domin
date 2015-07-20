@@ -15,7 +15,9 @@ class DateTimeField implements WebField {
      */
     public function handles(Parameter $parameter) {
         $type = $parameter->getType();
-        return $type instanceof ClassType && is_subclass_of($type->getClass(), \DateTimeInterface::class);
+        return
+            $type instanceof ClassType
+            && (new \ReflectionClass($type->getClass()))->implementsInterface(\DateTimeInterface::class);
     }
 
     /**
@@ -70,10 +72,19 @@ class DateTimeField implements WebField {
             HeadElements::jquery(),
             HeadElements::bootstrap(),
             HeadElements::bootstrapJs(),
-            new Element('script', ['src' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js']),
-            new Element('script', ['src' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js']),
-            new Element('link', ['rel' => 'stylesheet', 'href' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css']),
-            new Element('script', [], ['var dateTimePickerSettings = ' . json_encode($this->getOptions()) . ';'])
+            new Element('script', [
+                'src' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'
+            ]),
+            new Element('script', [
+                'src' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js'
+            ]),
+            new Element('link', [
+                'rel' => 'stylesheet',
+                'href' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css'
+            ]),
+            new Element('script', [], [
+                'var dateTimePickerSettings = ' . json_encode($this->getOptions()) . ';'
+            ])
         ];
     }
 
