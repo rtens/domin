@@ -2,6 +2,7 @@
 namespace rtens\domin\cli\fields;
 
 use rtens\domin\cli\CliField;
+use rtens\domin\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use watoki\factory\Factory;
@@ -17,17 +18,19 @@ class ObjectField implements CliField {
 
     /** @var FieldRegistry */
     private $fields;
-    private $input;
+
+    /** @var Console */
+    private $console;
 
     /**
      * @param TypeFactory $types
      * @param FieldRegistry $fields
-     * @param callable $input
+     * @param Console $console
      */
-    public function __construct(TypeFactory $types, FieldRegistry $fields, callable $input) {
+    public function __construct(TypeFactory $types, FieldRegistry $fields, Console $console) {
         $this->types = $types;
         $this->fields = $fields;
-        $this->input = $input;
+        $this->console = $console;
     }
 
     /**
@@ -61,7 +64,7 @@ class ObjectField implements CliField {
                 $prompt .= ' ' . $description;
             }
 
-            $input = $this->input('  ' . $prompt . ':');
+            $input = $this->console->read('  ' . $prompt . ':');
             $properties[$property->name()] = $field->inflate($param, $input);
         }
 
@@ -102,9 +105,5 @@ class ObjectField implements CliField {
      */
     public function getDescription(Parameter $parameter) {
         return '(press enter)';
-    }
-
-    private function input($prompt) {
-        return call_user_func($this->input, $prompt);
     }
 }

@@ -12,6 +12,9 @@ class Menu {
     /** @var MenuItem[]MenuGroup[] */
     private $items = [];
 
+    /**
+     * @param ActionRegistry $actions <-
+     */
     function __construct(ActionRegistry $actions) {
         $this->actions = $actions;
     }

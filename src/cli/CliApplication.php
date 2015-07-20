@@ -30,58 +30,83 @@ use rtens\domin\cli\renderers\PrimitiveRenderer;
 
 class CliApplication {
 
-    private $fields;
-    private $renderers;
-    private $types;
+    /** @var ActionRegistry */
+    public $actions;
+
+    /** @var FieldRegistry */
+    public $fields;
+
+    /** @var RendererRegistry */
+    public $renderers;
+
+    /** @var TypeFactory */
+    public $types;
 
     /**
+     * @param Factory $factory <-
+     * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
      * @param RendererRegistry $renderers <-
      * @param TypeFactory $types <-
      */
-    function __construct(FieldRegistry $fields, RendererRegistry $renderers, TypeFactory $types) {
-        $this->fields = $fields;
-        $this->renderers = $renderers;
-        $this->types = $types;
+    function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
+                         RendererRegistry $renderers, TypeFactory $types) {
+        $this->actions = $factory->setSingleton($actions);
+        $this->fields = $factory->setSingleton($fields);
+        $this->renderers = $factory->setSingleton($renderers);
+        $this->types = $factory->setSingleton($types);
     }
 
-    public static function run(Factory $factory, callable $read, callable $write) {
-        $app = $factory->getInstance(self::class);
-        $app->registerFields($read);
-        $app->registerRenderers();
+    /**
+     * @param callable $callback Receives the CliApplication instance
+     * @param null|Factory $factory
+     * @return Factory
+     */
+    public static function init(callable $callback, Factory $factory = null) {
+        $factory = $factory ?: new Factory();
+        $callback($factory->setSingleton($factory->getInstance(self::class)));
+        return $factory;
+    }
 
-        $actions = $factory->getInstance(ActionRegistry::class);
+    public static function run(Factory $factory, Console $console = null) {
+        /** @var self $app */
+        $app = $factory->getInstance(self::class);
+        $app->doRun($console ?: new Console());
+    }
+
+    private function doRun(Console $console) {
+        $this->registerFields($console);
+        $this->registerRenderers();
 
         $i = 1;
         $actionIds = [];
-        foreach ($actions->getAllActions() as $id => $action) {
-            $write($i++ . ' - ' . $action->caption() . PHP_EOL);
+        foreach ($this->actions->getAllActions() as $id => $action) {
+            $console->writeLine($i++ . ' - ' . $action->caption());
             $actionIds[] = $id;
         }
 
-        $actionIndex = $read('Action:');
+        $actionIndex = $console->read('Action:');
 
         $actionId = $actionIds[$actionIndex - 1];
-        $action = $actions->getAction($actionId);
-        $write(PHP_EOL . $action->caption() . PHP_EOL);
+        $action = $this->actions->getAction($actionId);
+        $console->writeLine();
+        $console->writeLine($action->caption());
 
-        $reader = $factory->getInstance(CliParameterReader::class, ['read' => $read]);
-        $factory->setSingleton($reader, ParameterReader::class);
-
-        $executor = $factory->getInstance(Executor::class);
-        $write($executor->execute($actionId));
+        $reader = new CliParameterReader($this->fields, $console);
+        $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
+        $console->write($executor->execute($actionId));
     }
 
-    private function registerFields(callable $read) {
+    private function registerFields(Console $console) {
         $this->fields->add(new PrimitiveField());
         $this->fields->add(new BooleanField());
         $this->fields->add(new FileField());
-        $this->fields->add(new HtmlField($read));
+        $this->fields->add(new HtmlField($console));
         $this->fields->add(new DateTimeField());
-        $this->fields->add(new ArrayField($this->fields, $read));
-        $this->fields->add(new NullableField($this->fields, $read));
-        $this->fields->add(new ObjectField($this->types, $this->fields, $read));
-        $this->fields->add(new MultiField($this->fields, $read));
+        $this->fields->add(new ArrayField($this->fields, $console));
+        $this->fields->add(new NullableField($this->fields, $console));
+        $this->fields->add(new ObjectField($this->types, $this->fields, $console));
+        $this->fields->add(new MultiField($this->fields, $console));
         $this->fields->add(new IdentifierField($this->fields));
         $this->fields->add(new EnumerationField($this->fields));
     }

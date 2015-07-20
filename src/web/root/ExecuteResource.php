@@ -22,6 +22,7 @@ use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
+use watoki\curir\rendering\PhpRenderer;
 use watoki\curir\Resource;
 use watoki\factory\Factory;
 
@@ -240,5 +241,9 @@ class ExecuteResource extends Resource {
 
     private function saveCrumbs($crumbs) {
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
+    }
+
+    protected function createDefaultRenderer() {
+        return new PhpRenderer();
     }
 }

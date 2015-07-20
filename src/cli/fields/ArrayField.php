@@ -2,6 +2,7 @@
 namespace rtens\domin\cli\fields;
 
 use rtens\domin\cli\CliField;
+use rtens\domin\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use watoki\reflect\type\ArrayType;
@@ -11,11 +12,12 @@ class ArrayField implements CliField {
     /** @var FieldRegistry */
     private $fields;
 
-    private $input;
+    /** @var Console */
+    private $console;
 
-    function __construct(FieldRegistry $fields, callable $input) {
+    function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
-        $this->input = $input;
+        $this->console = $console;
     }
 
     /**
@@ -44,7 +46,7 @@ class ArrayField implements CliField {
                 $prompt .= ' ' . $description;
             }
 
-            $items[] = $field->inflate($itemParameter, $this->input($prompt . ':'));
+            $items[] = $field->inflate($itemParameter, $this->console->read($prompt . ':'));
         }
         return $items;
     }
@@ -66,10 +68,6 @@ class ArrayField implements CliField {
      */
     public function getDescription(Parameter $parameter) {
         return '(size)';
-    }
-
-    private function input($caption) {
-        return call_user_func($this->input, $caption);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\web;
 
+use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\IdentifiersProvider;
@@ -27,28 +28,57 @@ use rtens\domin\web\fields\NullableField;
 use rtens\domin\web\fields\ObjectField;
 use rtens\domin\web\fields\PrimitiveField;
 use watoki\curir\protocol\Url;
+use watoki\factory\Factory;
 
 class WebApplication {
 
-    private $renderers;
-    private $links;
-    private $types;
-    private $fields;
-    private $identifiers;
+    /** @var ActionRegistry */
+    public $actions;
+
+    /** @var RendererRegistry */
+    public $renderers;
+
+    /** @var LinkRegistry */
+    public $links;
+
+    /** @var TypeFactory */
+    public $types;
+
+    /** @var FieldRegistry */
+    public $fields;
+
+    /** @var IdentifiersProvider */
+    public $identifiers;
 
     /**
+     * @param Factory $factory <-
+     * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
      * @param RendererRegistry $renderers <-
      * @param LinkRegistry $links <-
      * @param IdentifiersProvider $identifiers <-
      * @param TypeFactory $types <-
      */
-    public function __construct(FieldRegistry $fields, RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers, TypeFactory $types) {
-        $this->renderers = $renderers;
-        $this->links = $links;
-        $this->types = $types;
-        $this->fields = $fields;
-        $this->identifiers = $identifiers;
+    public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
+                                RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
+                                TypeFactory $types) {
+        $this->actions = $factory->setSingleton($actions);
+        $this->renderers = $factory->setSingleton($renderers);
+        $this->links = $factory->setSingleton($links);
+        $this->types = $factory->setSingleton($types);
+        $this->fields = $factory->setSingleton($fields);
+        $this->identifiers = $factory->setSingleton($identifiers);
+    }
+
+    /**
+     * @param callable $callback Receives the WebApplication instance
+     * @param null|Factory $factory
+     * @return Factory
+     */
+    public static function init(callable $callback, Factory $factory = null) {
+        $factory = $factory ?: new Factory();
+        $callback($factory->setSingleton($factory->getInstance(self::class)));
+        return $factory;
     }
 
     public function registerRenderers(Url $baseUrl) {

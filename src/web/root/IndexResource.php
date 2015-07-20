@@ -10,6 +10,7 @@ use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
+use watoki\curir\rendering\PhpRenderer;
 use watoki\deli\Path;
 use watoki\deli\Request;
 use watoki\factory\Factory;
@@ -89,5 +90,9 @@ class IndexResource extends Container {
 
     private function resetBreadCrumbs() {
         $this->cookies->create(new Cookie([]), ExecuteResource::BREADCRUMB_COOKIE);
+    }
+
+    protected function createDefaultRenderer() {
+        return new PhpRenderer();
     }
 }

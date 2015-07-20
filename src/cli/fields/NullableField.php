@@ -2,6 +2,7 @@
 namespace rtens\domin\cli\fields;
 
 use rtens\domin\cli\CliField;
+use rtens\domin\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use watoki\reflect\type\NullableType;
@@ -11,16 +12,16 @@ class NullableField implements CliField {
     /** @var FieldRegistry */
     private $fields;
 
-    /** @var callable */
-    private $input;
+    /** @var Console */
+    private $console;
 
     /**
      * @param FieldRegistry $fields
-     * @param callable $input
+     * @param Console $console
      */
-    public function __construct(FieldRegistry $fields, callable $input) {
+    public function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
-        $this->input = $input;
+        $this->console = $console;
     }
 
     /**
@@ -50,7 +51,7 @@ class NullableField implements CliField {
             $prompt .= ' ' . $description;
         }
 
-        return $field->inflate($innerParameter, $this->input($prompt . ':'));
+        return $field->inflate($innerParameter, $this->console->read($prompt . ':'));
     }
 
     private function getInnerParameter(Parameter $parameter) {
@@ -68,10 +69,6 @@ class NullableField implements CliField {
      */
     public function getDescription(Parameter $parameter) {
         return '? (y|N)';
-    }
-
-    private function input($caption) {
-        return call_user_func($this->input, $caption);
     }
 
     /**

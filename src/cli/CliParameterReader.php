@@ -8,14 +8,15 @@ use rtens\domin\Parameter;
 class CliParameterReader implements ParameterReader {
 
     private $fields;
+    private $console;
 
     /**
      * @param FieldRegistry $fields <-
-     * @param callable $read
+     * @param Console $console
      */
-    function __construct(FieldRegistry $fields, callable $read) {
+    function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
-        $this->read = $read;
+        $this->console = $console;
     }
 
     public function read(Parameter $parameter) {
@@ -30,10 +31,10 @@ class CliParameterReader implements ParameterReader {
             $prompt .= ' ' . $description;
         }
 
-        $value = call_user_func($this->read, $prompt . ':');
+        $value = $this->console->read($prompt . ':');
         if ($parameter->isRequired()) {
             while (!$value) {
-                $value = call_user_func($this->read, $prompt . ':');
+                $value = $this->console->read($prompt . ':');
             }
         }
         return $value;

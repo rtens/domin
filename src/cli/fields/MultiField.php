@@ -2,6 +2,7 @@
 namespace rtens\domin\cli\fields;
 
 use rtens\domin\cli\CliField;
+use rtens\domin\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use watoki\reflect\type\MultiType;
@@ -10,15 +11,17 @@ class MultiField implements CliField {
 
     /** @var FieldRegistry */
     private $fields;
-    private $input;
+
+    /** @var Console */
+    private $console;
 
     /**
      * @param FieldRegistry $fields
-     * @param callable $input
+     * @param Console $console
      */
-    public function __construct(FieldRegistry $fields, callable $input) {
+    public function __construct(FieldRegistry $fields, Console $console) {
         $this->fields = $fields;
-        $this->input = $input;
+        $this->console = $console;
     }
 
     /**
@@ -80,6 +83,6 @@ class MultiField implements CliField {
             $prompt .= ' ' . $description;
         }
 
-        return call_user_func($this->input, $prompt . ':');
+        return $this->console->read($prompt . ':');
     }
 }
