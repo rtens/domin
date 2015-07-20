@@ -3,7 +3,6 @@ namespace rtens\domin\cli;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Executor;
 use rtens\domin\reflection\TypeFactory;
@@ -30,6 +29,9 @@ use rtens\domin\cli\renderers\PrimitiveRenderer;
 
 class CliApplication {
 
+    /** @var Factory */
+    public $factory;
+
     /** @var ActionRegistry */
     public $actions;
 
@@ -51,6 +53,7 @@ class CliApplication {
      */
     function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                          RendererRegistry $renderers, TypeFactory $types) {
+        $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->fields = $factory->setSingleton($fields);
         $this->renderers = $factory->setSingleton($renderers);

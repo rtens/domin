@@ -6,6 +6,7 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\IdentifiersProvider;
 use rtens\domin\reflection\TypeFactory;
+use rtens\domin\web\menu\Menu;
 use rtens\domin\web\renderers\ArrayRenderer;
 use rtens\domin\web\renderers\BooleanRenderer;
 use rtens\domin\web\renderers\DateTimeRenderer;
@@ -32,6 +33,9 @@ use watoki\factory\Factory;
 
 class WebApplication {
 
+    /** @var Factory */
+    public $factory;
+
     /** @var ActionRegistry */
     public $actions;
 
@@ -50,6 +54,9 @@ class WebApplication {
     /** @var IdentifiersProvider */
     public $identifiers;
 
+    /** @var Menu */
+    public $menu;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -62,12 +69,14 @@ class WebApplication {
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
                                 TypeFactory $types) {
+        $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->renderers = $factory->setSingleton($renderers);
         $this->links = $factory->setSingleton($links);
         $this->types = $factory->setSingleton($types);
         $this->fields = $factory->setSingleton($fields);
         $this->identifiers = $factory->setSingleton($identifiers);
+        $this->menu = $factory->setSingleton($factory->getInstance(Menu::class));
     }
 
     /**
