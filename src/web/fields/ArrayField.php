@@ -85,7 +85,7 @@ class ArrayField implements WebField {
         return new Element('div', [
             'class' => 'array-item form-group input-group'
         ], [
-            new Element('span', ['class' => 'input-group-addon'], [
+            new Element('span', ['class' => 'sortable-handle input-group-addon'], [
                 new Element('span', ['class' => 'glyphicon glyphicon-sort'])
             ]),
             $field->render($parameter, $value),
@@ -114,7 +114,7 @@ class ArrayField implements WebField {
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
-                    $('.array-items').sortable().disableSelection();
+                    $('.array-items').sortable({handle:'.sortable-handle'}).disableSelection();
                 });"
             ])
         ], $this->itemHeadElements($this->makeInnerParameter($parameter)));

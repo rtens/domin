@@ -51,10 +51,13 @@ class ArrayFieldSpec extends StaticTestSuite {
         $this->assert($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))), [
             HeadElements::jquery(),
             HeadElements::jqueryUi(),
+            new Element('script', [
+                'src' => '//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'
+            ]),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
-                    $('.array-items').sortable().disableSelection();
+                    $('.array-items').sortable({handle:'.sortable-handle'}).disableSelection();
                 });"
             ])
         ]);
@@ -81,7 +84,7 @@ class ArrayFieldSpec extends StaticTestSuite {
             '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().detach().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .
-            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
+            '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[0] --' . "\n" .
             '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).parents(\'.array-item\').detach().prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
             '</div>');
@@ -102,11 +105,11 @@ class ArrayFieldSpec extends StaticTestSuite {
         $rendered = $this->field->render($parameter, ['one', 'two']);
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
-            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
+            '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[0]: one --');
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
-            '<span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
+            '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[1]: two --');
     }
 } 
