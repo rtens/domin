@@ -33,10 +33,18 @@ class FileField implements WebField {
         if (!$file->getError()) {
             return new SavedFile($file->getTemporaryName(), $file->getName(), $file->getType());
         } else if ($serialized['name']) {
-            return new MemoryFile($serialized['name'], $serialized['type'], base64_decode($serialized['data']));
+            return $this->createPreservedFile($serialized);
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param string[] $serialized
+     * @return File
+     */
+    protected function createPreservedFile($serialized) {
+        return new MemoryFile($serialized['name'], $serialized['type'], base64_decode($serialized['data']));
     }
 
     /**
@@ -54,17 +62,21 @@ class FileField implements WebField {
             $attributes["required"] = 'required';
         }
 
-        $output = (string)new Element("input", $attributes);
-
-        if ($value) {
-            return $this->renderImagePreservation($parameter, $value) . $output;
-        }
-
-        return $output;
+        return $this->renderImagePreservation($parameter, $value) .
+            new Element("input", $attributes);
     }
 
-    private function renderImagePreservation(Parameter $parameter, File $file) {
-        return new Element('p', [], [
+    /**
+     * @param Parameter $parameter
+     * @param File|null $file
+     * @return string
+     */
+    protected function renderImagePreservation(Parameter $parameter, File $file = null) {
+        if ($file === null) {
+            return '';
+        }
+
+        return (string)new Element('p', [], [
             new Element('input', [
                 'type' => 'hidden',
                 'name' => $parameter->getName() . '[name]',

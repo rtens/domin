@@ -17,7 +17,7 @@ class FileRenderer implements Renderer {
 
     /**
      * @param File $value
-     * @return mixed
+     * @return string
      */
     public function render($value) {
         if ($this->isImage($value)) {

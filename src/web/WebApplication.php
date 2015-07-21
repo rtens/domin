@@ -6,6 +6,7 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\IdentifiersProvider;
 use rtens\domin\reflection\TypeFactory;
+use rtens\domin\web\fields\ImageField;
 use rtens\domin\web\menu\Menu;
 use rtens\domin\web\renderers\ArrayRenderer;
 use rtens\domin\web\renderers\BooleanRenderer;
@@ -13,6 +14,7 @@ use rtens\domin\web\renderers\DateTimeRenderer;
 use rtens\domin\web\renderers\FileRenderer;
 use rtens\domin\web\renderers\HtmlRenderer;
 use rtens\domin\web\renderers\IdentifierRenderer;
+use rtens\domin\web\renderers\ImageRenderer;
 use rtens\domin\web\renderers\link\LinkPrinter;
 use rtens\domin\web\renderers\link\LinkRegistry;
 use rtens\domin\web\renderers\ObjectRenderer;
@@ -99,6 +101,7 @@ class WebApplication {
         $this->renderers->add(new HtmlRenderer());
         $this->renderers->add(new IdentifierRenderer($links));
         $this->renderers->add(new FileRenderer());
+        $this->renderers->add(new ImageRenderer());
         $this->renderers->add(new ArrayRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
@@ -107,6 +110,7 @@ class WebApplication {
         $this->fields->add(new PrimitiveField());
         $this->fields->add(new BooleanField());
         $this->fields->add(new FileField());
+        $this->fields->add(new ImageField());
         $this->fields->add(new HtmlField());
         $this->fields->add(new DateTimeField());
         $this->fields->add(new ArrayField($this->fields));
