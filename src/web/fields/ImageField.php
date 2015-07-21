@@ -63,6 +63,13 @@ class ImageField extends FileField {
 
                 new Element('div', ['class' => 'image-container', 'style' => 'display: none;'], [
                     new Element('div', ['class' => 'form-group'], [
+                        new Element('div', ['class' => 'input-group pull-right', 'style' => 'width: 250px'], [
+                            new Element('input', ['class' => 'form-control image-width', 'type' => 'text']),
+                            new Element('span', ['class' => 'input-group-addon'], ['x']),
+                            new Element('input', ['class' => 'form-control image-height', 'type' => 'text']),
+                            new Element('span', ['class' => 'input-group-addon'], ['px']),
+                        ]),
+
                         new Element('div', ['class' => 'btn-group'], [
                             $this->renderIconButton('refresh', 'rotate', 15),
                             $this->renderIconButton('repeat', 'rotate', 90),
@@ -102,27 +109,7 @@ class ImageField extends FileField {
             HeadElements::bootstrap(),
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.js'),
             HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.css'),
-            new Element('script', [], ["
-                $(function () {
-                    $('.image-cropper .image-input').change(function (e) {
-                        var target = $(e.target);
-                        var file = target.prop('files')[0];
-                        var parent = target.parents('.image-cropper');
-                        var img = parent.find('.image-placeholder');
-
-                        parent.find('.image-container').show();
-
-                        img.cropper({
-                            minContainerHeight: 300,
-                        });
-                        img.cropper('replace', URL.createObjectURL(file));
-                        img.parents('form').submit(function () {
-                            var url = img.cropper('getCroppedCanvas').toDataURL(file.type);
-                            parent.find('.image-data').val(file.name + ';;' + url);
-                        });
-                    });
-                });
-            "]),
+            new Element('script', [], [file_get_contents(__DIR__ . '/js/ImageField.js')]),
         ];
     }
 }
