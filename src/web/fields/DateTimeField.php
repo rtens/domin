@@ -72,16 +72,9 @@ class DateTimeField implements WebField {
             HeadElements::jquery(),
             HeadElements::bootstrap(),
             HeadElements::bootstrapJs(),
-            new Element('script', [
-                'src' => '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'
-            ]),
-            new Element('script', [
-                'src' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js'
-            ]),
-            new Element('link', [
-                'rel' => 'stylesheet',
-                'href' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css'
-            ]),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js'),
+            HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css'),
             new Element('script', [], [
                 'var dateTimePickerSettings = ' . json_encode($this->getOptions()) . ';'
             ])

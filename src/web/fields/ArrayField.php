@@ -108,9 +108,7 @@ class ArrayField implements WebField {
         return array_merge([
             HeadElements::jquery(),
             HeadElements::jqueryUi(),
-            new Element('script', [
-                'src' => '//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'
-            ]),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');

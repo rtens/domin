@@ -57,8 +57,8 @@ class HtmlField implements WebField {
             HeadElements::bootstrap(),
             HeadElements::bootstrapJs(),
             HeadElements::fontAwesome(),
-            new Element('link', ['rel' => 'stylesheet', 'href' => '//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.css']),
-            new Element('script', ['src' => '//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.js'], ['']),
+            HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.css'),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.js'),
             new Element('script', [], ["
                 $(document).ready(function() {
                     $('.summernote').summernote({
