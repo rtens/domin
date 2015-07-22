@@ -53,17 +53,24 @@ class FileField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
-        $attributes = [
-            "type" => "file",
-            "name" => $parameter->getName() . '[file]'
-        ];
-
-        if ($parameter->isRequired()) {
-            $attributes["required"] = 'required';
-        }
-
-        return $this->renderImagePreservation($parameter, $value) .
-            new Element("input", $attributes);
+        return (string)new Element('div', [], [
+            $this->renderImagePreservation($parameter, $value),
+            new ELement('label', [], [
+                new Element('div', ['class' => 'input-group file-field'], [
+                    new Element('span', ['class' => 'input-group-btn'], [
+                        new Element('span', ['class' => 'btn btn-success'], ['Choose File']),
+                        new Element("input", array_merge([
+                            'class' => 'sr-only file-input',
+                            'type' => 'file',
+                            'name' => $parameter->getName() . '[file]'
+                        ], $parameter->isRequired() ? [
+                            'required' => 'required'
+                        ] : []))
+                    ]),
+                    new Element('span', ['class' => 'form-control file-name'])
+                ])
+            ])
+        ]);
     }
 
     /**
@@ -101,6 +108,14 @@ class FileField implements WebField {
      * @return array|Element[]
      */
     public function headElements(Parameter $parameter) {
-        return [];
+        return [
+            new Element('script', [], ["
+                $(function () {
+                    $('.file-input').change(function (e) {
+                        $(this).parents('.file-field').find('.file-name').html($(this)[0].files[0].name);
+                    });
+                });
+            "])
+        ];
     }
 }

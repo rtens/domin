@@ -41,14 +41,14 @@ class FileFieldSpec extends StaticTestSuite {
 
     function optionalField() {
         $field = new FileField();
-        $this->assert($field->render(new Parameter('foo', new UnknownType('file')), null),
-            '<input type="file" name="foo[file]"/>');
+        $this->assert->contains($field->render(new Parameter('foo', new UnknownType('file')), null),
+            '<input class="sr-only file-input" type="file" name="foo[file]"/>');
     }
 
     function requiredField() {
         $field = new FileField();
-        $this->assert($field->render(new Parameter('foo', new IntegerType(), true), null),
-            '<input type="file" name="foo[file]" required="required"/>');
+        $this->assert->contains($field->render(new Parameter('foo', new IntegerType(), true), null),
+            '<input class="sr-only file-input" type="file" name="foo[file]" required="required"/>');
     }
 
     function withValue() {
