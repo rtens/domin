@@ -11,6 +11,38 @@ use watoki\reflect\type\ClassType;
 class ImageField extends FileField {
 
     /**
+     * For available options see https://github.com/fengyuanchen/cropper/#options
+     * @return array
+     */
+    protected function getOptions() {
+        return [
+            'autoCropArea' => 1,
+            'minContainerHeight' => 400,
+            'guides' => false,
+            'strict' => false
+        ];
+    }
+
+    /**
+     * @return array|array[] List of [nominator,denominator] pairs
+     */
+    protected function getAspectRatios() {
+        return [
+            [16, 9],
+            [4, 3],
+            [1, 1],
+            [2, 3]
+        ];
+    }
+
+    /**
+     * @return array|int[]
+     */
+    protected function getRotatingAngles() {
+        return [15, 90];
+    }
+
+    /**
      * @param Parameter $parameter
      * @return bool
      */
@@ -62,39 +94,67 @@ class ImageField extends FileField {
                 ]),
 
                 new Element('div', ['class' => 'image-container', 'style' => 'display: none;'], [
-                    new Element('div', ['class' => 'form-group'], [
-                        new Element('div', ['class' => 'input-group pull-right', 'style' => 'width: 250px'], [
-                            new Element('input', ['class' => 'form-control image-width', 'type' => 'text']),
-                            new Element('span', ['class' => 'input-group-addon'], ['x']),
-                            new Element('input', ['class' => 'form-control image-height', 'type' => 'text']),
-                            new Element('span', ['class' => 'input-group-addon'], ['px']),
-                        ]),
-
-                        new Element('div', ['class' => 'btn-group'], [
-                            $this->renderIconButton('refresh', 'rotate', 15),
-                            $this->renderIconButton('repeat', 'rotate', 90),
-                        ]),
-                        new Element('div', ['class' => 'btn-group'], [
-                            $this->renderButton('16:9', 'setAspectRatio', '16/9'),
-                            $this->renderButton('4:3', 'setAspectRatio', '4/3'),
-                            $this->renderButton('1:1', 'setAspectRatio', '1'),
-                            $this->renderButton('2:3', 'setAspectRatio', '2/3'),
-                            $this->renderButton('free', 'setAspectRatio', '0'),
-                        ]),
-                    ]),
+                    new Element('div', ['class' => 'form-group image-controls'], $this->renderControls()),
                     new Element('img', ['class' => 'image-placeholder']),
                 ])
             ]);
     }
 
-    private function renderIconButton($glyphIcon, $option, $value) {
-        return $this->renderButton(new Element('span', ['class' => 'glyphicon glyphicon-' . $glyphIcon]), $option, $value);
+    /**
+     * @return Element[]
+     */
+    protected function renderControls() {
+        return [
+            new Element('div', ['class' => 'pull-right'], $this->renderSizeControls()),
+            new Element('div', ['class' => 'btn-group'], $this->renderRotationButtons()),
+            new Element('div', ['class' => 'btn-group'], array_merge(
+                $this->renderAspectRatioButtons(),
+                [$this->renderButton('free', 'No aspect ratio', "$(this).setOption('setAspectRatio', 0)")]
+            )),
+        ];
     }
 
-    private function renderButton($caption, $option, $value) {
+    /**
+     * @return Element[]
+     */
+    protected function renderSizeControls() {
+        return [
+            new Element('div', ['class' => 'input-group pull-right', 'style' => 'width: 250px'], [
+                new Element('input', ['class' => 'form-control image-width', 'type' => 'text', 'title' => 'Image width']),
+                new Element('span', ['class' => 'input-group-addon'], ['&times;']),
+                new Element('input', ['class' => 'form-control image-height', 'type' => 'text', 'title' => 'Image height']),
+                new Element('span', ['class' => 'input-group-addon'], ['px'])
+            ]),
+            new Element('div', ['class' => 'btn-group'], [
+                $this->renderIconButton('resize-small', 'Shrink image', "$(this).changeFactor(1/1.25);"),
+                $this->renderIconButton('resize-full', 'Enlarge image', "$(this).changeFactor(1.25);"),
+                '&nbsp;'
+            ]),
+        ];
+    }
+
+    private function renderAspectRatioButtons() {
+        return array_map(function ($ratio) {
+            list($nom, $den) = $ratio;
+            return $this->renderButton("$nom:$den", "Fix aspect ratio to $nom:$den", "$(this).setOption('setAspectRatio', $nom/$den)");
+        }, $this->getAspectRatios());
+    }
+
+    private function renderRotationButtons() {
+        return array_map(function ($angle) {
+            return $this->renderButton("$angle&deg;", "Rotate by $angle degree", "$(this).setOption('rotate', $angle)");
+        }, $this->getRotatingAngles());
+    }
+
+    protected function renderIconButton($glyphIcon, $title, $onClick) {
+        return $this->renderButton(new Element('span', ['class' => 'glyphicon glyphicon-' . $glyphIcon]), $title, $onClick);
+    }
+
+    protected function renderButton($caption, $title, $onClick) {
         return new Element('span', [
             'class' => 'btn btn-default',
-            'onclick' => "$(this).parents('.image-cropper').find('.image-placeholder').cropper('{$option}', {$value});"
+            'title' => $title,
+            'onclick' => $onClick
         ], [$caption]);
     }
 
@@ -103,13 +163,19 @@ class ImageField extends FileField {
      * @return array|\rtens\domin\web\Element[]
      */
     public function headElements(Parameter $parameter) {
+        $script = str_replace(
+            '$cropperOptions$',
+            json_encode($this->getOptions()),
+            file_get_contents(__DIR__ . '/js/ImageField.js')
+        );
+
         return [
             HeadElements::jquery(),
             HeadElements::bootstrapJs(),
             HeadElements::bootstrap(),
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.js'),
             HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.css'),
-            new Element('script', [], [file_get_contents(__DIR__ . '/js/ImageField.js')]),
+            new Element('script', [], [$script]),
         ];
     }
 }

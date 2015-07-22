@@ -1,4 +1,41 @@
 $(function () {
+    var updateSize = function (parent, data) {
+        var img = parent.find('.image-placeholder');
+        var width = parent.find('.image-width');
+        var height = parent.find('.image-height');
+
+        width.val(Math.round(data.width * factor(img) * zoomLevel(img)));
+        height.val(Math.round(data.height * factor(img) * zoomLevel(img)));
+    };
+
+    var zoomLevel = function (img) {
+        var container = img.cropper('getContainerData');
+        var image = img.cropper('getImageData');
+        if ((container.height / container.width) > (image.height / image.width)) {
+            return image.width / container.width;
+        } else {
+            return image.height / container.height;
+        }
+    };
+
+    var factor = function(img) {
+        return parseFloat(img.data('factor'));
+    };
+
+    $('.image-controls .btn').each(function () {
+        $(this).init.prototype.setOption = function (option, value) {
+            $(this).parents('.image-cropper').find('.image-placeholder').cropper(option, value);
+        };
+
+        $(this).init.prototype.changeFactor = function (byFactor) {
+            var parent = $(this).parents('.image-cropper');
+            var img = parent.find('.image-placeholder');
+
+            img.data('factor', factor(img) * byFactor);
+            updateSize(parent, img.cropper('getData'));
+        };
+    });
+
     $('.image-cropper .image-input').change(function (e) {
         var target = $(e.target);
         var file = target.prop('files')[0];
@@ -7,20 +44,12 @@ $(function () {
         var width = parent.find('.image-width');
         var height = parent.find('.image-height');
 
-        var zoomLevel = function () {
-            var container = img.cropper('getContainerData');
-            var image = img.cropper('getImageData');
-            if ((container.height / container.width) > (image.height / image.width)) {
-                return image.width / container.width;
-            } else {
-                return image.height / container.height;
-            }
-        };
+        img.data('factor', 1.0);
 
         var set = function (prop) {
             return function (e) {
                 var data = img.cropper('getData');
-                data[prop] = parseInt($(e.target).val()) / zoomLevel();
+                data[prop] = parseInt($(e.target).val()) / zoomLevel(img) / factor(img);
                 img.cropper('setData', data);
             };
         };
@@ -30,15 +59,15 @@ $(function () {
 
         parent.find('.image-container').show();
 
-        img.cropper({
-            autoCropArea: 1,
-            minContainerHeight: 400,
-            crop: function (data) {
-                width.val(Math.round(data.width * zoomLevel()));
-                height.val(Math.round(data.height * zoomLevel()));
-            }
-        });
+        var options = $cropperOptions$;
+        options.crop = function (data) {
+            updateSize(parent, data);
+        };
+
+        img.cropper(options);
+
         img.cropper('replace', URL.createObjectURL(file));
+
         img.parents('form').submit(function () {
             var cropped = document.createElement('img');
             $(cropped).attr('src', img.cropper('getCroppedCanvas').toDataURL(file.type));
