@@ -41,7 +41,7 @@ If you would like to develop on *domin*, download it with [Composer] and execute
 
 ## Quick Start ##
 
-To run *domin* as a web application, paste the following code into `index.php`
+To run *domin* as a web application with [curir] as delivery system, paste the following code into `index.php`
 
 ```php
 use rtens\domin\web\root\IndexResource;
@@ -72,6 +72,8 @@ CliApplication::run(CliApplication::init(function (CliApplication $app) {
 and run it with
 
     $ php cli.php
+
+[curir]: http://github.com/watoki/curir
 
 
 ## Action! ##
