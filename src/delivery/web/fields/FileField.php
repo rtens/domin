@@ -63,7 +63,7 @@ class FileField implements WebField {
                             'class' => 'sr-only file-input',
                             'type' => 'file',
                             'name' => $parameter->getName() . '[file]'
-                        ], $parameter->isRequired() ? [
+                        ], $parameter->isRequired() && is_null($value) ? [
                             'required' => 'required'
                         ] : []))
                     ]),

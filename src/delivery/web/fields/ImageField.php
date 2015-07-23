@@ -82,7 +82,7 @@ class ImageField extends FileField {
                     new Element("input", array_merge([
                         'class' => 'sr-only image-input',
                         "type" => "file",
-                    ], $parameter->isRequired() ? [
+                    ], $parameter->isRequired() && is_null($value) ? [
                         'required' => 'required'
                     ] : []))
                 ]),

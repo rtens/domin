@@ -53,12 +53,16 @@ class FileFieldSpec extends StaticTestSuite {
 
     function withValue() {
         $field = new FileField();
-        $param = new Parameter('foo', new UnknownType('file'));
+        $param = new Parameter('foo', new UnknownType('file'), true);
         $file = new MemoryFile('foo.file', 'foo/type', 'foo');
-        $this->assert->contains($field->render($param, $file),
+        $rendered = $field->render($param, $file);
+
+        $this->assert->contains($rendered,
             '<input type="hidden" name="foo[name]" value="foo.file"/>' . "\n" .
             '<input type="hidden" name="foo[type]" value="foo/type"/>' . "\n" .
             '<input type="hidden" name="foo[data]" value="Zm9v"/>' . "\n" .
             '<a download="foo.file" href="data:foo/type;base64,Zm9v" target="_blank">foo.file</a>');
+        $this->assert->contains($rendered,
+            '<input class="sr-only file-input" type="file" name="foo[file]"/>');
     }
 }
