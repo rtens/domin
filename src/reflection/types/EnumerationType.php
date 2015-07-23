@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\reflection;
+namespace rtens\domin\reflection\types;
 
 use watoki\reflect\Type;
 
@@ -27,7 +27,7 @@ class EnumerationType implements Type {
     }
 
     public function __toString() {
-        return $this->optionType . '|enumeration';
+        return $this->optionType . '[]';
     }
 
     /**

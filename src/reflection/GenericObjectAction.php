@@ -1,6 +1,8 @@
 <?php
 namespace rtens\domin\reflection;
 
+use rtens\domin\reflection\types\TypeFactory;
+
 class GenericObjectAction extends ObjectAction {
 
     private $execute;

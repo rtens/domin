@@ -2,6 +2,7 @@
 namespace rtens\domin\reflection;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\reflection\types\TypeFactory;
 
 class MethodActionGenerator {
 

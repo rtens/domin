@@ -4,7 +4,7 @@ namespace rtens\domin\delivery\cli\fields;
 use rtens\domin\delivery\cli\CliField;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\reflection\IdentifierType;
+use rtens\domin\reflection\types\IdentifierType;
 
 class IdentifierField implements CliField {
 

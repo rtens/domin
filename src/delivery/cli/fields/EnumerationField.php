@@ -4,7 +4,7 @@ namespace rtens\domin\delivery\cli\fields;
 use rtens\domin\delivery\cli\CliField;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\reflection\EnumerationType;
+use rtens\domin\reflection\types\EnumerationType;
 
 class EnumerationField implements CliField {
 

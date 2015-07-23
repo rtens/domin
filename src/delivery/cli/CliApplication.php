@@ -5,7 +5,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Executor;
-use rtens\domin\reflection\TypeFactory;
+use rtens\domin\reflection\types\TypeFactory;
 use watoki\factory\Factory;
 use rtens\domin\delivery\cli\fields\ArrayField;
 use rtens\domin\delivery\cli\fields\BooleanField;

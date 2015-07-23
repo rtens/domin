@@ -3,7 +3,7 @@ namespace rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\reflection\EnumerationType;
+use rtens\domin\reflection\types\EnumerationType;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
 

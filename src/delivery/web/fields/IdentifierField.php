@@ -3,8 +3,8 @@ namespace rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\reflection\IdentifiersProvider;
-use rtens\domin\reflection\IdentifierType;
+use rtens\domin\reflection\types\identification\IdentifiersProvider;
+use rtens\domin\reflection\types\IdentifierType;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
 

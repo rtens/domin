@@ -4,7 +4,7 @@ namespace spec\rtens\domin\reflection;
 use rtens\domin\ActionRegistry;
 use rtens\domin\reflection\GenericObjectAction;
 use rtens\domin\reflection\ObjectActionGenerator;
-use rtens\domin\reflection\TypeFactory;
+use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument as A;
 use rtens\mockster\Mockster as M;
 use rtens\scrut\tests\statics\StaticTestSuite;

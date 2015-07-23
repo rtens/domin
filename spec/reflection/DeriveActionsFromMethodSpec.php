@@ -6,7 +6,7 @@ use rtens\domin\Parameter;
 use rtens\domin\reflection\GenericMethodAction;
 use rtens\domin\reflection\MethodAction;
 use rtens\domin\reflection\MethodActionGenerator;
-use rtens\domin\reflection\TypeFactory;
+use rtens\domin\reflection\types\TypeFactory;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;

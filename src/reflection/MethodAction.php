@@ -3,6 +3,7 @@ namespace rtens\domin\reflection;
 
 use rtens\domin\Action;
 use rtens\domin\Parameter;
+use rtens\domin\reflection\types\TypeFactory;
 use watoki\reflect\MethodAnalyzer;
 
 class MethodAction implements Action {

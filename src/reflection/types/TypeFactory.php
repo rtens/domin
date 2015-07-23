@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\reflection;
+namespace rtens\domin\reflection\types;
 
 use watoki\reflect\ClassResolver;
 use watoki\reflect\Type;
@@ -37,6 +37,6 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
             return new EnumerationType($options, new StringType());
         }
 
-        return parent::fromTypeHint($hint, $class);
+        return \watoki\reflect\TypeFactory::fromTypeHint($hint, $class);
     }
 }
