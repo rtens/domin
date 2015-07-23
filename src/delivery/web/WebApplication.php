@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web;
 
+use Detection\MobileDetect;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
@@ -60,6 +61,9 @@ class WebApplication {
     /** @var Menu */
     public $menu;
 
+    /** @var MobileDetect */
+    private $detect;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -68,10 +72,11 @@ class WebApplication {
      * @param LinkRegistry $links <-
      * @param IdentifiersProvider $identifiers <-
      * @param TypeFactory $types <-
+     * @param MobileDetect $detect <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types) {
+                                TypeFactory $types, MobileDetect $detect) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->renderers = $factory->setSingleton($renderers);
@@ -80,6 +85,7 @@ class WebApplication {
         $this->fields = $factory->setSingleton($fields);
         $this->identifiers = $factory->setSingleton($identifiers);
         $this->menu = $factory->setSingleton($factory->getInstance(Menu::class));
+        $this->detect = $factory->setSingleton($detect);
     }
 
     /**
@@ -115,7 +121,7 @@ class WebApplication {
         $this->fields->add(new ImageField());
         $this->fields->add(new HtmlField());
         $this->fields->add(new DateTimeField());
-        $this->fields->add(new ArrayField($this->fields));
+        $this->fields->add(new ArrayField($this->fields, $this->detect));
         $this->fields->add(new NullableField($this->fields));
         $this->fields->add(new ObjectField($this->types, $this->fields));
         $this->fields->add(new MultiField($this->fields));

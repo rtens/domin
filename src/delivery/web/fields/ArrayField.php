@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\fields;
 
+use Detection\MobileDetect;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
@@ -16,8 +17,12 @@ class ArrayField implements WebField {
     /** @var FieldRegistry */
     private $fields;
 
-    public function __construct(FieldRegistry $fields) {
+    /** @var MobileDetect */
+    private $detect;
+
+    public function __construct(FieldRegistry $fields, MobileDetect $detect) {
         $this->fields = $fields;
+        $this->detect = $detect;
     }
 
     /**
@@ -121,14 +126,15 @@ class ArrayField implements WebField {
         return array_merge([
             HeadElements::jquery(),
             HeadElements::jqueryUi(),
-            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
                     $('.array-items').sortable({handle:'.sortable-handle'}).disableSelection();
                 });"
             ])
-        ], $this->itemHeadElements($this->makeInnerParameter($parameter)));
+        ], $this->isMobile() ? [
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'),
+        ] : [], $this->itemHeadElements($this->makeInnerParameter($parameter)));
     }
 
     private function itemHeadElements(Parameter $itemParameter) {
@@ -150,5 +156,9 @@ class ArrayField implements WebField {
         /** @var ArrayType $type */
         $type = $parameter->getType();
         return new Parameter($parameter->getName() . $suffix, $type->getItemType());
+    }
+
+    private function isMobile() {
+        return $this->detect->isMobile() || $this->detect->isTablet();
     }
 }

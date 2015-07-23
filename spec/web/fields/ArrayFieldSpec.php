@@ -1,6 +1,7 @@
 <?php
 namespace spec\rtens\domin\delivery\web\fields;
 
+use Detection\MobileDetect;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
@@ -23,13 +24,18 @@ class ArrayFieldSpec extends StaticTestSuite {
     /** @var ArrayField */
     private $field;
 
+    /** @var MobileDetect */
+    private $detect;
+
     protected function before() {
         $fields = new FieldRegistry();
         $this->mockster = Mockster::of(WebField::class);
         Mockster::stub($this->mockster->handles(Argument::any()))->will()->return_(true);
 
+        $this->detect = Mockster::of(MobileDetect::class);
+
         $fields->add(Mockster::mock($this->mockster));
-        $this->field = new ArrayField($fields);
+        $this->field = new ArrayField($fields, Mockster::mock($this->detect));
     }
 
     function handlesArrayTypes() {
@@ -51,9 +57,6 @@ class ArrayFieldSpec extends StaticTestSuite {
         $this->assert($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))), [
             HeadElements::jquery(),
             HeadElements::jqueryUi(),
-            new Element('script', [
-                'src' => '//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'
-            ]),
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
@@ -61,6 +64,18 @@ class ArrayFieldSpec extends StaticTestSuite {
                 });"
             ])
         ]);
+    }
+
+    function requireTouchPunchForMobile() {
+        Mockster::stub($this->detect->isMobile())->will()->return_(true);
+        $this->assert->contains($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'));
+    }
+
+    function requireTouchPunchForTable() {
+        Mockster::stub($this->detect->isTablet())->will()->return_(true);
+        $this->assert->contains($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'));
     }
 
     function requiresScriptsOfItems() {

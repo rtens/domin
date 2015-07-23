@@ -20,7 +20,8 @@
   ],
   "require": {
     "watoki/reflect": "dev-master",
-    "watoki/curir": "dev-master"
+    "watoki/curir": "dev-master",
+    "mobiledetect/mobiledetectlib": "dev-master"
   },
   "require-dev": {
     "rtens/scrut": "dev-master",
