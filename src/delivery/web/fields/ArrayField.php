@@ -129,7 +129,8 @@ class ArrayField implements WebField {
             new Element('script', [], [
                 "$(function () {
                     $('.array-new-items').detach().appendTo('body');
-                    $('.array-items').sortable({handle:'.sortable-handle'}).disableSelection();
+                    $('.array-items').sortable({handle:'.sortable-handle'});
+                    $('.array-items .sortable-handle').disableSelection();
                 });"
             ])
         ], $this->isMobile() ? [
