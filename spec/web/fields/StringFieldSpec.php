@@ -2,32 +2,26 @@
 namespace spec\rtens\domin\web\fields;
 
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\PrimitiveField;
+use rtens\domin\web\fields\StringField;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\BooleanType;
-use watoki\reflect\type\DoubleType;
 use watoki\reflect\type\FloatType;
-use watoki\reflect\type\IntegerType;
-use watoki\reflect\type\LongType;
 use watoki\reflect\type\StringType;
 use watoki\reflect\type\UnknownType;
 
-class PrimitiveFieldSpec extends StaticTestSuite {
+class StringFieldSpec extends StaticTestSuite {
 
     /** @var \rtens\domin\web\WebField */
     public $field;
 
     protected function before() {
-        $this->field = new PrimitiveField();
+        $this->field = new StringField();
     }
 
     function handlesPrimitiveTypes() {
         $this->assert($this->field->handles(new Parameter('foo', new StringType())));
-        $this->assert($this->field->handles(new Parameter('foo', new LongType())));
-        $this->assert($this->field->handles(new Parameter('foo', new FloatType())));
-        $this->assert($this->field->handles(new Parameter('foo', new DoubleType())));
-        $this->assert($this->field->handles(new Parameter('foo', new IntegerType())));
 
+        $this->assert->not($this->field->handles(new Parameter('foo', new FloatType())));
         $this->assert->not($this->field->handles(new Parameter('foo', new UnknownType())));
         $this->assert->not($this->field->handles(new Parameter('foo', new BooleanType())));
     }
@@ -36,16 +30,7 @@ class PrimitiveFieldSpec extends StaticTestSuite {
         $param = new Parameter('foo', new StringType);
         $this->assert($this->field->inflate($param, 'foo'), 'foo');
         $this->assert($this->field->inflate($param, ''), null);
-        $this->assert($this->field->inflate($param, 'some <html>'), 'some &lt;html&gt;');
-
-        $this->assert($this->field->inflate(new Parameter('foo', new IntegerType()), '123A'), 123);
-    }
-
-    function useNumberInput() {
-        $parameter = new Parameter('foo', new IntegerType());
-        $this->assert($this->field->inflate($parameter, '12') === 12);
-        $this->assert($this->field->render($parameter, null),
-            '<input class="form-control" type="number" name="foo" value=""/>');
+        $this->assert($this->field->inflate($param, 'some <html>'), 'some <html>');
     }
 
     function hasNoHeadElements() {

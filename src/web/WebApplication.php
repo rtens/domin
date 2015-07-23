@@ -7,6 +7,7 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\IdentifiersProvider;
 use rtens\domin\reflection\TypeFactory;
 use rtens\domin\web\fields\ImageField;
+use rtens\domin\web\fields\NumberField;
 use rtens\domin\web\menu\Menu;
 use rtens\domin\web\renderers\ArrayRenderer;
 use rtens\domin\web\renderers\BooleanRenderer;
@@ -29,7 +30,7 @@ use rtens\domin\web\fields\IdentifierField;
 use rtens\domin\web\fields\MultiField;
 use rtens\domin\web\fields\NullableField;
 use rtens\domin\web\fields\ObjectField;
-use rtens\domin\web\fields\PrimitiveField;
+use rtens\domin\web\fields\StringField;
 use watoki\curir\protocol\Url;
 use watoki\factory\Factory;
 
@@ -107,7 +108,8 @@ class WebApplication {
     }
 
     public function registerFields() {
-        $this->fields->add(new PrimitiveField());
+        $this->fields->add(new StringField());
+        $this->fields->add(new NumberField());
         $this->fields->add(new BooleanField());
         $this->fields->add(new FileField());
         $this->fields->add(new ImageField());

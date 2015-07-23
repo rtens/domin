@@ -3,12 +3,11 @@ namespace rtens\domin\cli\fields;
 
 use rtens\domin\cli\CliField;
 use rtens\domin\Parameter;
-use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\DoubleType;
 use watoki\reflect\type\FloatType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\LongType;
-use watoki\reflect\type\PrimitiveType;
+use watoki\reflect\type\StringType;
 
 class PrimitiveField implements CliField {
 
@@ -17,7 +16,13 @@ class PrimitiveField implements CliField {
      * @return bool
      */
     public function handles(Parameter $parameter) {
-        return $parameter->getType() instanceof PrimitiveType && !($parameter->getType() instanceof BooleanType);
+        return in_array(get_class($parameter->getType()), [
+            StringType::class,
+            IntegerType::class,
+            FloatType::class,
+            LongType::class,
+            DoubleType::class
+        ]);
     }
 
     /**
@@ -35,7 +40,7 @@ class PrimitiveField implements CliField {
             case FloatType::class:
                 return (float)$serialized;
             default:
-                return htmlentities($serialized);
+                return (string)$serialized;
         }
     }
 

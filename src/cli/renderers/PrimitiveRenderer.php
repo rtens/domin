@@ -14,10 +14,10 @@ class PrimitiveRenderer implements Renderer {
     }
 
     /**
-     * @param mixed $value
-     * @return mixed
+     * @param string $value
+     * @return string
      */
     public function render($value) {
-        return htmlentities((string)$value);
+        return $value;
     }
 }

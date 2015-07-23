@@ -4,27 +4,30 @@ namespace rtens\domin\web\fields;
 use rtens\domin\Parameter;
 use rtens\domin\web\Element;
 use rtens\domin\web\WebField;
-use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\DoubleType;
 use watoki\reflect\type\FloatType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\LongType;
-use watoki\reflect\type\PrimitiveType;
 
-class PrimitiveField implements WebField {
+class NumberField implements WebField {
 
     /**
-     * @param \rtens\domin\Parameter $parameter
+     * @param Parameter $parameter
      * @return bool
      */
     public function handles(Parameter $parameter) {
-        return $parameter->getType() instanceof PrimitiveType && !($parameter->getType() instanceof BooleanType);
+        return in_array(get_class($parameter->getType()), [
+            IntegerType::class,
+            FloatType::class,
+            LongType::class,
+            DoubleType::class
+        ]);
     }
 
     /**
      * @param Parameter $parameter
      * @param string $serialized
-     * @return mixed
+     * @return int|float|double
      */
     public function inflate(Parameter $parameter, $serialized) {
         switch (get_class($parameter->getType())) {
@@ -36,31 +39,22 @@ class PrimitiveField implements WebField {
             case FloatType::class:
                 return (float)$serialized;
             default:
-                return htmlentities($serialized);
+                throw new \InvalidArgumentException("Not a number type [{$parameter->getType()}]");
         }
     }
 
     /**
      * @param Parameter $parameter
-     * @return array|\rtens\domin\web\Element[]
+     * @param mixed $value
+     * @return string
      */
-    public function headElements(Parameter $parameter) {
-        return [];
-    }
-
     public function render(Parameter $parameter, $value) {
-        $attributes = [
+        return (string)new Element("input", [
             "class" => "form-control",
             "type" => $this->getType($parameter),
             "name" => $parameter->getName(),
             "value" => $value
-        ];
-
-        if ($parameter->isRequired()) {
-            $attributes["required"] = 'required';
-        }
-
-        return (string)new Element("input", $attributes);
+        ]);
     }
 
     /**
@@ -74,5 +68,13 @@ class PrimitiveField implements WebField {
             default:
                 return 'text';
         }
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return array|Element[]
+     */
+    public function headElements(Parameter $parameter) {
+        return [];
     }
 }
