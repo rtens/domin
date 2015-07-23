@@ -1,7 +1,7 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
-use rtens\domin\web\renderers\DateTimeRenderer;
+use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class DateTimeRendererSpec extends StaticTestSuite {

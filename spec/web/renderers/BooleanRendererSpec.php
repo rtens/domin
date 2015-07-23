@@ -1,7 +1,7 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
-use rtens\domin\web\renderers\BooleanRenderer;
+use rtens\domin\delivery\web\renderers\BooleanRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class BooleanRendererSpec extends StaticTestSuite {

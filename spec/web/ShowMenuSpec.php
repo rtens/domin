@@ -1,16 +1,16 @@
 <?php
-namespace spec\rtens\domin\web;
+namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\web\menu\Menu;
-use rtens\domin\web\menu\MenuGroup;
-use rtens\domin\web\menu\MenuItem;
-use rtens\domin\web\root\ExecuteResource;
-use rtens\domin\web\root\IndexResource;
-use rtens\domin\web\WebApplication;
+use rtens\domin\delivery\web\menu\Menu;
+use rtens\domin\delivery\web\menu\MenuGroup;
+use rtens\domin\delivery\web\menu\MenuItem;
+use rtens\domin\delivery\web\root\ExecuteResource;
+use rtens\domin\delivery\web\root\IndexResource;
+use rtens\domin\delivery\web\WebApplication;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\curir\cookie\CookieStore;

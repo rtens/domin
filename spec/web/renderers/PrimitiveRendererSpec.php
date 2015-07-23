@@ -1,7 +1,7 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
-use rtens\domin\web\renderers\PrimitiveRenderer;
+use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class PrimitiveRendererSpec extends StaticTestSuite {

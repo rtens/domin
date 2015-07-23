@@ -1,10 +1,10 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\Parameter;
 use rtens\domin\parameters\Html;
-use rtens\domin\web\fields\HtmlField;
-use rtens\domin\web\HeadElements;
+use rtens\domin\delivery\web\fields\HtmlField;
+use rtens\domin\delivery\web\HeadElements;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\StringType;

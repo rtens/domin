@@ -1,12 +1,12 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\Parameter;
-use rtens\domin\web\Element;
-use rtens\domin\web\fields\NullableField;
-use rtens\domin\web\HeadElements;
-use rtens\domin\web\WebField;
+use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\fields\NullableField;
+use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster as M;
 use rtens\scrut\tests\statics\StaticTestSuite;

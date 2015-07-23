@@ -1,15 +1,15 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\TypeFactory;
-use rtens\domin\web\renderers\link\ClassLink;
-use rtens\domin\web\renderers\link\Link;
-use rtens\domin\web\renderers\link\LinkPrinter;
-use rtens\domin\web\renderers\link\LinkRegistry;
-use rtens\domin\web\renderers\ObjectRenderer;
-use rtens\domin\web\renderers\PrimitiveRenderer;
+use rtens\domin\delivery\web\renderers\link\ClassLink;
+use rtens\domin\delivery\web\renderers\link\Link;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
+use rtens\domin\delivery\web\renderers\link\LinkRegistry;
+use rtens\domin\delivery\web\renderers\ObjectRenderer;
+use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;

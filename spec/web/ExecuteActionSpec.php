@@ -1,16 +1,16 @@
 <?php
-namespace spec\rtens\domin\web;
+namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
-use rtens\domin\web\Element;
-use rtens\domin\web\HeadElements;
-use rtens\domin\web\menu\Menu;
-use rtens\domin\web\root\IndexResource;
-use rtens\domin\web\WebField;
+use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\menu\Menu;
+use rtens\domin\delivery\web\root\IndexResource;
+use rtens\domin\delivery\web\WebField;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;

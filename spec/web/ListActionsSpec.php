@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web;
+namespace spec\rtens\domin\delivery\web;
 
-use rtens\domin\web\menu\Menu;
-use rtens\domin\web\root\IndexResource;
+use rtens\domin\delivery\web\menu\Menu;
+use rtens\domin\delivery\web\root\IndexResource;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 /**

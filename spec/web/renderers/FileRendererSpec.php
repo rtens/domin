@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
-use rtens\domin\parameters\MemoryFile;
-use rtens\domin\web\renderers\FileRenderer;
+use rtens\domin\parameters\file\MemoryFile;
+use rtens\domin\delivery\web\renderers\FileRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class FileRendererSpec extends StaticTestSuite {

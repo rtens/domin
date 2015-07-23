@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\BooleanField;
+use rtens\domin\delivery\web\fields\BooleanField;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\StringType;

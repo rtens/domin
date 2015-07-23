@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web\renderers;
+namespace spec\rtens\domin\delivery\web\renderers;
 
 use rtens\domin\parameters\Html;
-use rtens\domin\web\renderers\HtmlRenderer;
+use rtens\domin\delivery\web\renderers\HtmlRenderer;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class HtmlRendererSpec extends StaticTestSuite {

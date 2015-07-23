@@ -1,9 +1,9 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\DateTimeField;
-use rtens\domin\web\HeadElements;
+use rtens\domin\delivery\web\fields\DateTimeField;
+use rtens\domin\delivery\web\HeadElements;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\UnknownType;

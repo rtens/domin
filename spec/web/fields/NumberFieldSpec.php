@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\NumberField;
+use rtens\domin\delivery\web\fields\NumberField;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\DoubleType;
@@ -14,7 +14,7 @@ use watoki\reflect\type\UnknownType;
 
 class NumberFieldSpec extends StaticTestSuite {
 
-    /** @var \rtens\domin\web\WebField */
+    /** @var \rtens\domin\delivery\web\WebField */
     public $field;
 
     protected function before() {

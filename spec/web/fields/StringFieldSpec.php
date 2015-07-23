@@ -1,8 +1,8 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\StringField;
+use rtens\domin\delivery\web\fields\StringField;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\FloatType;
@@ -11,7 +11,7 @@ use watoki\reflect\type\UnknownType;
 
 class StringFieldSpec extends StaticTestSuite {
 
-    /** @var \rtens\domin\web\WebField */
+    /** @var \rtens\domin\delivery\web\WebField */
     public $field;
 
     protected function before() {

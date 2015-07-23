@@ -1,11 +1,11 @@
 <?php
-namespace spec\rtens\domin\web\fields;
+namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\parameters\File;
-use rtens\domin\parameters\MemoryFile;
-use rtens\domin\parameters\SavedFile;
+use rtens\domin\parameters\file\MemoryFile;
+use rtens\domin\parameters\file\SavedFile;
 use rtens\domin\Parameter;
-use rtens\domin\web\fields\FileField;
+use rtens\domin\delivery\web\fields\FileField;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\curir\protocol\UploadedFile;
 use watoki\reflect\type\ClassType;
