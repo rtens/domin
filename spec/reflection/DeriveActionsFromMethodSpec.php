@@ -36,8 +36,9 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
              * @param string $two
              * @param string $three
              * @param string $four
+             * @param string $five
              */
-            function doStuffWithStuff($one, $two = "default", $three = "", $four = null) {
+            function doStuffWithStuff($one, $two = "default", $three = "", $four = null, $five = "this") {
                 return $one . ":" . $two;
             }
         }');
@@ -50,12 +51,14 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             new Parameter('two', new StringType()),
             new Parameter('three', new StringType()),
             new Parameter('four', new NullableType(new StringType())),
+            new Parameter('five', new StringType()),
         ]);
         $this->assert($action->execute(['one' => 'foo', 'two' => 'bar']), 'foo:bar');
         $this->assert($action->fill(['two' => null, 'three' => 'foo']), [
-            'two' => 'default',
+            'two' => null,
             'three' => 'foo',
-            'four' => null
+            'four' => null,
+            'five' => 'this'
         ]);
     }
 

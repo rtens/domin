@@ -48,8 +48,11 @@ class ObjectRenderer implements Renderer {
 
             $propertyValue = $property->get($value);
 
+            $caption = htmlentities(ucfirst($property->name()));
             $descriptions[] = new Element('dt', [], [
-                htmlentities(ucfirst($property->name()))
+                is_null($propertyValue)
+                    ? new Element('s', [], [$caption])
+                    : $caption
             ]);
             $descriptions[] = new Element('dd', [], [
                 $this->renderers->getRenderer($propertyValue)->render($propertyValue)

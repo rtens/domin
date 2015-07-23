@@ -10,6 +10,8 @@ use watoki\reflect\type\NullableType;
 
 class NullableField implements WebField {
 
+    const NULL_VALUE = '____IS_NULL____';
+
     /** @var FieldRegistry */
     private $fields;
 
@@ -31,9 +33,12 @@ class NullableField implements WebField {
     /**
      * @param Parameter $parameter
      * @param mixed $serialized
-     * @return mixed
+     * @return null|mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
+        if (is_null($serialized) || $serialized == self::NULL_VALUE) {
+            return null;
+        }
         $innerParameter = $this->getInnerParameter($parameter);
         return $this->fields->getField($innerParameter)
             ->inflate($innerParameter, $serialized);
@@ -48,6 +53,11 @@ class NullableField implements WebField {
         $id = str_replace(['[', ']'], '-', $parameter->getName());
 
         return implode("\n", [
+            new Element('input', [
+                'type' => 'hidden',
+                'name' => $parameter->getName(),
+                'value' => self::NULL_VALUE
+            ]),
             new Element('input', array_merge([
                 'type' => 'checkbox',
                 'onchange' => "var control = $('#$id-control').detach(); $(this).is(':checked') ? control.show().insertAfter($(this)) : control.hide().appendTo('body');"

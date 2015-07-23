@@ -69,9 +69,15 @@ class Executor {
         $params = [];
         $missing = [];
         foreach ($action->parameters() as $parameter) {
-            $serialized = $this->paramReader->read($parameter);
-            if (!is_null($serialized)) {
-                $params[$parameter->getName()] = $this->fields->getField($parameter)->inflate($parameter, $serialized);
+            if ($this->paramReader->has($parameter)) {
+                $inflated = $this->fields->getField($parameter)
+                    ->inflate($parameter, $this->paramReader->read($parameter));
+
+                if ($parameter->getType()->is($inflated)) {
+                    $params[$parameter->getName()] = $inflated;
+                } else if ($parameter->isRequired()) {
+                    $missing[] = $parameter->getName();
+                }
             } else if ($parameter->isRequired()) {
                 $missing[] = $parameter->getName();
             }

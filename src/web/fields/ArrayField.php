@@ -11,6 +11,8 @@ use watoki\reflect\type\ArrayType;
 
 class ArrayField implements WebField {
 
+    const EMPTY_LIST_VALUE = '_____EMPTY_LIST_____';
+
     /** @var FieldRegistry */
     private $fields;
 
@@ -32,6 +34,10 @@ class ArrayField implements WebField {
      * @return array
      */
     public function inflate(Parameter $parameter, $serialized) {
+        if ($serialized->count() == 1 && $serialized->first() == self::EMPTY_LIST_VALUE) {
+            return [];
+        }
+
         $itemParameter = $this->makeInnerParameter($parameter);
 
         return $serialized->map(function ($item) use ($itemParameter) {
@@ -51,7 +57,14 @@ class ArrayField implements WebField {
         /** @var WebField $innerField */
         $innerField = $this->fields->getField($this->makeInnerParameter($parameter));
 
-        $items = [];
+        $items = [
+            new Element('input', [
+                'type' => 'hidden',
+                'name' => $parameter->getName() . '[0]',
+                'value' => self::EMPTY_LIST_VALUE
+            ])
+        ];
+
         foreach ($value as $item) {
             $items[] = $this->makeInputGroup($innerField, $this->makeInnerParameter($parameter, '[' . $index++ . ']'), $id, $item);
         }

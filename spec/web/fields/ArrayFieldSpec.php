@@ -80,7 +80,9 @@ class ArrayFieldSpec extends StaticTestSuite {
         $parameter = new Parameter('foo', new ArrayType(new StringType()));
         $rendered = $this->field->render($parameter, []);
         $this->assert->contains($rendered,
-            '<div id="foo-items" class="array-items"></div>' . "\n" .
+            '<div id="foo-items" class="array-items">' .
+            '<input type="hidden" name="foo[0]" value="' . ArrayField::EMPTY_LIST_VALUE . '"/>' .
+            '</div>' . "\n" .
             '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().detach().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .

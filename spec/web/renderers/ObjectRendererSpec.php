@@ -80,9 +80,9 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->renderers->add(new PrimitiveRenderer());
 
         eval('class NotOnlyReadableProperties {
-            public $public;
-            function __construct($one) {}
-            function getGetter() {}
+            public $public = "foo";
+            function __construct($one) { $this->dynamic = $one; }
+            function getGetter() { return "bar"; }
             function setSetter($foo) {}
         }');
         $class = new \ReflectionClass('NotOnlyReadableProperties');
@@ -90,8 +90,26 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->assert->contains($this->renderer->render($class->newInstance("uno")),
             '<dl class="dl-horizontal">' . "\n" .
             '<dt>Public</dt>' . "\n" .
-            '<dd></dd>' . "\n" .
+            '<dd>foo</dd>' . "\n" .
+            '<dt>Dynamic</dt>' . "\n" .
+            '<dd>uno</dd>' . "\n" .
             '<dt>Getter</dt>' . "\n" .
+            '<dd>bar</dd>' . "\n" .
+            '</dl>'
+        );
+    }
+
+    function strikeNullProperties() {
+        $this->renderers->add(new PrimitiveRenderer());
+
+        eval('class APrettyEmptyProperty {
+            public $public;
+        }');
+        $class = new \ReflectionClass('APrettyEmptyProperty');
+
+        $this->assert->contains($this->renderer->render($class->newInstance()),
+            '<dl class="dl-horizontal">' . "\n" .
+            '<dt><s>Public</s></dt>' . "\n" .
             '<dd></dd>' . "\n" .
             '</dl>'
         );

@@ -7,7 +7,13 @@ interface ParameterReader {
 
     /**
      * @param Parameter $parameter
-     * @return null|string The serialized paramater
+     * @return mixed The serialized paramater
      */
     public function read(Parameter $parameter);
+
+    /**
+     * @param Parameter $parameter
+     * @return boolean
+     */
+    public function has(Parameter $parameter);
 }

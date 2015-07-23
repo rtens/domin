@@ -23,7 +23,7 @@ class EnumerationType implements Type {
     }
 
     public function is($value) {
-        return $value == $this->getOptions();
+        return in_array($value, $this->getOptions());
     }
 
     public function __toString() {

@@ -23,7 +23,7 @@ class DateTimeField implements WebField {
     /**
      * @param Parameter $parameter
      * @param string $serialized
-     * @return \DateTime|\DateTimeImmutable
+     * @return \DateTime|\DateTimeImmutable|null
      */
     public function inflate(Parameter $parameter, $serialized) {
         /** @var ClassType $type */

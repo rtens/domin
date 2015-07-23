@@ -45,13 +45,13 @@ class NumberFieldSpec extends StaticTestSuite {
 
     function emptyField() {
         $this->assert($this->field->render(new Parameter('foo', new FloatType(), true), null),
-            '<input class="form-control" type="text" name="foo" value=""/>');
+            '<input class="form-control" type="text" name="foo" value="0"/>');
     }
 
     function useNumberInput() {
         $parameter = new Parameter('foo', new IntegerType());
         $this->assert($this->field->render($parameter, null),
-            '<input class="form-control" type="number" name="foo" value=""/>');
+            '<input class="form-control" type="number" name="foo" value="0"/>');
     }
 
     function withValue() {

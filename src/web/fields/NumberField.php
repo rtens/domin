@@ -45,7 +45,7 @@ class NumberField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param mixed $value
+     * @param int|float|double|null $value
      * @return string
      */
     public function render(Parameter $parameter, $value) {
@@ -53,7 +53,7 @@ class NumberField implements WebField {
             "class" => "form-control",
             "type" => $this->getType($parameter),
             "name" => $parameter->getName(),
-            "value" => $value
+            "value" => $value ?: '0'
         ]);
     }
 

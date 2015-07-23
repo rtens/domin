@@ -47,7 +47,7 @@ abstract class ObjectAction implements Action {
      */
     public function fill(array $parameters) {
         foreach ($this->reader->readInterface() as $property) {
-            if (!array_key_exists($property->name(), $parameters) || is_null($parameters[$property->name()])) {
+            if (!array_key_exists($property->name(), $parameters)) {
                 $parameters[$property->name()] = $property->defaultValue();
             }
         }

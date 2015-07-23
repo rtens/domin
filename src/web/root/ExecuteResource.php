@@ -191,11 +191,9 @@ class ExecuteResource extends Resource {
         $values = [];
 
         foreach ($action->parameters() as $parameter) {
-            $value = $reader->read($parameter);
-
-            if (!is_null($value)) {
+            if ($reader->has($parameter)) {
                 $field = $this->fields->getField($parameter);
-                $values[$parameter->getName()] = $field->inflate($parameter, $value);
+                $values[$parameter->getName()] = $field->inflate($parameter, $reader->read($parameter));
             }
         }
         return $values;

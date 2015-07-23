@@ -93,13 +93,33 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheRequiredParameter('foo', 'three');
         $this->action->given_HasTheRequiredParameter('foo', 'four');
 
-        $this->givenTheParameter_Is('three', 'tres');
+        $this->givenTheParameter_Is('three', null);
         $this->givenAFieldHandling_InflatingWith('three', function ($s) {
             return $s . '!';
         });
 
         $this->whenIExecute('foo');
         $this->thenTheResultShouldBeThatParameters_AreMissing(['two', 'four']);
+    }
+
+    function parameterIsMissingIfValueDoesNotMatchType() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheRequiredParameter_OfATypeMatching('foo', 'one', 'uno!');
+        $this->action->given_HasTheRequiredParameter_OfATypeMatching('foo', 'two', 'uno!');
+        $this->action->given_HasTheRequiredParameter_OfATypeMatching('foo', 'three', 'uno!');
+        $this->action->given_HasTheParameter_OfATypeMatching('foo', 'four', 'uno!');
+
+        $this->givenTheParameter_Is('one', 'uno');
+        $this->givenTheParameter_Is('three', 'tres');
+        $this->givenTheParameter_Is('four', 'cuatro');
+
+        /** @noinspection PhpUnusedParameterInspection */
+        $this->givenAFieldInflatingWith(function (Parameter $p, $s) {
+            return $s . '!';
+        });
+
+        $this->whenIExecute('foo');
+        $this->thenTheResultShouldBeThatParameters_AreMissing(['two', 'three']);
     }
 
     function chooseFieldForParameterType() {
@@ -161,10 +181,10 @@ class ExecuteActionSpec extends StaticTestSuite {
     protected function before() {
         $this->reader = Mockster::of(ParameterReader::class);
         Mockster::stub($this->reader->read(Argument::any()))->will()->forwardTo(function (Parameter $parameter) {
-            if (!array_key_exists($parameter->getName(), $this->parameters)) {
-                return null;
-            }
             return $this->parameters[$parameter->getName()];
+        });
+        Mockster::stub($this->reader->has(Argument::any()))->will()->forwardTo(function (Parameter $parameter) {
+            return array_key_exists($parameter->getName(), $this->parameters);
         });
     }
 

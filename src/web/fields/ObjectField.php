@@ -46,7 +46,7 @@ class ObjectField implements WebField {
 
         $properties = [];
         foreach ($reader->readInterface() as $property) {
-            if ($serialized->has($property->name()) && !is_null($serialized[$property->name()])) {
+            if ($serialized->has($property->name())) {
                 $param = new Parameter($parameter->getName(), $property->type());
                 $properties[$property->name()] = $this->getField($param)->inflate($param, $serialized[$property->name()]);
             }
@@ -58,9 +58,8 @@ class ObjectField implements WebField {
         });
 
         foreach ($reader->readInterface() as $property) {
-            $value = $properties[$property->name()];
-            if (!is_null($value) && $property->canSet()) {
-                $property->set($instance, $value);
+            if ($property->canSet()) {
+                $property->set($instance, $properties[$property->name()]);
             }
         }
 

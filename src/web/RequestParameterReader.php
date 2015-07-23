@@ -16,13 +16,17 @@ class RequestParameterReader implements ParameterReader {
 
     /**
      * @param Parameter $parameter
-     * @return null|string The serialized paramater
+     * @return string The serialized paramater
      */
     public function read(Parameter $parameter) {
-        $args = $this->request->getArguments();
-        if (!$args->has($parameter->getName())) {
-            return null;
-        }
-        return $args->get($parameter->getName());
+        return $this->request->getArguments()->get($parameter->getName());
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return boolean
+     */
+    public function has(Parameter $parameter) {
+        return $this->request->getArguments()->has($parameter->getName());
     }
 }

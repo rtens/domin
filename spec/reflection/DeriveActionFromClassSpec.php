@@ -104,7 +104,7 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
     function fillParametersWithDefaultValues() {
         $this->givenTheClass('class ClassAction5 {
             public $public = "foo";
-            function __construct($required, $one = "bar", $two = "for") {}
+            function __construct($required, $one = "bar", $two = "for", $three = "fos") {}
             function setSetter($foo = "bas") {}
         }');
         $this->whenICreateAnObjectActionFrom('ClassAction5');
@@ -112,8 +112,9 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
             'one' => null,
             'two' => 'me'
         ]);
-        $this->thenFilledParameter_ShouldBe('one', "bar");
+        $this->thenFilledParameter_ShouldBe('one', null);
         $this->thenFilledParameter_ShouldBe('two', "me");
+        $this->thenFilledParameter_ShouldBe('three', "fos");
         $this->thenFilledParameter_ShouldBe('public', "foo");
         $this->thenFilledParameter_ShouldBe('setter', null);
     }

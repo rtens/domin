@@ -55,7 +55,7 @@ class MethodAction implements Action {
      */
     public function fill(array $parameters) {
         foreach ($this->method->getParameters() as $parameter) {
-            if ($parameter->isDefaultValueAvailable() && $this->notIn($parameter, $parameters)) {
+            if ($parameter->isDefaultValueAvailable() && !array_key_exists($parameter->name, $parameters)) {
                 $parameters[$parameter->name] = $parameter->getDefaultValue();
             }
         }
@@ -78,9 +78,5 @@ class MethodAction implements Action {
         $arguments = $analyzer->fillParameters($parameters, $injector, $filter);
 
         return $this->method->invokeArgs($this->object, $arguments);
-    }
-
-    private function notIn(\ReflectionParameter $parameter, array $parameters) {
-        return !array_key_exists($parameter->name, $parameters) || is_null($parameters[$parameter->name]);
     }
 }

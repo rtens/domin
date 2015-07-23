@@ -19,6 +19,19 @@ class CliParameterReader implements ParameterReader {
         $this->console = $console;
     }
 
+    /**
+     * @param Parameter $parameter
+     * @return boolean
+     */
+    public function has(Parameter $parameter) {
+        return true;
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return string
+     * @throws \Exception
+     */
     public function read(Parameter $parameter) {
         $prompt = $parameter->getName();
         if ($parameter->isRequired()) {
