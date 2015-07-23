@@ -2,7 +2,7 @@
 namespace rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\Renderer;
-use rtens\domin\reflection\types\identification\Identifier;
+use rtens\domin\parameters\Identifier;
 use rtens\domin\delivery\web\Element;
 
 class IdentifierRenderer implements Renderer {

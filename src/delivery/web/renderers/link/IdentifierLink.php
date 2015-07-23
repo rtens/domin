@@ -1,7 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\link;
 
-use rtens\domin\reflection\types\identification\Identifier;
+use rtens\domin\parameters\Identifier;
 
 class IdentifierLink extends GenericLink {
 

@@ -4,7 +4,7 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\reflection\types\identification\IdentifiersProvider;
+use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
 use rtens\domin\delivery\web\fields\NumberField;

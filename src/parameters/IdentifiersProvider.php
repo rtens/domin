@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\reflection\types\identification;
+namespace rtens\domin\parameters;
 
 class IdentifiersProvider {
 
