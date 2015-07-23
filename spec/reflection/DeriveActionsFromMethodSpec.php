@@ -33,10 +33,11 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         eval('class MethodWithSimpleParams {
             /**
              * @param string $one
-             * @param null|string $two
+             * @param string $two
              * @param string $three
+             * @param string $four
              */
-            function doStuffWithStuff($one, $two = "default", $three = "default") {
+            function doStuffWithStuff($one, $two = "default", $three = "", $four = null) {
                 return $one . ":" . $two;
             }
         }');
@@ -46,13 +47,15 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
 
         $this->assert($action->parameters(), [
             new Parameter('one', new StringType(), true),
-            new Parameter('two', new NullableType(new StringType())),
+            new Parameter('two', new StringType()),
             new Parameter('three', new StringType()),
+            new Parameter('four', new NullableType(new StringType())),
         ]);
         $this->assert($action->execute(['one' => 'foo', 'two' => 'bar']), 'foo:bar');
         $this->assert($action->fill(['two' => null, 'three' => 'foo']), [
+            'two' => 'default',
             'three' => 'foo',
-            'two' => 'default'
+            'four' => null
         ]);
     }
 
@@ -102,7 +105,9 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             'one' => 'foo',
             'two' => 'bar'
         ]), 'foo:bar');
-        $this->assert($actions->getAction('ClassWithSomeMethods:doThis')->fill([]), [
+        $this->assert($actions->getAction('ClassWithSomeMethods:doThis')->fill([
+            'one' => 'bar'
+        ]), [
             'one' => 'foo',
             'two' => 'default'
         ]);
