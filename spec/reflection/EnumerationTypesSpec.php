@@ -14,7 +14,7 @@ class EnumerationTypesSpec extends StaticTestSuite {
             const FOO_ONE = "one";
             const FOO_TWO = "two";
 
-            /** @var self::FOO_ */
+            /** @var self::FOO_* */
             public $foo;
         }');
 
@@ -26,7 +26,7 @@ class EnumerationTypesSpec extends StaticTestSuite {
 
     function determineTypeByHintToOtherConstants() {
         eval('class EnumerationHintToOtherConstants {
-            /** @var ClassContainingTheConstants::FOO_ */
+            /** @var ClassContainingTheConstants::FOO* */
             public $foo;
         }');
         eval('class ClassContainingTheConstants {

@@ -19,8 +19,8 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
             $target = $resolver->resolve(substr($hint, 0, -3));
             return new IdentifierType($target, new StringType());
 
-        } else if (strpos($hint, '::') && substr($hint, -1) == '_') {
-            list($container, $constant) = explode('::', $hint);
+        } else if (strpos($hint, '::') && substr($hint, -1) == '*') {
+            list($container, $constant) = explode('::', substr($hint, 0, -1));
             if ($container == 'self') {
                 $reflection = $class;
             } else {
