@@ -83,11 +83,16 @@ $(function () {
             $(cropped).attr('src', img.cropper('getCroppedCanvas').toDataURL(file.type));
         };
 
+        var resized = false;
         img.parents('form').submit(function (e) {
-            resize(function () {
-                e.target.submit();
-            });
-            return false;
+            if (!resized) {
+                resize(function () {
+                    console.log(e.target);
+                    resized = true;
+                    $(e.target).submit();
+                });
+                return false;
+            }
         });
     });
 });
