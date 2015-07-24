@@ -50,7 +50,6 @@ class HtmlField implements WebField {
     public function headElements(Parameter $parameter) {
         return [
             HeadElements::jquery(),
-            HeadElements::jqueryUi(), // not actually needed but it needs to be included before bootstrap.js too avoid conflicts
             HeadElements::bootstrap(),
             HeadElements::bootstrapJs(),
             HeadElements::fontAwesome(),
