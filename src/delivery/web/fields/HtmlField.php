@@ -33,16 +33,12 @@ class HtmlField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
-        $attributes = [
+        return (string)new Element('textarea', array_merge([
             'name' => $parameter->getName(),
             'class' => 'summernote',
-        ];
-
-        if ($parameter->isRequired()) {
-            $attributes['required'] = 'required';
-        }
-
-        return (string)new Element('textarea', $attributes, [
+        ], $parameter->isRequired() ? [
+            'required' => 'required'
+        ] : []), [
             $value ? $value->getContent() : null
         ]);
     }

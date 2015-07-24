@@ -35,4 +35,14 @@ class HeadElements {
             'href' => $href
         ]);
     }
+
+    /**
+     * @param Element[] $headElements
+     * @return array|string[]
+     */
+    public static function filter(array $headElements) {
+        return array_values(array_unique(array_map(function (Element $element) {
+            return (string)$element;
+        }, $headElements)));
+    }
 }

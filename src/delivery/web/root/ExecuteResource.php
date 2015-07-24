@@ -13,7 +13,6 @@ use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
-use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\RequestParameterReader;
@@ -66,9 +65,10 @@ class ExecuteResource extends Resource {
 
     private static function baseHeadElements() {
         return [
-            (string)HeadElements::jquery(),
-            (string)HeadElements::bootstrap(),
-            (string)HeadElements::bootstrapJs(),
+            HeadElements::jquery(),
+            HeadElements::jqueryUi(), // not actually needed but it needs to be included before bootstrap.js too avoid conflicts
+            HeadElements::bootstrap(),
+            HeadElements::bootstrapJs(),
         ];
     }
 
@@ -166,9 +166,7 @@ class ExecuteResource extends Resource {
                 throw new \Exception("[$parameter] is not a WebField");
             }
 
-            $headElements = array_merge($headElements, array_map(function (Element $element) {
-                return (string)$element;
-            }, $field->headElements($parameter)));
+            $headElements = array_merge($headElements, $field->headElements($parameter));
 
             $fields[] = [
                 'name' => $parameter->getName(),
@@ -178,7 +176,7 @@ class ExecuteResource extends Resource {
             ];
         }
         return [
-            'headElements' => array_values(array_unique($headElements)),
+            'headElements' => HeadElements::filter($headElements),
             'fields' => $fields
         ];
     }
