@@ -36,6 +36,13 @@ class MethodAction implements Action {
     }
 
     /**
+     * @return string|null
+     */
+    public function description() {
+        return null;
+    }
+
+    /**
      * @return Parameter[]
      */
     public function parameters() {

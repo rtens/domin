@@ -93,6 +93,7 @@ class ExecuteResource extends Resource {
             'fields' => []
         ];
         $caption = 'Error';
+        $description = null;
         $crumbs = [];
 
         $reader = new RequestParameterReader($request);
@@ -100,6 +101,7 @@ class ExecuteResource extends Resource {
         try {
             $action = $this->actions->getAction($__action);
             $caption = $action->caption();
+            $description = $action->description();
 
             $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
             $result = $executor->execute($__action);
@@ -118,6 +120,7 @@ class ExecuteResource extends Resource {
                 'menuItems' => $this->menu->assembleModel($request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
                 'action' => $caption,
+                'description' => $description,
                 'baseUrl' => $request->getContext()->appended('')->toString()
             ],
             $resultModel,
@@ -170,6 +173,7 @@ class ExecuteResource extends Resource {
 
             $fields[] = [
                 'name' => $parameter->getName(),
+                'description' => $parameter->getDescription(),
                 'caption' => ucfirst($parameter->getName()),
                 'required' => $parameter->isRequired(),
                 'control' => $field->render($parameter, $values[$parameter->getName()]),

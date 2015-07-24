@@ -78,10 +78,19 @@
             <h1 class="panel-title"><?= $action ?></h1>
         </div>
         <div class="panel-body">
+            <? if ($description) { ?>
+            <p class="well"><?= $description ?></p>
+            <? } ?>
+
             <form id="form" method="post" action="?" enctype="multipart/form-data">
                 <? foreach ($fields as $field) { ?>
                 <div class="form-group">
-                    <label><?= $field[caption] . ($field[required] ? '*' : '') ?></label>
+                    <label>
+                        <?= $field[caption] . ($field[required] ? '*' : '') ?>
+                    </label>
+                    <? if ($field[description]) { ?>
+                    <a class="description" data-content="<?= $field[description] ?>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    <? } ?>
                     <?= $field[control] ?>
                 </div>
                 <? } ?>
@@ -110,7 +119,14 @@
     <? } ?>
 
     <script>
-        document.onsubmit = function (e) {
+        $(function () {
+            $('.description').popover({
+                trigger: 'hover',
+                html: true
+            });
+        });
+
+        document.onsubmit = function () {
             window.onbeforeunload = function () {};
 
             document.getElementById('form').style.opacity = 0.5;

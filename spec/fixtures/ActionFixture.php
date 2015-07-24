@@ -58,6 +58,10 @@ class ActionFixture extends Fixture {
         Mockster::stub($this->actions[$id]->execute(Argument::any()))->will()->forwardTo($callback);
     }
 
+    public function given_HasTheDescription($id, $description) {
+        Mockster::stub($this->actions[$id]->description())->will()->return_($description);
+    }
+
     public function given_HasTheParameter($id, $name) {
         $this->given_HasTheParameter_OfType($id, $name, 'type of ' . $name);
     }
@@ -78,5 +82,13 @@ class ActionFixture extends Fixture {
         $type = Mockster::of(Type::class);
         Mockster::stub($type->is($matching))->will()->return_(true);
         $this->params[$id][] = new Parameter($name, Mockster::mock($type), $required);
+    }
+
+    public function given_HasTheParameter_WithTheDescription($id, $name, $description) {
+        $this->given_HasTheParameter($id, $name);
+        $this->params[$id][count($this->params)]->setDescription($description);
+    }
+
+    public function givenTheAction_WithTheDescription($string, $string1) {
     }
 }

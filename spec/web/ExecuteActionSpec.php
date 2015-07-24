@@ -166,6 +166,27 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenThereShouldBe_Fields(0);
     }
 
+    function showActionDescription() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheDescription('foo', 'Some Description');
+        $this->whenIExecute('foo');
+        $this->thenTheDescriptionShouldBe('Some Description');
+    }
+
+    function showFieldDescription() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
+        $this->action->given_HasTheParameter_WithTheDescription('foo', 'two', 'This is foo');
+        $this->givenAWebFieldRenderingWith(function () {
+            return '!';
+        });
+
+        $this->whenIExecute('foo');
+        $this->thenThereShouldBe_Fields(2);
+        $this->thenField_ShouldHaveTheDescription(1, null);
+        $this->thenField_ShouldHaveTheDescription(2, 'This is foo');
+    }
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -250,6 +271,10 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->assert($this->web->model['fields'][$pos - 1]['required']);
     }
 
+    private function thenField_ShouldHaveTheDescription($pos, $string) {
+        $this->assert($this->web->model['fields'][$pos - 1]['description'], $string);
+    }
+
     private function thenField_ShouldNotBeRequired($pos) {
         $this->assert->not($this->web->model['fields'][$pos - 1]['required']);
     }
@@ -264,5 +289,9 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenIShouldBeRedirectedTo($url) {
         $this->assert($this->web->model['redirect'], $url);
+    }
+
+    private function thenTheDescriptionShouldBe($string) {
+        $this->assert($this->web->model['description'], $string);
     }
 }

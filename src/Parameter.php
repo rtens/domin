@@ -14,6 +14,9 @@ class Parameter {
     /** @var boolean */
     private $required;
 
+    /** @var string */
+    private $description = null;
+
     public function __construct($name, Type $type, $required = false) {
         $this->name = $name;
         $this->required = $required;
@@ -25,6 +28,20 @@ class Parameter {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description) {
+        $this->description = $description;
     }
 
     /**
@@ -44,4 +61,4 @@ class Parameter {
     public function __toString() {
         return $this->name . ':' . $this->type;
     }
-} 
+}

@@ -17,6 +17,13 @@ class GenericObjectAction extends ObjectAction {
         return parent::caption();
     }
 
+    /**
+     * @return string|null
+     */
+    public function description() {
+        return null;
+    }
+
     public function setExecute(callable $execute) {
         $this->execute = $execute;
         return $this;

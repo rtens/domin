@@ -9,6 +9,11 @@ interface Action {
     public function caption();
 
     /**
+     * @return string|null
+     */
+    public function description();
+
+    /**
      * @return Parameter[]
      */
     public function parameters();
