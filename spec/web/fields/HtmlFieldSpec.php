@@ -47,12 +47,15 @@ class HtmlFieldSpec extends StaticTestSuite {
     function requiresJsAndCss() {
         $elements = $this->field->headElements(new Parameter('notUsed', new StringType()));
 
-        $this->assert((string)$elements[0], HeadElements::jquery());
-        $this->assert((string)$elements[1], HeadElements::bootstrap());
-        $this->assert((string)$elements[2], HeadElements::bootstrapJs());
-        $this->assert((string)$elements[3], HeadElements::fontAwesome());
-        $this->assert->contains((string)$elements[4], 'summernote.min.css');
-        $this->assert->contains((string)$elements[5], 'summernote.min.js');
-        $this->assert->contains((string)$elements[6], "$(this).val($(this).code());");
+        $this->assert(array_slice($elements, 0, 5), [
+            HeadElements::jquery(),
+            HeadElements::jqueryUi(),
+            HeadElements::bootstrap(),
+            HeadElements::bootstrapJs(),
+            HeadElements::fontAwesome()
+        ]);
+        $this->assert->contains((string)$elements[5], 'summernote.min.css');
+        $this->assert->contains((string)$elements[6], 'summernote.min.js');
+        $this->assert->contains((string)$elements[7], "$(this).val($(this).code());");
     }
 }
