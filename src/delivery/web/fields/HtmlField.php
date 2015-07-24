@@ -56,11 +56,24 @@ class HtmlField implements WebField {
             HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.css'),
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/summernote/0.6.10/summernote.min.js'),
             new Element('script', [], ["
-                $(document).ready(function() {
+                $(function() {
                     $('.summernote').summernote({
                         onKeyup: function(e) {
                             $(this).val($(this).code());
                         }
+                    });
+                    $('.summernote').on('invalid', function (e) {
+                        var editor = $(e.target).siblings('.note-editor');
+                        editor.popover({
+                            content: 'Please fill out this field.',
+                            placement: 'bottom',
+                            trigger: 'manual'
+                        });
+                        editor.popover('show');
+
+                        editor.click(function () {
+                            editor.popover('hide');
+                        });
                     });
                 });
             "])
