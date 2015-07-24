@@ -49,7 +49,7 @@ class ArrayFieldSpec extends StaticTestSuite {
         });
 
         $param = new Parameter('foo', new ArrayType(new StringType()));
-        $this->assert($this->field->inflate($param, new Liste(['one', 'two'])),
+        $this->assert($this->field->inflate($param, new Liste(['ignored', 'one', 'two'])),
             ['foo_one', 'foo_two']);
     }
 
@@ -103,7 +103,7 @@ class ArrayFieldSpec extends StaticTestSuite {
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
-            '-- foo[0] --' . "\n" .
+            '-- foo[1] --' . "\n" .
             '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).parents(\'.array-item\').detach().prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
             '</div>');
     }
@@ -124,10 +124,10 @@ class ArrayFieldSpec extends StaticTestSuite {
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
-            '-- foo[0]: one --');
+            '-- foo[1]: one --');
         $this->assert->contains($rendered,
             '<div class="array-item form-group input-group">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
-            '-- foo[1]: two --');
+            '-- foo[2]: two --');
     }
 } 

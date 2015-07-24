@@ -8,6 +8,7 @@ use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebField;
 use watoki\collections\Liste;
+use watoki\collections\Map;
 use watoki\reflect\type\ArrayType;
 
 class ArrayField implements WebField {
@@ -35,17 +36,17 @@ class ArrayField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param Liste $serialized
+     * @param Liste|Map $serialized
      * @return array
      */
     public function inflate(Parameter $parameter, $serialized) {
-        if ($serialized->count() == 1 && $serialized->first() == self::EMPTY_LIST_VALUE) {
-            return [];
+        if ($serialized instanceof Map) {
+            $serialized = $serialized->asList();
         }
 
         $itemParameter = $this->makeInnerParameter($parameter);
 
-        return $serialized->map(function ($item) use ($itemParameter) {
+        return $serialized->slice(1)->map(function ($item) use ($itemParameter) {
             return $this->fields->getField($itemParameter)->inflate($itemParameter, $item);
         })->toArray();
     }
@@ -57,7 +58,6 @@ class ArrayField implements WebField {
      */
     public function render(Parameter $parameter, $value) {
         $id = str_replace(['[', ']'], '-', $parameter->getName());
-        $index = 0;
 
         /** @var WebField $innerField */
         $innerField = $this->fields->getField($this->makeInnerParameter($parameter));
@@ -70,6 +70,7 @@ class ArrayField implements WebField {
             ])
         ];
 
+        $index = 1;
         foreach ($value as $item) {
             $items[] = $this->makeInputGroup($innerField, $this->makeInnerParameter($parameter, '[' . $index++ . ']'), $id, $item);
         }
