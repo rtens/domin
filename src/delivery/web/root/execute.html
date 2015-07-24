@@ -79,7 +79,7 @@
         </div>
         <div class="panel-body">
             <? if ($description) { ?>
-            <p class="well"><?= $description ?></p>
+            <p class="well"><?= nl2br($description) ?></p>
             <? } ?>
 
             <form id="form" method="post" action="?" enctype="multipart/form-data">
@@ -89,7 +89,7 @@
                         <?= $field[caption] . ($field[required] ? '*' : '') ?>
                     </label>
                     <? if ($field[description]) { ?>
-                    <a class="description" data-content="<?= $field[description] ?>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    <a class="description" data-content="<?= nl2br($field[description]) ?>"><span class="glyphicon glyphicon-question-sign"></span></a>
                     <? } ?>
                     <?= $field[control] ?>
                 </div>
