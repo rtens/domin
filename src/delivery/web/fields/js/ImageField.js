@@ -68,16 +68,26 @@ $(function () {
 
         img.cropper('replace', URL.createObjectURL(file));
 
-        img.parents('form').submit(function () {
+        var resize = function (callback) {
             var cropped = document.createElement('img');
+            $(cropped).load(function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = parseInt(width.val());
+                canvas.height = parseInt(height.val());
+                canvas.getContext('2d').drawImage(cropped, 0, 0, canvas.width, canvas.height);
+
+                parent.find('.image-data').val(file.name + ';;' + canvas.toDataURL(file.type));
+
+                callback();
+            });
             $(cropped).attr('src', img.cropper('getCroppedCanvas').toDataURL(file.type));
+        };
 
-            var canvas = document.createElement('canvas');
-            canvas.width = parseInt(width.val());
-            canvas.height = parseInt(height.val());
-            canvas.getContext('2d').drawImage(cropped, 0, 0, canvas.width, canvas.height);
-
-            parent.find('.image-data').val(file.name + ';;' + canvas.toDataURL(file.type));
+        img.parents('form').submit(function (e) {
+            resize(function () {
+                e.target.submit();
+            });
+            return false;
         });
     });
 });
