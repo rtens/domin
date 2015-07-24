@@ -78,7 +78,7 @@
             <h1 class="panel-title"><?= $action ?></h1>
         </div>
         <div class="panel-body">
-            <form method="post" action="?" enctype="multipart/form-data">
+            <form id="form" method="post" action="?" enctype="multipart/form-data">
                 <? foreach ($fields as $field) { ?>
                 <div class="form-group">
                     <label><?= $field[caption] . ($field[required] ? '*' : '') ?></label>
@@ -100,17 +100,26 @@
     <? } ?>
 
     <? if ($missing) { ?>
-    <script property="isPreparing">
+    <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {
                 return "If you close this page, you will lose unsaved changes.";
             };
         };
-        document.onsubmit = function () {
-            window.onbeforeunload = function () {};
-        };
     </script>
     <? } ?>
+
+    <script>
+        document.onsubmit = function (e) {
+            window.onbeforeunload = function () {};
+
+            document.getElementById('form').style.opacity = 0.5;
+            document.onsubmit = function () {
+                return false;
+            };
+            return true;
+        };
+    </script>
 </div>
 
 </body>
