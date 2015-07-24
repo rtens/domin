@@ -55,7 +55,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute('foo');
         $this->thenItShouldDisplayTheError('No field found to handle [one:type of one]');
         $this->thenThereShouldBe_Fields(0);
-        $this->thenThereShouldBe_HeadElements(3);
+        $this->thenThereShouldBe_HeadElements(4);
     }
 
     function showFields() {
@@ -122,13 +122,14 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
 
-        $this->thenThereShouldBe_HeadElements(6);
+        $this->thenThereShouldBe_HeadElements(7);
         $this->thenHeadElement_ShouldBe(1, HeadElements::jquery());
-        $this->thenHeadElement_ShouldBe(2, HeadElements::bootstrap());
-        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrapJs());
-        $this->thenHeadElement_ShouldBe(4, '<one></one>');
-        $this->thenHeadElement_ShouldBe(5, '<bar></bar>');
-        $this->thenHeadElement_ShouldBe(6, '<bas></bas>');
+        $this->thenHeadElement_ShouldBe(2, HeadElements::jqueryUi());
+        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrap());
+        $this->thenHeadElement_ShouldBe(4, HeadElements::bootstrapJs());
+        $this->thenHeadElement_ShouldBe(5, '<one></one>');
+        $this->thenHeadElement_ShouldBe(6, '<bar></bar>');
+        $this->thenHeadElement_ShouldBe(7, '<bas></bas>');
     }
 
     function fillParametersByAction() {
