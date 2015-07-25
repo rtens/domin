@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\link;
 
+use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;
@@ -13,9 +14,13 @@ class LinkPrinter {
     /** @var LinkRegistry */
     private $links;
 
-    public function __construct(Url $baseUrl, LinkRegistry $links) {
+    /** @var ActionRegistry */
+    private $actions;
+
+    public function __construct(Url $baseUrl, LinkRegistry $links, ActionRegistry $actions) {
         $this->baseUrl = $baseUrl;
         $this->links = $links;
+        $this->actions = $actions;
     }
 
     /**
@@ -24,13 +29,19 @@ class LinkPrinter {
      */
     public function createLinkElements($object) {
         return array_map(function (Link $link) use ($object) {
+            $action = $this->actions->getAction($link->actionId());
+
             $url = $this->baseUrl->appended($link->actionId())->withParameters(new Map($link->parameters($object)));
             $attributes = ['class' => 'btn btn-xs btn-primary', 'href' => $url];
             if ($link->confirm() !== null) {
                 $attributes['onclick'] = "return confirm('{$link->confirm()}');";
             }
+            $description = $action->description();
+            if (!is_null($description)) {
+                $attributes['title'] = explode("\n\n", $description)[0];
+            }
             return new Element('a', $attributes, [
-                $link->caption($object)
+                $action->caption()
             ]);
         }, $this->links->getLinks($object));
     }

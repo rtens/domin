@@ -1,6 +1,8 @@
 <?php
 namespace spec\rtens\domin\delivery\web\renderers;
 
+use rtens\domin\Action;
+use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\reflection\types\TypeFactory;
@@ -17,6 +19,9 @@ use watoki\curir\protocol\Url;
 
 class ObjectRendererSpec extends StaticTestSuite {
 
+    /** @var ActionRegistry */
+    private $actions;
+
     /** @var LinkRegistry */
     private $links;
 
@@ -29,8 +34,9 @@ class ObjectRendererSpec extends StaticTestSuite {
     protected function before() {
         $this->renderers = new RendererRegistry();
         $this->links = new LinkRegistry();
+        $this->actions = new ActionRegistry();
         $this->renderer = new ObjectRenderer($this->renderers, new TypeFactory(),
-            new LinkPrinter(Url::fromString('baser/url'), $this->links));
+            new LinkPrinter(Url::fromString('baser/url'), $this->links, $this->actions));
     }
 
     function handlesObjects() {
@@ -115,6 +121,9 @@ class ObjectRendererSpec extends StaticTestSuite {
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     function renderLinkedAction() {
         $this->renderers->add(new PrimitiveRenderer());
 
@@ -122,15 +131,19 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->links->add(Mockster::mock($link));
 
         Mockster::stub($link->handles(Argument::any()))->will()->return_(true);
-        Mockster::stub($link->caption(Argument::any()))->will()->return_('Some Action');
         Mockster::stub($link->actionId())->will()->return_('foo');
+
+        $action = Mockster::of(Action::class);
+        $this->actions->add('foo', Mockster::mock($action));
+        Mockster::stub($action->caption())->will()->return_('Foo');
+        Mockster::stub($action->description())->will()->return_("Foo description\n\nWith two lines.");
 
         $object = new \StdClass();
         $object->foo = 'bar';
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' .
-            '<a class="btn btn-xs btn-primary" href="baser/url/foo">Some Action</a>' .
+            '<a class="btn btn-xs btn-primary" href="baser/url/foo" title="Foo description">Foo</a>' .
             '</small>');
     }
 
@@ -140,8 +153,9 @@ class ObjectRendererSpec extends StaticTestSuite {
         $link = Mockster::of(Link::class);
         $this->links->add(Mockster::mock($link));
 
+        $this->actions->add('foo', Mockster::mock(Action::class));
+
         Mockster::stub($link->handles(Argument::any()))->will()->return_(true);
-        Mockster::stub($link->caption(Argument::any()))->will()->return_('Some Action');
         Mockster::stub($link->actionId())->will()->return_('foo');
         Mockster::stub($link->parameters(Argument::any()))->will()->forwardTo(function ($object) {
             return [
@@ -154,7 +168,7 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' .
-            '<a class="btn btn-xs btn-primary" href="baser/url/foo?bas=bar">Some Action</a>' .
+            '<a class="btn btn-xs btn-primary" href="baser/url/foo?bas=bar"></a>' .
             '</small>');
     }
 
@@ -163,20 +177,16 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $linkOne = Mockster::of(Link::class);
         $this->links->add(Mockster::mock($linkOne));
+        Mockster::stub($linkOne->actionId())->will()->return_('one');
         Mockster::stub($linkOne->handles(Argument::any()))->will()->forwardTo(function ($object) {
             return isset($object->foo);
-        });
-        Mockster::stub($linkOne->caption(Argument::any()))->will()->forwardTo(function ($object) {
-            return 'One ' . $object->foo;
         });
 
         $linkTwo = Mockster::of(Link::class);
         $this->links->add(Mockster::mock($linkTwo));
+        Mockster::stub($linkTwo->actionId())->will()->return_('two');
         Mockster::stub($linkTwo->handles(Argument::any()))->will()->forwardTo(function ($object) {
             return isset($object->foo);
-        });
-        Mockster::stub($linkTwo->caption(Argument::any()))->will()->forwardTo(function ($object) {
-            return 'Two ' . $object->foo;
         });
 
         $linkThree = Mockster::of(Link::class);
@@ -185,13 +195,16 @@ class ObjectRendererSpec extends StaticTestSuite {
             return isset($object->bar);
         });
 
+        $this->actions->add('one', Mockster::mock(Action::class));
+        $this->actions->add('two', Mockster::mock(Action::class));
+
         $object = new \StdClass();
         $object->foo = 'bar';
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' . "\n" .
-            '<a class="btn btn-xs btn-primary" href="baser/url/">One bar</a>' . "\n" .
-            '<a class="btn btn-xs btn-primary" href="baser/url/">Two bar</a>' . "\n" .
+            '<a class="btn btn-xs btn-primary" href="baser/url/one"></a>' . "\n" .
+            '<a class="btn btn-xs btn-primary" href="baser/url/two"></a>' . "\n" .
             '</small>');
     }
 
@@ -200,6 +213,8 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $link = Mockster::of(Link::class);
         $this->links->add(Mockster::mock($link));
+
+        $this->actions->add('', Mockster::mock(Action::class));
 
         Mockster::stub($link->handles(Argument::any()))->will()->return_(true);
         Mockster::stub($link->confirm())->will()->return_('Foo?');
@@ -223,7 +238,6 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->assert->not($link->handles(new \StdClass()));
 
         $this->assert($link->actionId(), 'fooBar');
-        $this->assert($link->caption(new \DateTime()), 'Foo Bar');
         $this->assert($link->parameters(new \DateTime('13 December 2011')), ['one' => '2011-12-13']);
 
         $link = $link->setHandles(function (\DateTime $object) {

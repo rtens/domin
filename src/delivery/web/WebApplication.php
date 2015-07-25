@@ -100,7 +100,7 @@ class WebApplication {
     }
 
     public function registerRenderers(Url $baseUrl) {
-        $links = new LinkPrinter($baseUrl, $this->links);
+        $links = new LinkPrinter($baseUrl, $this->links, $this->actions);
 
         $this->renderers->add(new BooleanRenderer());
         $this->renderers->add(new PrimitiveRenderer());

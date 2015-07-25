@@ -4,14 +4,12 @@ namespace rtens\domin\delivery\web\renderers\link;
 class GenericLink implements Link {
 
     private $actionId;
-    private $caption;
     private $parameters;
     private $handles;
     private $confirmation;
 
     public function __construct($actionId, callable $handles, callable $parameters = null) {
         $this->actionId = $actionId;
-        $this->caption = preg_replace('/(.)([A-Z])/', '$1 $2', ucfirst($this->actionId));
         $this->handles = $handles;
         $this->parameters = $parameters ?: function () {
             return [];
@@ -36,23 +34,6 @@ class GenericLink implements Link {
      */
     public function actionId() {
         return $this->actionId;
-    }
-
-    /**
-     * @param mixed $caption
-     * @return $this
-     */
-    public function setCaption($caption) {
-        $this->caption = $caption;
-        return $this;
-    }
-
-    /**
-     * @param object $object
-     * @return string
-     */
-    public function caption($object) {
-        return $this->caption;
     }
 
     /**

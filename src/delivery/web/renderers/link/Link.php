@@ -16,12 +16,6 @@ interface Link {
 
     /**
      * @param object $object
-     * @return string
-     */
-    public function caption($object);
-
-    /**
-     * @param object $object
      * @return array|mixed[] Values indexed by parameter names
      */
     public function parameters($object);
