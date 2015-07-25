@@ -7,21 +7,29 @@ class GenericObjectAction extends ObjectAction {
 
     private $execute;
     private $fill;
+    private $caption;
+    private $description;
 
     public function __construct($class, TypeFactory $types, callable $execute) {
         parent::__construct($class, $types);
         $this->execute = $execute;
     }
 
-    public function caption() {
-        return parent::caption();
+    public function setCaption($caption) {
+        $this->caption = $caption;
     }
 
-    /**
-     * @return string|null
-     */
+    public function caption() {
+        return $this->caption ?: parent::caption();
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
+
     public function description() {
-        return null;
+        return $this->description ?: parent::description();
     }
 
     public function setExecute(callable $execute) {

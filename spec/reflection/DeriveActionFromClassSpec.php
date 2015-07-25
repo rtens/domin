@@ -119,6 +119,29 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
         $this->thenFilledParameter_ShouldBe('setter', null);
     }
 
+    function useDocCommentAsDescription() {
+        $this->givenTheClass('
+            /**
+             * My doc comment
+             *
+             * *In many *lines*
+             */
+            class ClassAction6 {
+                /** @var string Some comment */
+                public $public;
+
+                /**
+                 * @param string $one Comment one
+                 */
+                function __construct($one) {}
+            }');
+
+        $this->whenICreateAnObjectActionFrom('ClassAction6');
+        $this->thenTheDescriptionShouldBe("My doc comment\n\nIn many *lines*");
+        $this->thenParameter_ShouldHaveTheDescription(1, 'Comment one');
+        $this->thenParameter_ShouldHaveTheDescription(2, 'Some comment');
+    }
+
     /** @var Action */
     private $uut;
 
@@ -175,6 +198,10 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
         $this->assert($this->uut->parameters()[$pos - 1]->getType(), $type);
     }
 
+    private function thenParameter_ShouldHaveTheDescription($pos, $string) {
+        $this->assert($this->uut->parameters()[$pos - 1]->getDescription(), $string);
+    }
+
     private function thenItShouldBeExecutedWithAnInstanceOf($class) {
         $this->assert->isInstanceOf($this->instance, $class);
     }
@@ -185,5 +212,9 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
 
     private function thenFilledParameter_ShouldBe($name, $value) {
         $this->assert($this->filledParameters[$name], $value);
+    }
+
+    private function thenTheDescriptionShouldBe($string) {
+        $this->assert($this->uut->description(), $string);
     }
 }

@@ -39,9 +39,11 @@ class Parameter {
 
     /**
      * @param string $description
+     * @return static
      */
     public function setDescription($description) {
         $this->description = $description;
+        return $this;
     }
 
     /**

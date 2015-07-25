@@ -41,6 +41,20 @@ abstract class ObjectAction implements Action {
     }
 
     /**
+     * @return string|null
+     */
+    public function description() {
+        $docComment = $this->class->getDocComment();
+        if (!$docComment) {
+            return null;
+        }
+
+        return implode("\n", array_map(function ($line) {
+            return ltrim($line, " *\r\n\t");
+        }, array_slice(explode("\n", $docComment), 1, -1)));
+    }
+
+    /**
      * Fills out partially available parameters
      *
      * @param array $parameters Available values indexed by name
@@ -57,12 +71,14 @@ abstract class ObjectAction implements Action {
 
     /**
      * @return Parameter[]
+     * @throws \Exception
      */
     public function parameters() {
         $parameters = [];
         foreach ($this->reader->readInterface() as $property) {
             if ($property->canSet()) {
-                $parameters[] = new Parameter($property->name(), $property->type(), $property->isRequired());
+                $parameters[] = (new Parameter($property->name(), $property->type(), $property->isRequired()))
+                    ->setDescription($property->comment());
             }
         }
         return $parameters;

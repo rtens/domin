@@ -6,6 +6,7 @@ class GenericMethodAction extends MethodAction {
     private $afterExecute;
     private $caption;
     private $fill;
+    private $description;
 
     /**
      * @param callable $callback Filter for return value of execute()
@@ -29,10 +30,16 @@ class GenericMethodAction extends MethodAction {
     }
 
     public function caption() {
-        if ($this->caption) {
-            return $this->caption;
-        }
-        return parent::caption();
+        return $this->caption ?: parent::caption();
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function description() {
+        return $this->description ?: parent::description();
     }
 
     public function setFill(callable $callback) {

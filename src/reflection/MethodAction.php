@@ -39,7 +39,14 @@ class MethodAction implements Action {
      * @return string|null
      */
     public function description() {
-        return null;
+        $lines = array_slice(explode("\n", $this->method->getDocComment()), 1, -1);
+        $lines = array_map(function ($line) {
+            return ltrim($line, ' *');
+        }, $lines);
+        $lines = array_filter($lines, function ($line) {
+            return substr($line, 0, 1) != '@';
+        });
+        return trim(implode("\n", $lines));
     }
 
     /**
@@ -50,7 +57,8 @@ class MethodAction implements Action {
         $parameters = [];
         foreach ($this->method->getParameters() as $parameter) {
             $type = $analyzer->getType($parameter, $this->types);
-            $parameters[] = new Parameter($parameter->name, $type, !$parameter->isDefaultValueAvailable());
+            $parameters[] = (new Parameter($parameter->name, $type, !$parameter->isDefaultValueAvailable()))
+                ->setDescription($analyzer->getComment($parameter));
         }
         return $parameters;
     }

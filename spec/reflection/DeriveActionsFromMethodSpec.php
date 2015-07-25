@@ -62,6 +62,29 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         ]);
     }
 
+    function getDescriptionFromDocComment() {
+        eval('class ClassWithCommentedMethod {
+            /**
+             * This describes the method.
+             *
+             * In possibly multiple lines.
+             *
+             * @param string $one Comment one
+             * @param string $two Comment two
+             */
+            function doStuff($one, $two) {}
+        }');
+
+        /** @noinspection PhpUndefinedClassInspection */
+        $action = new MethodAction(new \ClassWithCommentedMethod(), 'doStuff', new TypeFactory());
+
+        $this->assert($action->description(), "This describes the method.\n\nIn possibly multiple lines.");
+
+        $parameters = $action->parameters();
+        $this->assert($parameters[0]->getDescription(), "Comment one");
+        $this->assert($parameters[1]->getDescription(), "Comment two");
+    }
+
     function generateFromMethods() {
         eval('class ClassWithSomeMethods {
             /**
