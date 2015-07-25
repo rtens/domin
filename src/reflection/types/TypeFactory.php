@@ -37,6 +37,6 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
             return new EnumerationType($options, new StringType());
         }
 
-        return \watoki\reflect\TypeFactory::fromTypeHint($hint, $class);
+        return parent::fromTypeHint($hint, $class);
     }
 }

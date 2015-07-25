@@ -36,9 +36,9 @@ class MultiField implements WebField {
      */
     public function inflate(Parameter $parameter, $serialized) {
         foreach ($this->getTypes($parameter) as $i => $type) {
-            if ($serialized->has("option-$i")) {
+            if ($serialized->has("multi-$i")) {
                 $optionParameter = new Parameter($parameter->getName(), $type);
-                return $this->getField($optionParameter)->inflate($optionParameter, $serialized["option-$i"]);
+                return $this->getField($optionParameter)->inflate($optionParameter, $serialized["multi-$i"]);
             }
         }
         return null;
@@ -63,7 +63,7 @@ class MultiField implements WebField {
     private function renderOptions(Parameter $parameter, $value, $id) {
         $fields = [];
         foreach ($this->getTypes($parameter) as $i => $type) {
-            $optionParameter = new Parameter($parameter->getName() . "[option-$i]", $type);
+            $optionParameter = new Parameter($parameter->getName() . "[multi-$i]", $type);
             $selected = is_null($value) && $i == 0 || $type->is($value);
             $fields[] = new Element('div', ['class' => 'multi-control' . ($selected ? '' : ' not-selected'), 'id' => "$id-multi-option-$i"], [
                 $this->getField($optionParameter)->render($optionParameter, $type->is($value) ? $value : null)
