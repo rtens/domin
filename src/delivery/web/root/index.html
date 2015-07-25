@@ -51,7 +51,12 @@
 
 <div class="list-group">
     <? foreach ($action as $anAction) { ?>
-        <a href="<?= $anAction[link][href] ?>" class="list-group-item"><?= $anAction[caption] ?></a>
+        <a href="<?= $anAction[link][href] ?>" class="list-group-item">
+            <?= $anAction[caption] ?>
+            <? if ($anAction[description]) { ?>
+            <small class="text-muted">- <?= $anAction[description] ?></small>
+            <? } ?>
+        </a>
     <? } ?>
 </div>
 
