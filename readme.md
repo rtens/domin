@@ -44,8 +44,8 @@ If you would like to develop on *domin*, download it with [Composer] and execute
 To run *domin* as a web application with [curir] as delivery system, paste the following code into `index.php`
 
 ```php
-use rtens\domin\web\root\IndexResource;
-use rtens\domin\web\WebApplication;
+use rtens\domin\delivery\web\root\IndexResource;
+use rtens\domin\delivery\web\WebApplication;
 use watoki\curir\WebDelivery;
 
 WebDelivery::quickResponse(IndexResource::class,
@@ -62,7 +62,7 @@ And then start a development server to access the application on [localhost:8000
 To get the CLI application running, paste this code into `cli.php`
 
 ```php
-use rtens\domin\cli\CliApplication;
+use rtens\domin\delivery\cli\CliApplication;
 
 CliApplication::run(CliApplication::init(function (CliApplication $app) {
     // Set-up $app here (e.g. $app->actions->add('foo', ...))
