@@ -176,7 +176,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     function showFieldDescription() {
         $this->action->givenTheAction('foo');
         $this->action->given_HasTheParameter('foo', 'one');
-        $this->action->given_HasTheParameter_WithTheDescription('foo', 'two', 'This is foo');
+        $this->action->given_HasTheParameter_WithTheDescription('foo', 'two', 'This is "foo"');
         $this->givenAWebFieldRenderingWith(function () {
             return '!';
         });
@@ -184,7 +184,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute('foo');
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheDescription(1, null);
-        $this->thenField_ShouldHaveTheDescription(2, 'This is foo');
+        $this->thenField_ShouldHaveTheDescription(2, "This is 'foo'");
     }
 
     /** @var RendererRegistry */
