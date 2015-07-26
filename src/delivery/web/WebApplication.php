@@ -1,7 +1,6 @@
 <?php
 namespace rtens\domin\delivery\web;
 
-use Detection\MobileDetect;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
@@ -61,7 +60,7 @@ class WebApplication {
     /** @var Menu */
     public $menu;
 
-    /** @var MobileDetect */
+    /** @var MobileDetector */
     private $detect;
 
     /**
@@ -72,11 +71,11 @@ class WebApplication {
      * @param LinkRegistry $links <-
      * @param IdentifiersProvider $identifiers <-
      * @param TypeFactory $types <-
-     * @param MobileDetect $detect <-
+     * @param MobileDetector $detect <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types, MobileDetect $detect) {
+                                TypeFactory $types, MobileDetector $detect) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->renderers = $factory->setSingleton($renderers);

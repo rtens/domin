@@ -20,8 +20,10 @@
   ],
   "require": {
     "watoki/reflect": "dev-master",
-    "watoki/curir": "dev-master",
-    "mobiledetect/mobiledetectlib": "dev-master"
+    "watoki/curir": "dev-master"
+  },
+  "suggest": {
+    "mobiledetect/mobiledetectlib": "To enable mobile-specific client-side code only when on mobile."
   },
   "require-dev": {
     "rtens/scrut": "dev-master",

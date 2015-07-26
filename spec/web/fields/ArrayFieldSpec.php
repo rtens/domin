@@ -1,8 +1,8 @@
 <?php
 namespace spec\rtens\domin\delivery\web\fields;
 
-use Detection\MobileDetect;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\web\MobileDetector;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\fields\ArrayField;
@@ -24,18 +24,18 @@ class ArrayFieldSpec extends StaticTestSuite {
     /** @var ArrayField */
     private $field;
 
-    /** @var MobileDetect */
-    private $detect;
+    /** @var MobileDetector */
+    private $detector;
 
     protected function before() {
         $fields = new FieldRegistry();
         $this->mockster = Mockster::of(WebField::class);
         Mockster::stub($this->mockster->handles(Argument::any()))->will()->return_(true);
 
-        $this->detect = Mockster::of(MobileDetect::class);
+        $this->detector = Mockster::of(MobileDetector::class);
 
         $fields->add(Mockster::mock($this->mockster));
-        $this->field = new ArrayField($fields, Mockster::mock($this->detect));
+        $this->field = new ArrayField($fields, Mockster::mock($this->detector));
     }
 
     function handlesArrayTypes() {
@@ -68,13 +68,7 @@ class ArrayFieldSpec extends StaticTestSuite {
     }
 
     function requireTouchPunchForMobile() {
-        Mockster::stub($this->detect->isMobile())->will()->return_(true);
-        $this->assert->contains($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))),
-            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'));
-    }
-
-    function requireTouchPunchForTable() {
-        Mockster::stub($this->detect->isTablet())->will()->return_(true);
+        Mockster::stub($this->detector->isMobile())->will()->return_(true);
         $this->assert->contains($this->field->headElements(new Parameter('foo', new ArrayType(new UnknownType()))),
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'));
     }

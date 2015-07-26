@@ -1,8 +1,8 @@
 <?php
 namespace rtens\domin\delivery\web\fields;
 
-use Detection\MobileDetect;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\web\MobileDetector;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
@@ -18,12 +18,12 @@ class ArrayField implements WebField {
     /** @var FieldRegistry */
     private $fields;
 
-    /** @var MobileDetect */
-    private $detect;
+    /** @var MobileDetector */
+    private $mobile;
 
-    public function __construct(FieldRegistry $fields, MobileDetect $detect) {
+    public function __construct(FieldRegistry $fields, MobileDetector $mobile) {
         $this->fields = $fields;
-        $this->detect = $detect;
+        $this->mobile = $mobile;
     }
 
     /**
@@ -134,7 +134,7 @@ class ArrayField implements WebField {
                     $('.array-items .sortable-handle').disableSelection();
                 });"
             ])
-        ], $this->isMobile() ? [
+        ], $this->mobile->isMobile() ? [
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'),
         ] : [], $this->itemHeadElements($this->makeInnerParameter($parameter)));
     }
@@ -158,9 +158,5 @@ class ArrayField implements WebField {
         /** @var ArrayType $type */
         $type = $parameter->getType();
         return new Parameter($parameter->getName() . $suffix, $type->getItemType());
-    }
-
-    private function isMobile() {
-        return $this->detect->isMobile() || $this->detect->isTablet();
     }
 }
