@@ -23,7 +23,8 @@
     "watoki/curir": "dev-master"
   },
   "suggest": {
-    "mobiledetect/mobiledetectlib": "To enable mobile-specific client-side code only when on mobile."
+    "mobiledetect/mobiledetectlib": "To enable mobile-specific client-side code only when on mobile.",
+    "erusev/parsedown": "To parse Action and Parameter descriptions for HTML output."
   },
   "require-dev": {
     "rtens/scrut": "dev-master",

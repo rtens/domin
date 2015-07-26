@@ -3,6 +3,7 @@ namespace rtens\domin\delivery\web\renderers\link;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\WebCommentParser;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;
 
@@ -17,10 +18,14 @@ class LinkPrinter {
     /** @var ActionRegistry */
     private $actions;
 
-    public function __construct(Url $baseUrl, LinkRegistry $links, ActionRegistry $actions) {
+    /** @var WebCommentParser */
+    private $parser;
+
+    public function __construct(Url $baseUrl, LinkRegistry $links, ActionRegistry $actions, WebCommentParser $parser) {
         $this->baseUrl = $baseUrl;
         $this->links = $links;
         $this->actions = $actions;
+        $this->parser = $parser;
     }
 
     /**
@@ -38,7 +43,7 @@ class LinkPrinter {
             }
             $description = $action->description();
             if (!is_null($description)) {
-                $attributes['title'] = explode("\n\n", $description)[0];
+                $attributes['title'] = str_replace('"', "'", strip_tags($this->parser->shorten($description)));
             }
             return new Element('a', $attributes, [
                 $action->caption()

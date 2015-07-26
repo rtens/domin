@@ -5,6 +5,7 @@ use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\renderers\link\ClassLink;
 use rtens\domin\delivery\web\renderers\link\Link;
@@ -36,7 +37,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
         $this->renderer = new ObjectRenderer($this->renderers, new TypeFactory(),
-            new LinkPrinter(Url::fromString('baser/url'), $this->links, $this->actions));
+            new LinkPrinter(Url::fromString('baser/url'), $this->links, $this->actions, new WebCommentParser()));
     }
 
     function handlesObjects() {
@@ -136,14 +137,14 @@ class ObjectRendererSpec extends StaticTestSuite {
         $action = Mockster::of(Action::class);
         $this->actions->add('foo', Mockster::mock($action));
         Mockster::stub($action->caption())->will()->return_('Foo');
-        Mockster::stub($action->description())->will()->return_("Foo description\n\nWith two lines.");
+        Mockster::stub($action->description())->will()->return_("\"Foo\" <em>description</em>\n\nWith two lines.");
 
         $object = new \StdClass();
         $object->foo = 'bar';
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' .
-            '<a class="btn btn-xs btn-primary" href="baser/url/foo" title="Foo description">Foo</a>' .
+            '<a class="btn btn-xs btn-primary" href="baser/url/foo" title="\'Foo\' description">Foo</a>' .
             '</small>');
     }
 

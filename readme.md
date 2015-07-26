@@ -99,6 +99,10 @@ class MyAction implements Action {
         return 'Some Action';
     }
 
+    public function description() {
+        return 'Some Description';
+    }
+
     public function parameters() {
         return [
             new Parameter('foo', new StringType()),

@@ -79,7 +79,7 @@
         </div>
         <div class="panel-body">
             <? if ($description) { ?>
-            <p class="well"><?= $description ?></p>
+            <div class="well"><?= $description ?></div>
             <? } ?>
 
             <form id="form" method="post" action="?" enctype="multipart/form-data">
@@ -125,8 +125,9 @@
         $(function () {
             $('.description').popover({
                 trigger: 'hover',
-                delay: { "show": 100, "hide": 1000 },
+                delay: { show: 100, hide: 1000 },
                 html: true,
+                placement: 'auto top',
                 content: function (e) {
                     return $(this).siblings('.description-content').html();
                 }

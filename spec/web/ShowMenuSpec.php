@@ -35,7 +35,7 @@ class ShowMenuSpec extends StaticTestSuite {
     protected function before() {
         $this->actions = new ActionRegistry();
         $this->menu = new Menu($this->actions);
-        $this->resource = new IndexResource(new Factory(), Mockster::mock(WebApplication::class),
+        $this->resource = new IndexResource(new Factory(), Mockster::uut(WebApplication::class),
             $this->actions, $this->menu, Mockster::mock(CookieStore::class));
     }
 

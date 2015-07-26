@@ -84,7 +84,7 @@ class IndexResource extends Container {
         foreach ($this->actions->getAllActions() as $id => $action) {
             $actions[] = [
                 'caption' => $action->caption(),
-                'description' => explode("\n\n", $action->description())[0],
+                'description' => $this->app->parser->shorten($action->description()),
                 'link' => ['href' => $base->appended($id)->toString()]
             ];
         }
