@@ -45,7 +45,7 @@ class DateTimeField implements WebField {
         ], [
             new Element('span', [
                 'class' => 'input-group-addon',
-                'onclick' => "$(this).parents('.datetimepicker').datetimepicker(dateTimePickerSettings); $(this).siblings('.hidden').toggleClass('hidden'); $(this).remove(); return false;"
+                'onclick' => "$(this).closest('.datetimepicker').datetimepicker(dateTimePickerSettings); $(this).siblings('.hidden').toggleClass('hidden'); $(this).remove(); return false;"
             ], [
                 new Element('span', ['class' => 'glyphicon glyphicon-calendar', 'style' => 'opacity: 0.5'])
             ]),

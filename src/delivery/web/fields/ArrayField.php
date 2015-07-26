@@ -89,7 +89,7 @@ class ArrayField implements WebField {
 
                 new Element('button', [
                     'class' => 'btn btn-success',
-                    'onclick' => "$('#$id-new-items').children().first().detach().appendTo('#$id-items'); return false;"
+                    'onclick' => "$('#$id-new-items').children().first().appendTo('#$id-items'); return false;"
                 ], ['Add']),
 
                 new Element('div', [
@@ -113,7 +113,7 @@ class ArrayField implements WebField {
             ], [
                 new Element('button', [
                     'class' => 'btn btn-danger',
-                    'onclick' => "$(this).parents('.array-item').detach().prependTo('#$id-new-items'); return false;"
+                    'onclick' => "$(this).closest('.array-item').prependTo('#$id-new-items'); return false;"
                 ], ['X'])
             ])
         ]);
@@ -129,7 +129,7 @@ class ArrayField implements WebField {
             HeadElements::jqueryUi(),
             new Element('script', [], [
                 "$(function () {
-                    $('.array-new-items').detach().appendTo('body');
+                    $('.array-new-items').appendTo('body');
                     $('.array-items').sortable({handle:'.sortable-handle'});
                     $('.array-items .sortable-handle').disableSelection();
                 });"
@@ -146,7 +146,7 @@ class ArrayField implements WebField {
     }
 
     protected function numberOfNewItems() {
-        return 30;
+        return 10;
     }
 
     /**

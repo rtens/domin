@@ -59,7 +59,7 @@ class ArrayFieldSpec extends StaticTestSuite {
             HeadElements::jqueryUi(),
             new Element('script', [], [
                 "$(function () {
-                    $('.array-new-items').detach().appendTo('body');
+                    $('.array-new-items').appendTo('body');
                     $('.array-items').sortable({handle:'.sortable-handle'});
                     $('.array-items .sortable-handle').disableSelection();
                 });"
@@ -93,12 +93,12 @@ class ArrayFieldSpec extends StaticTestSuite {
             '<div id="foo-items" class="array-items">' .
             '<input type="hidden" name="foo[0]" value="' . ArrayField::EMPTY_LIST_VALUE . '"/>' .
             '</div>' . "\n" .
-            '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().detach().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
+            '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
             '<div class="array-item form-group input-group">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[1] --' . "\n" .
-            '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).parents(\'.array-item\').detach().prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
+            '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).closest(\'.array-item\').prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
             '</div>');
     }
 

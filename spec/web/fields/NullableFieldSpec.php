@@ -42,7 +42,7 @@ class NullableFieldSpec extends StaticTestSuite {
 
         $this->assert($this->field->render($this->param('foo[bar]'), null),
             '<input type="hidden" name="foo[bar]" value="____IS_NULL____"/>' . "\n" .
-            '<input type="checkbox" onchange="var control = $(\'#foo-bar--control\').detach(); $(this).is(\':checked\') ? control.show().insertAfter($(this)) : control.hide().appendTo(\'body\');"/>' . "\n" .
+            '<input type="checkbox" onchange="var control = $(\'#foo-bar--control\'); $(this).is(\':checked\') ? control.show().insertAfter($(this)) : control.hide().appendTo(\'body\');"/>' . "\n" .
             '<div id="foo-bar--control" class="null-nullable">foo[bar]!</div>');
     }
 

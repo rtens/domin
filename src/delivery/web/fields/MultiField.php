@@ -55,7 +55,7 @@ class MultiField implements WebField {
         return implode("\n", array_merge([
             new Element('select', [
                 'class' => 'form-control form-group',
-                'onchange' => "$(this).next().hide().detach().appendTo('body'); $('#' + $(this).val()).detach().show().insertAfter($(this));"
+                'onchange' => "$(this).next().hide().appendTo('body'); $('#' + $(this).val()).show().insertAfter($(this));"
             ], $this->getOptions($parameter, $value, $id))
         ], $this->renderOptions($parameter, $value, $id)));
     }
@@ -77,14 +77,22 @@ class MultiField implements WebField {
      * @return array|Element[]
      */
     public function headElements(Parameter $parameter) {
-        return [
+        $ownElements = [
             HeadElements::jquery(),
             new Element('script', [], [
                 "$(function () {
-                    $('.multi-control.not-selected').hide().detach().appendTo('body');
+                    $('.multi-control.not-selected').hide().appendTo('body');
                 });"
             ])
         ];
+
+        foreach ($this->getTypes($parameter) as $i => $type) {
+            $optionParameter = new Parameter($parameter->getName(), $type);
+            $optionElements = $this->getField($optionParameter)->headElements($optionParameter);
+            $ownElements = array_merge($ownElements, $optionElements);
+        }
+
+        return $ownElements;
     }
 
     private function getOptions(Parameter $parameter, $value, $id) {

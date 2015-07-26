@@ -60,7 +60,7 @@ class NullableField implements WebField {
             ]),
             new Element('input', array_merge([
                 'type' => 'checkbox',
-                'onchange' => "var control = $('#$id-control').detach(); $(this).is(':checked') ? control.show().insertAfter($(this)) : control.hide().appendTo('body');"
+                'onchange' => "var control = $('#$id-control'); $(this).is(':checked') ? control.show().insertAfter($(this)) : control.hide().appendTo('body');"
             ], is_null($value) ? [] : [
                 'checked' => 'checked'
             ])),
@@ -84,7 +84,7 @@ class NullableField implements WebField {
         return array_merge($this->getInnerField($innerParameter)->headElements($innerParameter), [
             HeadElements::jquery(),
             new Element('script', [], ["$(function () {
-                    $('.null-nullable').hide().detach().appendTo('body');
+                    $('.null-nullable').hide().appendTo('body');
                 });"])
         ]);
     }

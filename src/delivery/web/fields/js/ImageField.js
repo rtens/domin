@@ -24,11 +24,11 @@ $(function () {
 
     $('.image-controls .btn').each(function () {
         $(this).init.prototype.setOption = function (option, value) {
-            $(this).parents('.image-cropper').find('.image-placeholder').cropper(option, value);
+            $(this).closest('.image-cropper').find('.image-placeholder').cropper(option, value);
         };
 
         $(this).init.prototype.changeFactor = function (byFactor) {
-            var parent = $(this).parents('.image-cropper');
+            var parent = $(this).closest('.image-cropper');
             var img = parent.find('.image-placeholder');
 
             img.data('factor', factor(img) * byFactor);
@@ -39,7 +39,7 @@ $(function () {
     $('.image-cropper .image-input').change(function (e) {
         var target = $(e.target);
         var file = target.prop('files')[0];
-        var parent = target.parents('.image-cropper');
+        var parent = target.closest('.image-cropper');
         var img = parent.find('.image-placeholder');
         var width = parent.find('.image-width');
         var height = parent.find('.image-height');
@@ -84,7 +84,7 @@ $(function () {
         };
 
         var resized = false;
-        img.parents('form').submit(function (e) {
+        img.closest('form').submit(function (e) {
             if (!resized) {
                 resize(function () {
                     console.log(e.target);

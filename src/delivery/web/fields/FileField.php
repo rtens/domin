@@ -112,7 +112,7 @@ class FileField implements WebField {
             new Element('script', [], ["
                 $(function () {
                     $('.file-input').change(function (e) {
-                        $(this).parents('.file-field').find('.file-name').html($(this)[0].files[0].name);
+                        $(this).closest('.file-field').find('.file-name').html($(this)[0].files[0].name);
                     });
                 });
             "])

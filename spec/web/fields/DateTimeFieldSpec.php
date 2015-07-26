@@ -33,7 +33,7 @@ class DateTimeFieldSpec extends StaticTestSuite {
     function rendersControl() {
         $this->assert($this->field->render(new Parameter('foo', new UnknownType()), null),
             '<div class="input-group date datetimepicker" style="width: 100%;">' . "\n" .
-            '<span class="input-group-addon" onclick="$(this).parents(\'.datetimepicker\').datetimepicker(dateTimePickerSettings); $(this).siblings(\'.hidden\').toggleClass(\'hidden\'); $(this).remove(); return false;">' .
+            '<span class="input-group-addon" onclick="$(this).closest(\'.datetimepicker\').datetimepicker(dateTimePickerSettings); $(this).siblings(\'.hidden\').toggleClass(\'hidden\'); $(this).remove(); return false;">' .
             '<span class="glyphicon glyphicon-calendar" style="opacity: 0.5"></span>' .
             '</span>' . "\n" .
             '<span class="input-group-addon hidden"><span class="glyphicon glyphicon-calendar"></span></span>' . "\n" .
