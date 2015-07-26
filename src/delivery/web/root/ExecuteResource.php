@@ -173,7 +173,7 @@ class ExecuteResource extends Resource {
 
             $fields[] = [
                 'name' => $parameter->getName(),
-                'description' => str_replace('"', "'", $parameter->getDescription()),
+                'description' => $parameter->getDescription(),
                 'caption' => ucfirst($parameter->getName()),
                 'required' => $parameter->isRequired(),
                 'control' => $field->render($parameter, $values[$parameter->getName()]),

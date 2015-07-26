@@ -89,7 +89,10 @@
                         <?= $field[caption] . ($field[required] ? '*' : '') ?>
                     </label>
                     <? if ($field[description]) { ?>
-                    <a class="description" data-content="<?= $field[description] ?>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    <a class="description">
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </a>
+                    <div class="description-content sr-only"><?= $field[description] ?></div>
                     <? } ?>
                     <?= $field[control] ?>
                 </div>
@@ -123,7 +126,10 @@
             $('.description').popover({
                 trigger: 'hover',
                 delay: { "show": 100, "hide": 1000 },
-                html: true
+                html: true,
+                content: function (e) {
+                    return $(this).siblings('.description-content').html();
+                }
             });
         });
 
