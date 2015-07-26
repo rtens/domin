@@ -10,8 +10,8 @@ class GenericObjectAction extends ObjectAction {
     private $caption;
     private $description;
 
-    public function __construct($class, TypeFactory $types, callable $execute) {
-        parent::__construct($class, $types);
+    public function __construct($class, TypeFactory $types, CommentParser $parser, callable $execute) {
+        parent::__construct($class, $types, $parser);
         $this->execute = $execute;
     }
 

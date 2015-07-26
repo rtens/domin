@@ -16,13 +16,18 @@ abstract class ObjectAction implements Action {
     /** @var \ReflectionClass */
     protected $class;
 
+    /** @var CommentParser */
+    private $parser;
+
     /**
      * @param string $class
      * @param TypeFactory $types
+     * @param CommentParser $parser
      */
-    public function __construct($class, TypeFactory $types) {
+    public function __construct($class, TypeFactory $types, CommentParser $parser) {
         $this->reader = new PropertyReader($types, $class);
         $this->class = new \ReflectionClass($class);
+        $this->parser = $parser;
     }
 
     /**
@@ -49,9 +54,9 @@ abstract class ObjectAction implements Action {
             return null;
         }
 
-        return implode("\n", array_map(function ($line) {
+        return $this->parser->parse(implode("\n", array_map(function ($line) {
             return ltrim($line, " *\r\n\t");
-        }, array_slice(explode("\n", $docComment), 1, -1)));
+        }, array_slice(explode("\n", $docComment), 1, -1))));
     }
 
     /**
@@ -78,7 +83,7 @@ abstract class ObjectAction implements Action {
         foreach ($this->reader->readInterface() as $property) {
             if ($property->canSet()) {
                 $parameters[] = (new Parameter($property->name(), $property->type(), $property->isRequired()))
-                    ->setDescription($property->comment());
+                    ->setDescription($this->parser->parse($property->comment()));
             }
         }
         return $parameters;

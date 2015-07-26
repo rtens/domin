@@ -3,10 +3,13 @@ namespace spec\rtens\domin\reflection;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\Parameter;
+use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\GenericMethodAction;
 use rtens\domin\reflection\MethodAction;
 use rtens\domin\reflection\MethodActionGenerator;
 use rtens\domin\reflection\types\TypeFactory;
+use rtens\mockster\arguments\Argument;
+use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
@@ -20,8 +23,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             }
         }");
 
-        /** @noinspection PhpUndefinedClassInspection */
-        $action = new MethodAction(new \SomeEmptyMethod(), 'doStuff', new TypeFactory());
+        $action = $this->createMethodAction('SomeEmptyMethod', 'doStuff');
 
         $this->assert($action->caption(), 'Do Stuff');
         $this->assert($action->parameters(), []);
@@ -43,8 +45,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             }
         }');
 
-        /** @noinspection PhpUndefinedClassInspection */
-        $action = new MethodAction(new \MethodWithSimpleParams(), 'doStuffWithStuff', new TypeFactory());
+        $action = $this->createMethodAction('MethodWithSimpleParams', 'doStuffWithStuff');
 
         $this->assert($action->parameters(), [
             new Parameter('one', new StringType(), true),
@@ -75,14 +76,13 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             function doStuff($one, $two) {}
         }');
 
-        /** @noinspection PhpUndefinedClassInspection */
-        $action = new MethodAction(new \ClassWithCommentedMethod(), 'doStuff', new TypeFactory());
+        $action = $this->createMethodAction('ClassWithCommentedMethod', 'doStuff');
 
-        $this->assert($action->description(), "This describes the method.\n\nIn possibly multiple lines.");
+        $this->assert($action->description(), "This describes the method.\n\nIn possibly multiple lines. (parsed)");
 
         $parameters = $action->parameters();
-        $this->assert($parameters[0]->getDescription(), "Comment one");
-        $this->assert($parameters[1]->getDescription(), "Comment two");
+        $this->assert($parameters[0]->getDescription(), "Comment one (parsed)");
+        $this->assert($parameters[1]->getDescription(), "Comment two (parsed)");
     }
 
     function generateFromMethods() {
@@ -110,7 +110,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         $object = new \ClassWithSomeMethods();
 
         $actions = new ActionRegistry();
-        (new MethodActionGenerator($actions, new TypeFactory()))
+        (new MethodActionGenerator($actions, new TypeFactory(), new CommentParser()))
             ->fromObject($object)
             ->configure($object, 'doThis', function (GenericMethodAction $action) {
                 $action->setFill(function ($p) {
@@ -139,5 +139,16 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         ]);
         $this->assert($actions->getAction('ClassWithSomeMethods:doThat')->execute([]), 'foo!');
         $this->assert($actions->getAction('ClassWithSomeMethods:doThat')->caption(), 'That');
+    }
+
+    private function createMethodAction($class, $method) {
+        $parser = Mockster::of(CommentParser::class);
+        Mockster::stub($parser->parse(Argument::any()))->will()->forwardTo(function ($comment) {
+            if (!$comment) {
+                return null;
+            }
+            return $comment . ' (parsed)';
+        });
+        return new MethodAction(new $class(), $method, new TypeFactory(), Mockster::mock($parser));
     }
 }

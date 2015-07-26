@@ -61,7 +61,10 @@ class WebApplication {
     public $menu;
 
     /** @var MobileDetector */
-    private $detect;
+    public $detector;
+
+    /** @var WebCommentParser */
+    public $parser;
 
     /**
      * @param Factory $factory <-
@@ -72,10 +75,11 @@ class WebApplication {
      * @param IdentifiersProvider $identifiers <-
      * @param TypeFactory $types <-
      * @param MobileDetector $detect <-
+     * @param WebCommentParser $parser <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types, MobileDetector $detect) {
+                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->renderers = $factory->setSingleton($renderers);
@@ -84,7 +88,8 @@ class WebApplication {
         $this->fields = $factory->setSingleton($fields);
         $this->identifiers = $factory->setSingleton($identifiers);
         $this->menu = $factory->setSingleton($factory->getInstance(Menu::class));
-        $this->detect = $factory->setSingleton($detect);
+        $this->detector = $factory->setSingleton($detect);
+        $this->parser = $factory->setSingleton($parser);
     }
 
     /**
@@ -120,7 +125,7 @@ class WebApplication {
         $this->fields->add(new ImageField());
         $this->fields->add(new HtmlField());
         $this->fields->add(new DateTimeField());
-        $this->fields->add(new ArrayField($this->fields, $this->detect));
+        $this->fields->add(new ArrayField($this->fields, $this->detector));
         $this->fields->add(new NullableField($this->fields));
         $this->fields->add(new ObjectField($this->types, $this->fields));
         $this->fields->add(new MultiField($this->fields));

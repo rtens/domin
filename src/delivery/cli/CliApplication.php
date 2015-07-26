@@ -5,6 +5,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Executor;
+use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\factory\Factory;
 use rtens\domin\delivery\cli\fields\ArrayField;
@@ -44,20 +45,25 @@ class CliApplication {
     /** @var TypeFactory */
     public $types;
 
+    /** @var CommentParser */
+    public $parser;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
      * @param RendererRegistry $renderers <-
      * @param TypeFactory $types <-
+     * @param CommentParser $parser <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
-                         RendererRegistry $renderers, TypeFactory $types) {
+                         RendererRegistry $renderers, TypeFactory $types, CommentParser $parser) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->fields = $factory->setSingleton($fields);
         $this->renderers = $factory->setSingleton($renderers);
         $this->types = $factory->setSingleton($types);
+        $this->parser = $factory->setSingleton($parser);
     }
 
     /**

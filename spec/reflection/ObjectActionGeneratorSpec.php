@@ -2,6 +2,7 @@
 namespace spec\rtens\domin\reflection;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\GenericObjectAction;
 use rtens\domin\reflection\ObjectActionGenerator;
 use rtens\domin\reflection\types\TypeFactory;
@@ -18,7 +19,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $this->file->givenTheFolder('empty/folder');
 
         $registry = new ActionRegistry();
-        $generator = new ObjectActionGenerator($registry, new TypeFactory());
+        $generator = $this->createGenerator($registry);
 
         $generator->fromFolder($this->file->fullPath('empty/folder'), 'is_null');
 
@@ -31,7 +32,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $this->file->givenTheFile_Containing('folder/three.txt', '<?php class ThreeObjectAction {}');
 
         $registry = M::of(ActionRegistry::class);
-        (new ObjectActionGenerator(M::mock($registry), new TypeFactory()))->fromFolder($this->file->fullPath('folder'), 'is_null');
+        $this->createGenerator(M::mock($registry))->fromFolder($this->file->fullPath('folder'), 'is_null');
 
         $this->assert(M::stub($registry->add('oneObjectAction', A::any()))->has()->beenCalled());
         $this->assert(M::stub($registry->add('twoObjectAction', A::any()))->has()->beenCalled());
@@ -49,7 +50,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         }');
 
         $registry = M::of(ActionRegistry::class);
-        (new ObjectActionGenerator(M::mock($registry), new TypeFactory()))
+        $this->createGenerator(M::mock($registry))
             ->fromFolder($this->file->fullPath('folder'), function ($object) {
                 return $object->one . ':' . $object->two;
             });
@@ -67,7 +68,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
             return get_class($object);
         };
         $actions = new ActionRegistry();
-        $generator = new ObjectActionGenerator($actions, new TypeFactory());
+        $generator = $this->createGenerator($actions);
         $generator->fromFolder($this->file->fullPath('folder'), $execute);
 
         $generator->get('extendExecute\FooObjectAction')->setExecute(function ($object) use ($execute) {
@@ -81,7 +82,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $this->file->givenTheFile_Containing('folder/foo.php', '<?php namespace after\execute; class FooObjectAction {}');
 
         $actions = new ActionRegistry();
-        (new ObjectActionGenerator($actions, new TypeFactory()))
+        $this->createGenerator($actions)
             ->fromFolder($this->file->fullPath('folder'), function ($object) {
                 return get_class($object);
             })
@@ -103,7 +104,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         }');
 
         $actions = new ActionRegistry();
-        (new ObjectActionGenerator($actions, new TypeFactory()))
+        $this->createGenerator($actions)
             ->fromFolder($this->file->fullPath('folder'), 'is_null')
             ->configure('fill\FooObjectAction', function (GenericObjectAction $action) {
                 $action->setFill(function ($parameters) {
@@ -113,5 +114,9 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
             });
 
         $this->assert($actions->getAction('fooObjectAction')->fill([]), ['one' => 'default', 'two' => 'foo']);
+    }
+
+    private function createGenerator(ActionRegistry $actions) {
+        return new ObjectActionGenerator($actions, new TypeFactory(), new CommentParser());
     }
 }

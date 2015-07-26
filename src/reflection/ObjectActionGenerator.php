@@ -8,10 +8,12 @@ class ObjectActionGenerator {
 
     private $actions;
     private $types;
+    private $parser;
 
-    public function __construct(ActionRegistry $actions, TypeFactory $types) {
+    public function __construct(ActionRegistry $actions, TypeFactory $types, CommentParser $parser) {
         $this->actions = $actions;
         $this->types = $types;
+        $this->parser = $parser;
     }
 
     public function fromFolder($path, callable $execute) {
@@ -25,7 +27,7 @@ class ObjectActionGenerator {
 
         foreach ($newClasses as $class) {
             $this->actions->add($this->getId($class),
-                new GenericObjectAction($class, $this->types, $execute));
+                new GenericObjectAction($class, $this->types, $this->parser, $execute));
         }
 
         return $this;

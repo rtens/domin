@@ -6,15 +6,14 @@ use rtens\domin\reflection\types\TypeFactory;
 
 class MethodActionGenerator {
 
-    /** @var ActionRegistry */
     private $actions;
-
-    /** @var TypeFactory */
     private $types;
+    private $parser;
 
-    public function __construct(ActionRegistry $actions, TypeFactory $types) {
+    public function __construct(ActionRegistry $actions, TypeFactory $types, CommentParser $parser) {
         $this->actions = $actions;
         $this->types = $types;
+        $this->parser = $parser;
     }
 
     public function fromObject($object) {
@@ -25,7 +24,7 @@ class MethodActionGenerator {
                 continue;
             }
             $this->actions->add(self::getId($method),
-                new GenericMethodAction($object, $method->name, $this->types));
+                new GenericMethodAction($object, $method->name, $this->types, $this->parser));
         }
 
         return $this;

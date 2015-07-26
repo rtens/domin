@@ -2,6 +2,7 @@
 namespace spec\rtens\domin\reflection;
 
 use rtens\domin\Action;
+use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\ObjectAction;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument;
@@ -137,9 +138,9 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
             }');
 
         $this->whenICreateAnObjectActionFrom('ClassAction6');
-        $this->thenTheDescriptionShouldBe("My doc comment\n\nIn many *lines*");
-        $this->thenParameter_ShouldHaveTheDescription(1, 'Comment one');
-        $this->thenParameter_ShouldHaveTheDescription(2, 'Some comment');
+        $this->thenTheDescriptionShouldBe("My doc comment\n\nIn many *lines* (parsed)");
+        $this->thenParameter_ShouldHaveTheDescription(1, 'Comment one (parsed)');
+        $this->thenParameter_ShouldHaveTheDescription(2, 'Some comment (parsed)');
     }
 
     /** @var Action */
@@ -159,7 +160,11 @@ class DeriveActionFromClassSpec extends StaticTestSuite {
 
     private function whenICreateAnObjectActionFrom($className) {
         $this->action = Mockster::of(ObjectAction::class);
-        $this->uut = Mockster::uut($this->action, [$className, new TypeFactory()]);
+        $parser = Mockster::of(CommentParser::class);
+        Mockster::stub($parser->parse(Argument::any()))->will()->forwardTo(function ($comment) {
+            return $comment . ' (parsed)';
+        });
+        $this->uut = Mockster::uut($this->action, [$className, new TypeFactory(), Mockster::mock($parser)]);
     }
 
     private function whenIExecuteThatActionWith($parameters) {

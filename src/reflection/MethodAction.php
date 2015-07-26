@@ -17,15 +17,20 @@ class MethodAction implements Action {
     /** @var TypeFactory */
     private $types;
 
+    /** @var CommentParser */
+    private $parser;
+
     /**
      * @param object $object
      * @param string $method
      * @param TypeFactory $types
+     * @param CommentParser $parser
      */
-    public function __construct($object, $method, TypeFactory $types) {
+    public function __construct($object, $method, TypeFactory $types, CommentParser $parser) {
         $this->object = $object;
         $this->method = new \ReflectionMethod(get_class($object), $method);
         $this->types = $types;
+        $this->parser = $parser;
     }
 
     /**
@@ -46,7 +51,7 @@ class MethodAction implements Action {
         $lines = array_filter($lines, function ($line) {
             return substr($line, 0, 1) != '@';
         });
-        return trim(implode("\n", $lines));
+        return $this->parser->parse(trim(implode("\n", $lines)));
     }
 
     /**
@@ -58,7 +63,7 @@ class MethodAction implements Action {
         foreach ($this->method->getParameters() as $parameter) {
             $type = $analyzer->getType($parameter, $this->types);
             $parameters[] = (new Parameter($parameter->name, $type, !$parameter->isDefaultValueAvailable()))
-                ->setDescription($analyzer->getComment($parameter));
+                ->setDescription($this->parser->parse($analyzer->getComment($parameter)));
         }
         return $parameters;
     }
