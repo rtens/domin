@@ -95,7 +95,7 @@ class ArrayFieldSpec extends StaticTestSuite {
             '</div>' . "\n" .
             '<button class="btn btn-success" onclick="$(\'#foo-new-items\').children().first().appendTo(\'#foo-items\'); return false;">Add</button>' . "\n" .
             '<div id="foo-new-items" class="array-new-items hidden">' . "\n" .
-            '<div class="array-item form-group input-group">' . "\n" .
+            '<div class="array-item form-group input-group" style="width: 100%">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[1] --' . "\n" .
             '<span class="input-group-btn"><button class="btn btn-danger" onclick="$(this).closest(\'.array-item\').prependTo(\'#foo-new-items\'); return false;">X</button></span>' . "\n" .
@@ -116,11 +116,11 @@ class ArrayFieldSpec extends StaticTestSuite {
         $parameter = new Parameter('foo', new ArrayType(new StringType()));
         $rendered = $this->field->render($parameter, ['one', 'two']);
         $this->assert->contains($rendered,
-            '<div class="array-item form-group input-group">' . "\n" .
+            '<div class="array-item form-group input-group" style="width: 100%">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[1]: one --');
         $this->assert->contains($rendered,
-            '<div class="array-item form-group input-group">' . "\n" .
+            '<div class="array-item form-group input-group" style="width: 100%">' . "\n" .
             '<span class="sortable-handle input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>' . "\n" .
             '-- foo[2]: two --');
     }
