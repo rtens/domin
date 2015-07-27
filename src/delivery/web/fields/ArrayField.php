@@ -102,7 +102,8 @@ class ArrayField implements WebField {
 
     private function makeInputGroup(WebField $field, Parameter $parameter, $id, $value = null) {
         return new Element('div', [
-            'class' => 'array-item form-group input-group'
+            'class' => 'array-item form-group input-group',
+            'style' => 'width: 100%'
         ], [
             new Element('span', ['class' => 'sortable-handle input-group-addon'], [
                 new Element('span', ['class' => 'glyphicon glyphicon-sort'])
