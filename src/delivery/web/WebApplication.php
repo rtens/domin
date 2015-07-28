@@ -4,6 +4,9 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\renderers\ObjectArrayRenderer;
+use rtens\domin\delivery\web\renderers\table\DefaultTableConfiguration;
+use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
@@ -66,6 +69,9 @@ class WebApplication {
     /** @var WebCommentParser */
     public $parser;
 
+    /** @var TableConfigurationRegistry */
+    public $tables;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -76,10 +82,12 @@ class WebApplication {
      * @param TypeFactory $types <-
      * @param MobileDetector $detect <-
      * @param WebCommentParser $parser <-
+     * @param TableConfigurationRegistry $tables <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser) {
+                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser,
+                                TableConfigurationRegistry $tables) {
         $this->factory = $factory;
         $this->actions = $factory->setSingleton($actions);
         $this->renderers = $factory->setSingleton($renderers);
@@ -90,6 +98,7 @@ class WebApplication {
         $this->menu = $factory->setSingleton($factory->getInstance(Menu::class));
         $this->detector = $factory->setSingleton($detect);
         $this->parser = $factory->setSingleton($parser);
+        $this->tables = $factory->setSingleton($tables);
     }
 
     /**
@@ -104,6 +113,7 @@ class WebApplication {
     }
 
     public function registerRenderers(Url $baseUrl) {
+        $this->tables->add(new DefaultTableConfiguration($this->types));
         $links = new LinkPrinter($baseUrl, $this->links, $this->actions, $this->parser);
 
         $this->renderers->add(new BooleanRenderer());
@@ -113,6 +123,7 @@ class WebApplication {
         $this->renderers->add(new IdentifierRenderer($links));
         $this->renderers->add(new FileRenderer());
         $this->renderers->add(new ImageRenderer());
+        $this->renderers->add(new ObjectArrayRenderer($this->renderers, $this->types, $links, $this->tables));
         $this->renderers->add(new ArrayRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
