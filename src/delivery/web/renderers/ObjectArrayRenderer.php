@@ -64,9 +64,11 @@ class ObjectArrayRenderer implements Renderer {
 
         $properties = $config->getProperties($value[0]);
 
-        return (string)new Element('table', ['class' => 'table table-striped'], array_merge([
-            new Element('thead', [], [new Element('tr', [], $this->renderHeaders($properties, $config))])
-        ], $this->renderRows($value, $properties, $config)));
+        return (string)new Element('div', ['class' => 'table-responsive'], [
+            new Element('table', ['class' => 'table table-striped'], array_merge([
+                new Element('thead', [], [new Element('tr', [], $this->renderHeaders($properties, $config))])
+            ], $this->renderRows($value, $properties, $config)))
+        ]);
     }
 
     /**
