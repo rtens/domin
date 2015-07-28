@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\fields;
 
+use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
@@ -31,23 +32,20 @@ class BooleanField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
-        $attributes = [
-            'type' => 'checkbox',
-            'name' => $parameter->getName(),
-            'value' => 1,
-        ];
-
-        if ($value) {
-            $attributes['checked'] = 'checked';
-        }
-
         return implode('', [
             new Element('input', [
                 'type' => 'hidden',
                 'name' => $parameter->getName(),
                 'value' => 0
             ]),
-            new Element('input', $attributes)
+            new Element('input', array_merge([
+                'class' => 'boolean-switch',
+                'type' => 'checkbox',
+                'name' => $parameter->getName(),
+                'value' => 1,
+            ], $value ? [
+                'checked' => 'checked'
+            ] : []))
         ]);
     }
 
@@ -56,6 +54,20 @@ class BooleanField implements WebField {
      * @return array|Element[]
      */
     public function headElements(Parameter $parameter) {
-        return [];
+        return [
+            HeadElements::bootstrap(),
+            HeadElements::jquery(),
+            HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css'),
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js'),
+            new Element('script', [], ["
+                $(function () {
+                    $('.boolean-switch').bootstrapSwitch({
+                        size: 'small',
+                        onColor: 'success',
+                        onText: 'Yes',
+                        offText: 'No'
+                    });
+                });"])
+        ];
     }
 }
