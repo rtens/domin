@@ -2,15 +2,16 @@
 namespace rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\Renderer;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\parameters\Identifier;
 use rtens\domin\delivery\web\Element;
 
 class IdentifierRenderer implements Renderer {
 
-    /** @var \rtens\domin\delivery\web\renderers\link\LinkPrinter */
+    /** @var LinkPrinter */
     private $links;
 
-    public function __construct($links) {
+    public function __construct(LinkPrinter $links) {
         $this->links = $links;
     }
 
@@ -27,6 +28,14 @@ class IdentifierRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        return $value->getId() . new Element('span', ['class' => 'pull-right'], $this->links->createLinkElements($value));
+        $caption = (new \ReflectionClass($value->getTarget()))->getShortName();
+        $out = $value->getId();
+
+        $dropDown = $this->links->createDropDown($value, $caption);
+        if ($dropDown) {
+            $out .= new Element('span', ['class' => 'pull-right'], $dropDown);
+        }
+
+        return $out;
     }
 }

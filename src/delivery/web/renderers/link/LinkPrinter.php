@@ -30,14 +30,48 @@ class LinkPrinter {
 
     /**
      * @param object $object
-     * @return array|\rtens\domin\delivery\web\Element[]
+     * @return array
      */
     public function createLinkElements($object) {
-        return array_map(function (Link $link) use ($object) {
+        return $this->createLinks($object, 'btn btn-xs btn-primary');
+    }
+
+    /**
+     * @param object $object
+     * @param string|null $caption
+     * @return array|\rtens\domin\delivery\web\Element[]
+     */
+    public function createDropDown($object, $caption = null) {
+        $links = $this->createLinks($object);
+        if (empty($links)) {
+            return [];
+        }
+
+        return [
+            new Element('div', ['class' => 'dropdown'], [
+                new Element('button', [
+                    'class' => 'btn btn-xs btn-primary dropdown-toggle',
+                    'type' => 'button',
+                    'data-toggle' => 'dropdown',
+                    'aria-haspopup' => 'true',
+                    'aria-expanded' => 'false'
+                ], [
+                    $caption ?: (new \ReflectionClass($object))->getShortName(),
+                    new Element('span', ['class' => 'caret'])
+                ]),
+                new Element('ul', ['class' => 'dropdown-menu'], array_map(function (Element $element) {
+                    return new Element('li', [], [$element]);
+                }, $links))
+            ])
+        ];
+    }
+
+    private function createLinks($object, $classes = '') {
+        return array_map(function (Link $link) use ($object, $classes) {
             $action = $this->actions->getAction($link->actionId());
 
             $url = $this->baseUrl->appended($link->actionId())->withParameters(new Map($link->parameters($object)));
-            $attributes = ['class' => 'btn btn-xs btn-primary', 'href' => $url];
+            $attributes = ['class' => $classes, 'href' => $url];
             if ($link->confirm() !== null) {
                 $attributes['onclick'] = "return confirm('{$link->confirm()}');";
             }
