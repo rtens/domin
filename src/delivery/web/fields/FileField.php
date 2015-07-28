@@ -30,7 +30,7 @@ class FileField implements WebField {
     public function inflate(Parameter $parameter, $serialized) {
         $file = $serialized['file'];
 
-        if (!$file->getError()) {
+        if ($file && !$file->getError()) {
             return new SavedFile($file->getTemporaryName(), $file->getName(), $file->getType());
         } else if ($serialized['name']) {
             return $this->createPreservedFile($serialized);

@@ -21,6 +21,12 @@ class FileFieldSpec extends StaticTestSuite {
         $this->assert($field->handles(new Parameter('foo', new ClassType(File::class))));
     }
 
+    function inflateNothing() {
+        $field = new FileField();
+        $param = new Parameter('foo', new StringType());
+        $this->assert($field->inflate($param, ['file' => '']), null);
+    }
+
     function inflateUploadedFile() {
         $field = new FileField();
         $param = new Parameter('foo', new StringType());
