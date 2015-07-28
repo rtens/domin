@@ -5,6 +5,7 @@ use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\fields\DateTimeField;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\fields\StringField;
 use rtens\domin\delivery\web\menu\Menu;
@@ -21,9 +22,13 @@ use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\deli\Path;
 use watoki\factory\Factory;
+use watoki\reflect\type\ClassType;
 use watoki\reflect\type\StringType;
 
 class SprinkleBreadcrumbsSpec extends StaticTestSuite {
+
+    /** @var FieldRegistry */
+    private $fields;
 
     /** @var ActionRegistry */
     private $actions;
@@ -39,12 +44,12 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     protected function before() {
         $this->actions = new ActionRegistry();
         $this->cookies = Mockster::of(CookieStore::class);
-        $fields = Mockster::of(FieldRegistry::class);
+        $this->fields = new FieldRegistry();
         $this->resource = new ExecuteResource(new Factory(), $this->actions,
-            Mockster::mock($fields), Mockster::mock(RendererRegistry::class),
+            $this->fields, Mockster::mock(RendererRegistry::class),
             Mockster::mock(Menu::class), Mockster::mock($this->cookies));
 
-        Mockster::stub($fields->getField(Arg::any()))->will()->return_(new StringField());
+        $this->fields->add(new StringField());
     }
 
     function addCrumbIfActionRendered() {
@@ -61,6 +66,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->thenTheCrumbs_ShouldBeSaved([
             ['target' => 'http://example.com/base/foo?one=uno', 'caption' => 'My Foo']
         ]);
+        $this->thenTheCurrentActionShouldBe('http://example.com/base/foo?one=uno');
     }
 
     function noCrumbIfActionNotRendered() {
@@ -71,7 +77,6 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
         $this->thenNoCrumbsShouldBeSaved();
-
     }
 
     function emptyCrumbs() {
@@ -153,6 +158,21 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->thenTheCrumbs_ShouldBeSaved([]);
     }
 
+    function nonStringParameter() {
+        $action = Mockster::of(Action::class);
+        $this->actions->add('foo', Mockster::mock($action));
+
+        Mockster::stub($action->execute(Arg::any()))->will()->return_('foo');
+        Mockster::stub($action->parameters())->will()->return_([
+            new Parameter('date', new ClassType(\DateTime::class))
+        ]);
+
+        $this->fields->add(new DateTimeField());
+
+        $this->whenIExecute_With('foo', ['date' => 'today']);
+        $this->thenTheCurrentActionShouldBe('http://example.com/base/foo?date=today');
+    }
+
     private function whenIExecute($action) {
         $this->whenIExecute_With($action, []);
     }
@@ -197,5 +217,9 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
             Mockster::mock($this->cookies));
 
         $resource->doGet($this->makeRequest());
+    }
+
+    private function thenTheCurrentActionShouldBe($target) {
+        $this->assert($this->model['current'], $target);
     }
 }

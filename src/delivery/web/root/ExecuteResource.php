@@ -119,6 +119,7 @@ class ExecuteResource extends Resource {
             [
                 'menuItems' => $this->menu->assembleModel($request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
+                'current' => $crumbs ? array_slice($crumbs, -1)[0]['target'] : null,
                 'action' => $caption,
                 'description' => $description,
                 'baseUrl' => $request->getContext()->appended('')->toString()
@@ -208,7 +209,7 @@ class ExecuteResource extends Resource {
         $current = [
             'target' => (string)$request->getContext()
                 ->appended($actionId)
-                ->withParameters(new Map($this->readParameters($action, $reader))),
+                ->withParameters(new Map($this->readRawParameters($action, $reader))),
             'caption' => $action->caption()
         ];
         $newCrumbs = [];
@@ -223,6 +224,17 @@ class ExecuteResource extends Resource {
             $this->saveCrumbs($newCrumbs);
         }
         return $newCrumbs;
+    }
+
+    private function readRawParameters(Action $action, ParameterReader $reader) {
+        $values = [];
+
+        foreach ($action->parameters() as $parameter) {
+            if ($reader->has($parameter)) {
+                $values[$parameter->getName()] = $reader->read($parameter);
+            }
+        }
+        return $values;
     }
 
     private function getLastCrumb() {

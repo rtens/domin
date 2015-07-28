@@ -75,7 +75,7 @@
 
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <h1 class="panel-title"><?= $action ?></h1>
+            <h1 class="panel-title"><a href="<?= $current ?>"><?= $action ?></a></h1>
         </div>
         <div class="panel-body">
             <? if ($description) { ?>
@@ -128,7 +128,7 @@
                 delay: { show: 100, hide: 1000 },
                 html: true,
                 placement: 'auto top',
-                content: function (e) {
+                content: function () {
                     return $(this).siblings('.description-content').html();
                 }
             });
