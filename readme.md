@@ -78,7 +78,7 @@ and run it with
 
 ## Action! ##
 
-[`Actions`] decide what [`Parameters`] they need, how to `fill()` them with default values and how to `execute()` them. 
+[`Actions`] decide what [`Parameters`] they need, how to `fill()` them with default values and, most importantly, how to `execute()` them. 
 The way *domin* knows what actions there are is through the [`ActionRegistry`], so all actions need to be added to it.
 
 There are several ways to create actions:
