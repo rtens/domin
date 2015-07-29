@@ -38,7 +38,7 @@ class ObjectRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        $descriptions = [];
+        $map = [];
 
         $reader = new PropertyReader($this->types, get_class($value));
         foreach ($reader->readInterface($value) as $property) {
@@ -46,17 +46,7 @@ class ObjectRenderer implements Renderer {
                 continue;
             }
 
-            $propertyValue = $property->get($value);
-
-            $caption = htmlentities(ucfirst($property->name()));
-            $descriptions[] = new Element('dt', [], [
-                is_null($propertyValue)
-                    ? new Element('s', [], [$caption])
-                    : $caption
-            ]);
-            $descriptions[] = new Element('dd', [], [
-                $this->renderers->getRenderer($propertyValue)->render($propertyValue)
-            ]);
+            $map[$property->name()] = $property->get($value);
         }
 
         return (string)new Element('div', ['class' => 'panel panel-info'], [
@@ -67,7 +57,7 @@ class ObjectRenderer implements Renderer {
                 ])
             ]),
             new Element('div', ['class' => 'panel-body'], [
-                new Element('dl', ['class' => 'dl-horizontal'], $descriptions)
+                (new MapRenderer($this->renderers))->render($map)
             ])
         ]);
     }

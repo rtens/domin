@@ -19,7 +19,16 @@ class ListRenderer implements Renderer {
      * @return bool
      */
     public function handles($value) {
-        return is_array($value);
+        return is_array($value) && $this->areNumerical(array_keys($value));
+    }
+
+    private function areNumerical($keys) {
+        foreach ($keys as $key) {
+            if (!is_numeric($key)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

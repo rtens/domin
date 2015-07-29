@@ -10,30 +10,44 @@ use rtens\scrut\tests\statics\StaticTestSuite;
 
 class ListRendererSpec extends StaticTestSuite {
 
+    /** @var ListRenderer */
+    private $renderer;
+
+    /** @var RendererRegistry */
+    private $registry;
+
+    protected function before() {
+        $this->registry = new RendererRegistry();
+        $this->renderer = new ListRenderer($this->registry);
+    }
+
+    function handlesArraysWithNumericKeys() {
+        $this->assert($this->renderer->handles([]));
+        $this->assert($this->renderer->handles(['ome', 'two']));
+        $this->assert($this->renderer->handles([3 => 'one', 10 => 'two']));
+        $this->assert->not($this->renderer->handles(['uno' => 'one', 'two' => 'dos']));
+    }
+
     function emptyArray() {
-        $renderer = new ListRenderer(new RendererRegistry());
+        $this->assert($this->renderer->handles([]));
+        $this->assert->not($this->renderer->handles(''));
+        $this->assert->not($this->renderer->handles(new \StdClass()));
 
-        $this->assert($renderer->handles([]));
-        $this->assert->not($renderer->handles(''));
-        $this->assert->not($renderer->handles(new \StdClass()));
-
-        $this->assert($renderer->render([]), '<ul class="list-unstyled"></ul>');
+        $this->assert($this->renderer->render([]), '<ul class="list-unstyled"></ul>');
     }
 
     function nonEmptyArray() {
-        $renderers = new RendererRegistry();
-
         $itemRenderer = Mockster::of(Renderer::class);
-        $renderers->add(Mockster::mock($itemRenderer));
+        $this->registry->add(Mockster::mock($itemRenderer));
 
         Mockster::stub($itemRenderer->handles(Argument::any()))->will()->return_(true);
         Mockster::stub($itemRenderer->render(Argument::any()))->will()->forwardTo(function ($item) {
             return $item . ' rendered';
         });
 
-        $renderer = new ListRenderer($renderers);
+        $this->renderer = new ListRenderer($this->registry);
 
-        $this->assert($renderer->render(['one', 'two']),
+        $this->assert($this->renderer->render(['one', 'two']),
             '<ul class="list-unstyled">' . "\n" .
             "<li>one rendered</li>" . "\n" .
             "<li>two rendered</li>" . "\n" .

@@ -4,6 +4,7 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\ObjectListRenderer;
 use rtens\domin\delivery\web\renderers\table\DefaultTableConfiguration;
 use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
@@ -125,6 +126,7 @@ class WebApplication {
         $this->renderers->add(new ImageRenderer());
         $this->renderers->add(new ObjectListRenderer($this->renderers, $this->types, $links, $this->tables));
         $this->renderers->add(new ListRenderer($this->renderers));
+        $this->renderers->add(new MapRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
 
