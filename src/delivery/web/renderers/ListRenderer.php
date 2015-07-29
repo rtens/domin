@@ -5,7 +5,7 @@ use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 
-class ArrayRenderer implements Renderer {
+class ListRenderer implements Renderer {
 
     /** @var RendererRegistry */
     private $renderers;

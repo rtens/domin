@@ -4,7 +4,7 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\delivery\web\renderers\ObjectArrayRenderer;
+use rtens\domin\delivery\web\renderers\ObjectListRenderer;
 use rtens\domin\delivery\web\renderers\table\DefaultTableConfiguration;
 use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
 use rtens\domin\parameters\IdentifiersProvider;
@@ -12,7 +12,7 @@ use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
 use rtens\domin\delivery\web\fields\NumberField;
 use rtens\domin\delivery\web\menu\Menu;
-use rtens\domin\delivery\web\renderers\ArrayRenderer;
+use rtens\domin\delivery\web\renderers\ListRenderer;
 use rtens\domin\delivery\web\renderers\BooleanRenderer;
 use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\domin\delivery\web\renderers\FileRenderer;
@@ -123,8 +123,8 @@ class WebApplication {
         $this->renderers->add(new IdentifierRenderer($links));
         $this->renderers->add(new FileRenderer());
         $this->renderers->add(new ImageRenderer());
-        $this->renderers->add(new ObjectArrayRenderer($this->renderers, $this->types, $links, $this->tables));
-        $this->renderers->add(new ArrayRenderer($this->renderers));
+        $this->renderers->add(new ObjectListRenderer($this->renderers, $this->types, $links, $this->tables));
+        $this->renderers->add(new ListRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
 

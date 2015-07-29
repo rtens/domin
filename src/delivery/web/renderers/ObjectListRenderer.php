@@ -10,7 +10,7 @@ use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\reflect\Property;
 
-class ObjectArrayRenderer implements Renderer {
+class ObjectListRenderer implements Renderer {
 
     /** @var RendererRegistry */
     private $renderers;

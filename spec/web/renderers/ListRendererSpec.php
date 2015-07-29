@@ -3,15 +3,15 @@ namespace spec\rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\delivery\web\renderers\ArrayRenderer;
+use rtens\domin\delivery\web\renderers\ListRenderer;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class ArrayRendererSpec extends StaticTestSuite {
+class ListRendererSpec extends StaticTestSuite {
 
     function emptyArray() {
-        $renderer = new ArrayRenderer(new RendererRegistry());
+        $renderer = new ListRenderer(new RendererRegistry());
 
         $this->assert($renderer->handles([]));
         $this->assert->not($renderer->handles(''));
@@ -31,7 +31,7 @@ class ArrayRendererSpec extends StaticTestSuite {
             return $item . ' rendered';
         });
 
-        $renderer = new ArrayRenderer($renderers);
+        $renderer = new ListRenderer($renderers);
 
         $this->assert($renderer->render(['one', 'two']),
             '<ul class="list-unstyled">' . "\n" .
