@@ -36,7 +36,7 @@ class GenericTableConfiguration extends DefaultTableConfiguration {
      * @return boolean
      */
     public function appliesTo($object) {
-        return get_class($object) == $this->class || (new \ReflectionClass($object))->isSubclassOf($this->class);
+        return is_a($object, $this->class);
     }
 
     /**

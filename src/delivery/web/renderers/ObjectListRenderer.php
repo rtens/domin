@@ -37,7 +37,7 @@ class ObjectListRenderer implements Renderer {
      * @return bool
      */
     public function handles($value) {
-        return is_array($value) && !empty($value[0]) && is_object($value[0])
+        return is_array($value) && count($value) > 1 && !empty($value[0]) && is_object($value[0])
         && $this->usesObjectRenderer($value[0]) && $this->isHomogeneous($value);
     }
 
