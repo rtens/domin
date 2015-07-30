@@ -10,10 +10,10 @@
     <meta http-equiv="refresh" content="2; URL=<?= $redirect ?>">
     <? } ?>
 
-<? foreach ($headElements as $element) { ?>
+    <? foreach ($headElements as $element) { ?>
     <?= $element ?>
 
-<? } ?>
+    <? } ?>
 
 </head>
 <body>
@@ -21,7 +21,8 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -33,18 +34,19 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <? foreach ($menuItems as $item) { ?>
-                    <? if (isset($item[items])) { ?>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?= $item[caption] ?> <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <? foreach ($item[items] as $subItem) { ?>
-                                <li><a href="<?= $subItem[target] ?>"><?= $subItem[caption] ?></a></li>
-                                <? } ?>
-                            </ul>
-                        </li>
-                    <? } else { ?>
-                        <li><a href="<?= $item[target] ?>"><?= $item[caption] ?></a></li>
-                    <? } ?>
+                <? if (isset($item[items])) { ?>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><?= $item[caption] ?> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <? foreach ($item[items] as $subItem) { ?>
+                        <li><a href="<?= $subItem[target] ?>"><?= $subItem[caption] ?></a></li>
+                        <? } ?>
+                    </ul>
+                </li>
+                <? } else { ?>
+                <li><a href="<?= $item[target] ?>"><?= $item[caption] ?></a></li>
+                <? } ?>
                 <? } ?>
             </ul>
         </div>
@@ -73,38 +75,46 @@
     <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $redirect ?>">click here</a></div>
     <? } else { ?>
 
+    <form id="form" method="post" action="?" enctype="multipart/form-data">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h1 class="panel-title"><a href="<?= $current ?>"><?= $action ?></a></h1>
         </div>
+
+        <? if ($fields) { ?>
         <div class="panel-body">
             <? if ($description) { ?>
             <div class="well"><?= $description ?></div>
             <? } ?>
 
-            <form id="form" method="post" action="?" enctype="multipart/form-data">
-                <? foreach ($fields as $field) { ?>
-                <div class="form-group">
-                    <label>
-                        <?= $field[caption] . ($field[required] ? '*' : '') ?>
-                    </label>
-                    <? if ($field[description]) { ?>
-                    <a class="description">
-                        <span class="glyphicon glyphicon-question-sign"></span>
-                    </a>
-                    <div class="description-content sr-only"><?= $field[description] ?></div>
-                    <? } ?>
-                    <?= $field[control] ?>
-                </div>
-                <? } ?>
-                <input type="submit" class="btn btn-primary" value="Execute">
+            <? foreach ($fields as $field) { ?>
+            <div class="form-group">
+                <label>
+                    <?= $field[caption] . ($field[required] ? '*' : '') ?>
+                </label>
+                <? if ($field[description]) { ?>
+                <a class="description">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
 
-                <? if ($missing) { ?>
-                <a href="javascript:history.back()" class="btn btn-default">Back</a>
+                <div class="description-content sr-only"><?= $field[description] ?></div>
                 <? } ?>
-            </form>
+                <?= $field[control] ?>
+            </div>
+            <? } ?>
+        </div>
+        <? } ?>
+
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-primary" value="Execute">
+
+            <? if ($missing) { ?>
+            <a href="javascript:history.back()" class="btn btn-default">Back</a>
+            <? } ?>
         </div>
     </div>
+    </form>
+
     <? } ?>
 
     <? if ($output) { ?>
@@ -125,7 +135,7 @@
         $(function () {
             $('.description').popover({
                 trigger: 'hover',
-                delay: { show: 100, hide: 1000 },
+                delay: {show: 100, hide: 1000},
                 html: true,
                 placement: 'auto top',
                 content: function () {
@@ -135,7 +145,8 @@
         });
 
         document.onsubmit = function () {
-            window.onbeforeunload = function () {};
+            window.onbeforeunload = function () {
+            };
 
             document.getElementById('form').style.opacity = 0.5;
             document.onsubmit = function () {
