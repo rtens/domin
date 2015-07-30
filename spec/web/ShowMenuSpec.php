@@ -3,8 +3,6 @@ namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
-use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\menu\MenuGroup;
 use rtens\domin\delivery\web\menu\MenuItem;
@@ -35,8 +33,8 @@ class ShowMenuSpec extends StaticTestSuite {
     protected function before() {
         $this->actions = new ActionRegistry();
         $this->menu = new Menu($this->actions);
-        $this->resource = new IndexResource(new Factory(), Mockster::uut(WebApplication::class),
-            $this->actions, $this->menu, Mockster::mock(CookieStore::class));
+
+        $this->resource = new IndexResource(new Factory(), $this->createWebApplication(), Mockster::mock(CookieStore::class));
     }
 
     function emptyMenuOnOverview() {
@@ -93,8 +91,7 @@ class ShowMenuSpec extends StaticTestSuite {
             'two' => 'dos'
         ]));
 
-        $this->resource = new ExecuteResource(new Factory(), $this->actions, new FieldRegistry(), new RendererRegistry(),
-            $this->menu, Mockster::mock(CookieStore::class));
+        $this->resource = new ExecuteResource(new Factory(), $this->createWebApplication(), Mockster::mock(CookieStore::class));
 
         $this->model = $this->resource->doGet('foo', new WebRequest(Url::fromString('http://example.com/base'), new Path()));
         $this->assert($this->model['menuItems'], [
@@ -105,5 +102,13 @@ class ShowMenuSpec extends StaticTestSuite {
 
     private function whenIGetTheModel() {
         $this->model = $this->resource->doGet(new WebRequest(Url::fromString('http://example.com/base'), new Path()));
+    }
+
+    private function createWebApplication() {
+        $factory = new Factory();
+        $app = $factory->getInstance(WebApplication::class);
+        $app->menu = $this->menu;
+        $app->actions = $this->actions;
+        return $app;
     }
 }

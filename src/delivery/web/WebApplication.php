@@ -90,17 +90,19 @@ class WebApplication {
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
                                 TypeFactory $types, MobileDetector $detect, WebCommentParser $parser,
                                 TableConfigurationRegistry $tables) {
+        $factory->setSingleton($this);
+
         $this->factory = $factory;
-        $this->actions = $factory->setSingleton($actions);
-        $this->renderers = $factory->setSingleton($renderers);
-        $this->links = $factory->setSingleton($links);
-        $this->types = $factory->setSingleton($types);
-        $this->fields = $factory->setSingleton($fields);
-        $this->identifiers = $factory->setSingleton($identifiers);
-        $this->menu = $factory->setSingleton($factory->getInstance(Menu::class));
-        $this->detector = $factory->setSingleton($detect);
-        $this->parser = $factory->setSingleton($parser);
-        $this->tables = $factory->setSingleton($tables);
+        $this->actions = $actions;
+        $this->renderers = $renderers;
+        $this->links = $links;
+        $this->types = $types;
+        $this->fields = $fields;
+        $this->identifiers = $identifiers;
+        $this->detector = $detect;
+        $this->parser = $parser;
+        $this->tables = $tables;
+        $this->menu = new Menu($actions);
     }
 
     /**

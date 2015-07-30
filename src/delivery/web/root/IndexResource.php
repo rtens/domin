@@ -1,9 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\root;
 
-use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\HeadElements;
-use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\WebApplication;
 use watoki\curir\Container;
 use watoki\curir\cookie\Cookie;
@@ -17,12 +15,6 @@ use watoki\factory\Factory;
 
 class IndexResource extends Container {
 
-    /** @var ActionRegistry */
-    private $actions;
-
-    /** @var Menu */
-    private $menu;
-
     /** @var CookieStore */
     private $cookies;
 
@@ -32,14 +24,10 @@ class IndexResource extends Container {
     /**
      * @param Factory $factory <-
      * @param WebApplication $app <-
-     * @param ActionRegistry $actions <-
-     * @param Menu $menu <-
      * @param CookieStore $cookies <-
      */
-    public function __construct(Factory $factory, WebApplication $app, ActionRegistry $actions, Menu $menu, CookieStore $cookies) {
+    public function __construct(Factory $factory, WebApplication $app, CookieStore $cookies) {
         parent::__construct($factory);
-        $this->actions = $actions;
-        $this->menu = $menu;
         $this->cookies = $cookies;
         $this->app = $app;
     }
@@ -65,7 +53,7 @@ class IndexResource extends Container {
     public function doGet(WebRequest $request) {
         $this->resetBreadCrumbs();
         return [
-            'menuItems' => $this->menu->assembleModel($request),
+            'menuItems' => $this->app->menu->assembleModel($request),
             'action' => $this->assembleActions($request->getContext()),
             'headElements' => [
                 (string)HeadElements::jquery(),
@@ -81,7 +69,7 @@ class IndexResource extends Container {
      */
     private function assembleActions(Url $base) {
         $actions = [];
-        foreach ($this->actions->getAllActions() as $id => $action) {
+        foreach ($this->app->actions->getAllActions() as $id => $action) {
             $actions[] = [
                 'caption' => $action->caption(),
                 'description' => $this->app->parser->shorten($action->description()),

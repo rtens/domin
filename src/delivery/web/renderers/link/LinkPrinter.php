@@ -56,7 +56,7 @@ class LinkPrinter {
                     'aria-haspopup' => 'true',
                     'aria-expanded' => 'false'
                 ], [
-                    $caption ?: (new \ReflectionClass($object))->getShortName(),
+                    !is_null($caption) ? $caption : (new \ReflectionClass($object))->getShortName(),
                     new Element('span', ['class' => 'caret'])
                 ]),
                 new Element('ul', ['class' => 'dropdown-menu'], array_map(function (Element $element) {

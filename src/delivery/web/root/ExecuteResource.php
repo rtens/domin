@@ -2,10 +2,11 @@
 namespace rtens\domin\delivery\web\root;
 
 use rtens\domin\Action;
-use rtens\domin\ActionRegistry;
-use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
-use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\RequestParameterReader;
+use rtens\domin\delivery\web\WebApplication;
+use rtens\domin\delivery\web\WebField;
 use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
@@ -13,10 +14,6 @@ use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Executor;
-use rtens\domin\delivery\web\HeadElements;
-use rtens\domin\delivery\web\menu\Menu;
-use rtens\domin\delivery\web\RequestParameterReader;
-use rtens\domin\delivery\web\WebField;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -30,36 +27,17 @@ class ExecuteResource extends Resource {
     const ACTION_ARG = '__action';
     const BREADCRUMB_COOKIE = 'domin_trail';
 
-    /** @var ActionRegistry */
-    private $actions;
-
-    /** @var FieldRegistry */
-    private $fields;
-
-    /** @var RendererRegistry */
-    private $renderers;
-
-    /** @var Menu */
-    private $menu;
-
     /** @var CookieStore */
     private $cookies;
 
     /**
      * @param Factory $factory <-
-     * @param ActionRegistry $actions <-
-     * @param FieldRegistry $fields <-
-     * @param RendererRegistry $renderers <-
-     * @param Menu $menu <-
+     * @param WebApplication $app <-
      * @param CookieStore $cookies <-
      */
-    public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
-                         RendererRegistry $renderers, Menu $menu, CookieStore $cookies) {
+    public function __construct(Factory $factory, WebApplication $app, CookieStore $cookies) {
         parent::__construct($factory);
-        $this->actions = $actions;
-        $this->fields = $fields;
-        $this->renderers = $renderers;
-        $this->menu = $menu;
+        $this->app = $app;
         $this->cookies = $cookies;
     }
 
@@ -99,11 +77,11 @@ class ExecuteResource extends Resource {
         $reader = new RequestParameterReader($request);
 
         try {
-            $action = $this->actions->getAction($__action);
+            $action = $this->app->actions->getAction($__action);
             $caption = $action->caption();
             $description = $action->description();
 
-            $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
+            $executor = new Executor($this->app->actions, $this->app->fields, $this->app->renderers, $reader);
             $result = $executor->execute($__action);
 
             if (!($result instanceof RedirectResult)) {
@@ -117,7 +95,7 @@ class ExecuteResource extends Resource {
         $resultModel = $this->assembleResult($result, $request);
         return array_merge(
             [
-                'menuItems' => $this->menu->assembleModel($request),
+                'menuItems' => $this->app->menu->assembleModel($request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
                 'current' => $crumbs ? array_slice($crumbs, -1)[0]['target'] : null,
                 'action' => $caption,
@@ -164,7 +142,7 @@ class ExecuteResource extends Resource {
         $values = $this->collectParameters($action, $reader);
 
         foreach ($action->parameters() as $parameter) {
-            $field = $this->fields->getField($parameter);
+            $field = $this->app->fields->getField($parameter);
 
             if (!($field instanceof WebField)) {
                 throw new \Exception("[$parameter] is not a WebField");
@@ -195,7 +173,7 @@ class ExecuteResource extends Resource {
 
         foreach ($action->parameters() as $parameter) {
             if ($reader->has($parameter)) {
-                $field = $this->fields->getField($parameter);
+                $field = $this->app->fields->getField($parameter);
                 $values[$parameter->getName()] = $field->inflate($parameter, $reader->read($parameter));
             }
         }
@@ -203,7 +181,7 @@ class ExecuteResource extends Resource {
     }
 
     private function updateCrumbs($actionId, ExecutionResult $result, WebRequest $request, ParameterReader $reader) {
-        $action = $this->actions->getAction($actionId);
+        $action = $this->app->actions->getAction($actionId);
         $crumbs = $this->readCrumbs();
 
         $current = [

@@ -59,11 +59,12 @@ class CliApplication {
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                          RendererRegistry $renderers, TypeFactory $types, CommentParser $parser) {
         $this->factory = $factory;
-        $this->actions = $factory->setSingleton($actions);
-        $this->fields = $factory->setSingleton($fields);
-        $this->renderers = $factory->setSingleton($renderers);
-        $this->types = $factory->setSingleton($types);
-        $this->parser = $factory->setSingleton($parser);
+
+        $this->actions = $actions;
+        $this->fields = $fields;
+        $this->renderers = $renderers;
+        $this->types = $types;
+        $this->parser = $parser;
     }
 
     /**

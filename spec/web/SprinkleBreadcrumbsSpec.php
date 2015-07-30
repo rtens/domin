@@ -2,16 +2,13 @@
 namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\Action;
-use rtens\domin\ActionRegistry;
-use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\fields\DateTimeField;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\fields\StringField;
-use rtens\domin\delivery\web\menu\Menu;
+use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
 use rtens\domin\delivery\web\root\ExecuteResource;
 use rtens\domin\delivery\web\root\IndexResource;
 use rtens\domin\delivery\web\WebApplication;
+use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -27,34 +24,32 @@ use watoki\reflect\type\StringType;
 
 class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
-    /** @var FieldRegistry */
-    private $fields;
-
-    /** @var ActionRegistry */
-    private $actions;
-
     /** @var CookieStore */
     private $cookies;
 
     /** @var ExecuteResource */
     private $resource;
 
+    /** @var WebApplication */
+    private $app;
+
     private $model;
 
     protected function before() {
-        $this->actions = new ActionRegistry();
         $this->cookies = Mockster::of(CookieStore::class);
-        $this->fields = new FieldRegistry();
-        $this->resource = new ExecuteResource(new Factory(), $this->actions,
-            $this->fields, Mockster::mock(RendererRegistry::class),
-            Mockster::mock(Menu::class), Mockster::mock($this->cookies));
 
-        $this->fields->add(new StringField());
+        $factory = new Factory();
+        $this->app = $factory->getInstance(WebApplication::class);
+
+        $this->resource = new ExecuteResource(new Factory(), $this->app, Mockster::mock($this->cookies));
+
+        $this->app->renderers->add(new PrimitiveRenderer());
+        $this->app->fields->add(new StringField());
     }
 
     function addCrumbIfActionRendered() {
         $action = Mockster::of(Action::class);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         Mockster::stub($action->execute(Arg::any()))->will()->return_('foo');
         Mockster::stub($action->caption())->will()->return_('My Foo');
@@ -71,7 +66,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
     function noCrumbIfActionNotRendered() {
         $action = Mockster::of(Action::class);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         Mockster::stub($action->execute(Arg::any()))->will()->return_(null);
 
@@ -80,7 +75,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     function emptyCrumbs() {
-        $this->actions->add('foo', Mockster::mock(Action::class));
+        $this->app->actions->add('foo', Mockster::mock(Action::class));
 
         $this->whenIExecute('foo');
         $this->assert->size($this->model['breadcrumbs'], 0);
@@ -92,7 +87,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
             ['target' => 'bar', 'caption' => 'My Bar'],
         ]);
 
-        $this->actions->add('foo', Mockster::mock(Action::class));
+        $this->app->actions->add('foo', Mockster::mock(Action::class));
 
         $this->whenIExecute('foo');
         $this->assert($this->model['breadcrumbs'], [
@@ -115,7 +110,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         Mockster::stub($action->parameters())->will()->return_([
             new Parameter('one', new StringType())
         ]);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         $this->whenIExecute_With('foo', ['one' => 'uno']);
         $this->assert($this->model['breadcrumbs'], [
@@ -136,7 +131,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
         $action = Mockster::of(Action::class);
         Mockster::stub($action->execute(Arg::any()))->will()->return_(null);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         $this->whenIExecute('foo');
         $this->assert($this->model['redirect'], 'path/to/foo');
@@ -147,7 +142,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
         $action = Mockster::of(Action::class);
         Mockster::stub($action->execute(Arg::any()))->will()->return_(null);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         $this->whenIExecute('foo');
         $this->assert->isNull($this->model['redirect']);
@@ -160,14 +155,14 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
     function nonStringParameter() {
         $action = Mockster::of(Action::class);
-        $this->actions->add('foo', Mockster::mock($action));
+        $this->app->actions->add('foo', Mockster::mock($action));
 
         Mockster::stub($action->execute(Arg::any()))->will()->return_('foo');
         Mockster::stub($action->parameters())->will()->return_([
             new Parameter('date', new ClassType(\DateTime::class))
         ]);
 
-        $this->fields->add(new DateTimeField());
+        $this->app->fields->add(new DateTimeField());
 
         $this->whenIExecute_With('foo', ['date' => 'today']);
         $this->thenTheCurrentActionShouldBe('http://example.com/base/foo?date=today');
@@ -211,9 +206,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     private function whenIListAllActions() {
         $resource = new IndexResource(
             new Factory(),
-            Mockster::mock(WebApplication::class),
-            $this->actions,
-            Mockster::mock(Menu::class),
+            $this->app,
             Mockster::mock($this->cookies));
 
         $resource->doGet($this->makeRequest());
