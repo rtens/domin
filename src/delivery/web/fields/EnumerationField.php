@@ -34,7 +34,7 @@ class EnumerationField implements WebField {
      * @return mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
-        $param = new Parameter($parameter->getName(), $this->getType($parameter)->getOptionType());
+        $param = new Parameter($parameter->getName(), $this->getOptionType($parameter));
         return $this->fields->getField($param)->inflate($param, $serialized);
     }
 
@@ -52,13 +52,13 @@ class EnumerationField implements WebField {
 
     private function renderOptions(Parameter $parameter, $value) {
         $options = [];
-        foreach ($this->getOptions($parameter) as $option) {
+        foreach ($this->getOptions($parameter) as $key => $caption) {
             $options[] = new Element('option', array_merge([
-                'value' => $option
-            ], $option == $value ? [
+                'value' => $key
+            ], $key == $value ? [
                 'selected' => 'selected'
             ] : []), [
-                (string)$option
+                ucfirst((string)$caption)
             ]);
         }
         return $options;
@@ -72,8 +72,16 @@ class EnumerationField implements WebField {
         return [];
     }
 
-    private function getOptions(Parameter $parameter) {
-        return $this->getType($parameter)->getOptions();
+    /**
+     * @param Parameter $parameter
+     * @return array With captions indexed by values
+     */
+    protected function getOptions(Parameter $parameter) {
+        $options = [];
+        foreach ($this->getType($parameter)->getOptions() as $option) {
+            $options[$option] = $option;
+        }
+        return $options;
     }
 
     /**
@@ -81,10 +89,14 @@ class EnumerationField implements WebField {
      * @return EnumerationType
      */
     private function getType(Parameter $parameter) {
-        $type = $parameter->getType();
-        if (!($type instanceof EnumerationType)) {
-            throw new \InvalidArgumentException("[$type] must be an EnumerationType");
-        }
-        return $type;
+        return $parameter->getType();
+    }
+
+    /**
+     * @param Parameter $parameter
+     * @return \watoki\reflect\Type
+     */
+    protected function getOptionType(Parameter $parameter) {
+        return $this->getType($parameter)->getOptionType();
     }
 }
