@@ -12,7 +12,7 @@ class LineChart extends DataSetChart {
     public function makePalette(array $rgb) {
         list($red, $green, $blue) = $rgb;
 
-        $light = "rgba($red,$green,$blue,0.05)";
+        $light = "rgba($red,$green,$blue,0.1)";
         $full = "rgba($red,$green,$blue,1)";
 
         return [

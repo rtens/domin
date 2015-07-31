@@ -13,10 +13,10 @@ class BarChart extends DataSetChart {
         list($red, $green, $blue) = $rgb;
 
         return [
-            'fillColor' => "rgba($red,$green,$blue,0.5)",
-            'strokeColor' => "rgba($red,$green,$blue,0.8)",
-            'highlightFill' => "rgba($red,$green,$blue,0.75)",
-            'highlightStroke' => "rgba($red,$green,$blue,1)",
+            'fillColor' => "rgba($red,$green,$blue,1)",
+            'strokeColor' => "rgba($red,$green,$blue,0)",
+            'highlightFill' => "rgba($red,$green,$blue,0.8)",
+            'highlightStroke' => "rgba($red,$green,$blue,0)",
         ];
     }
 }
