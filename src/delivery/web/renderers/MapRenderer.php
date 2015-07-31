@@ -8,7 +8,7 @@ use rtens\domin\delivery\web\WebRenderer;
 class MapRenderer implements WebRenderer {
 
     /** @var RendererRegistry */
-    private $renderers;
+    protected $renderers;
 
     public function __construct(RendererRegistry $renderers) {
         $this->renderers = $renderers;
@@ -50,10 +50,10 @@ class MapRenderer implements WebRenderer {
      */
     public function headElements($array) {
         $elements = [];
-        foreach ($array as $value) {
-            $renderer = $this->renderers->getRenderer($value);
+        foreach ($array as $item) {
+            $renderer = $this->renderers->getRenderer($item);
             if ($renderer instanceof WebRenderer) {
-                $elements = array_merge($elements, $renderer->headElements($value));
+                $elements = array_merge($elements, $renderer->headElements($item));
             }
         }
         return $elements;

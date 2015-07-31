@@ -1,25 +1,16 @@
 <?php
 namespace rtens\domin\delivery\web\renderers;
 
-use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
-use rtens\domin\delivery\web\WebRenderer;
 
-class ListRenderer implements WebRenderer {
-
-    /** @var RendererRegistry */
-    private $renderers;
-
-    public function __construct(RendererRegistry $renderers) {
-        $this->renderers = $renderers;
-    }
+class ListRenderer extends MapRenderer {
 
     /**
      * @param mixed $value
      * @return bool
      */
     public function handles($value) {
-        return is_array($value) && $this->areNumerical(array_keys($value));
+        return parent::handles($value) && $this->areNumerical(array_keys($value));
     }
 
     private function areNumerical($keys) {
@@ -43,20 +34,5 @@ class ListRenderer implements WebRenderer {
             ]);
         }
         return (string)new Element('ul', ['class' => 'list-unstyled'], $items);
-    }
-
-    /**
-     * @param mixed $value
-     * @return array|Element[]
-     */
-    public function headElements($value) {
-        $elements = [];
-        foreach ($value as $item) {
-            $renderer = $this->renderers->getRenderer($item);
-            if ($renderer instanceof WebRenderer) {
-                $elements = array_merge($elements, $renderer->headElements($item));
-            }
-        }
-        return $elements;
     }
 }
