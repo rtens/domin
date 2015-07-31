@@ -6,6 +6,7 @@ use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\RequestParameterReader;
 use rtens\domin\delivery\web\WebApplication;
+use rtens\domin\delivery\web\WebExecutor;
 use rtens\domin\delivery\web\WebField;
 use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
@@ -13,7 +14,6 @@ use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
-use rtens\domin\Executor;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -81,12 +81,14 @@ class ExecuteResource extends Resource {
             $caption = $action->caption();
             $description = $action->description();
 
-            $executor = new Executor($this->app->actions, $this->app->fields, $this->app->renderers, $reader);
+            $executor = new WebExecutor($this->app->actions, $this->app->fields, $this->app->renderers, $reader);
             $result = $executor->execute($__action);
 
             if (!($result instanceof RedirectResult)) {
                 $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
                 $fields = $this->assembleFields($action, $reader);
+
+                $fields['headElements'] = array_merge($fields['headElements'], $executor->getHeadElements());
             }
         } catch (\Exception $e) {
             $result = new FailedResult($e);

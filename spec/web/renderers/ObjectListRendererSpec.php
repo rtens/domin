@@ -4,6 +4,7 @@ namespace spec\rtens\domin\delivery\web\renderers;
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\domin\delivery\web\renderers\link\ClassLink;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
@@ -16,7 +17,9 @@ use rtens\domin\delivery\web\renderers\table\DefaultTableConfiguration;
 use rtens\domin\delivery\web\renderers\table\GenericTableConfiguration;
 use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
 use rtens\domin\delivery\web\WebCommentParser;
+use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\reflection\types\TypeFactory;
+use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\curir\protocol\Url;
@@ -107,7 +110,7 @@ class ObjectListRendererSpec extends StaticTestSuite {
 
         $this->config->add(new DefaultTableConfiguration($this->types));
         $this->assert($this->renderer->render([$object1, $object2]),
-            '<table class="table table-striped">' . "\n" .
+            '<table class="table table-striped data-table">' . "\n" .
             '<thead>' . "\n" .
             '<tr>' . "\n" .
             '<th></th>' . "\n" .
@@ -175,5 +178,31 @@ class ObjectListRendererSpec extends StaticTestSuite {
         $this->config->add(new GenericTableConfiguration($this->types, \DateTimeInterface::class));
 
         $this->assert($this->renderer->render([new \DateTime(), new \DateTime()]));
+    }
+
+    function usesDataTables() {
+        $this->config->add(new DefaultTableConfiguration($this->types));
+        $this->renderers->add(new PrimitiveRenderer());
+
+        $elements = $this->renderer->headElements([new \DateTime()]);
+        $this->assert->contains((string)$elements[0], 'jquery.dataTables.min.css');
+        $this->assert->contains((string)$elements[1], 'jquery.dataTables.min.js');
+        $this->assert->contains((string)$elements[2], "$('.data-table').dataTable({");
+    }
+
+    function collectsHeadElementsFromObjectRenderer() {
+        $renderer = Mockster::of(WebRenderer::class);
+        Mockster::stub($renderer->handles(Argument::any()))->will()->return_(true);
+        Mockster::stub($renderer->headElements(Argument::any()))
+            ->will()->return_([new Element('foo'), new Element('bar')]);
+
+        $this->renderers->add(Mockster::mock($renderer));
+
+        $this->config->add(new DefaultTableConfiguration($this->types));
+
+        $elements = $this->renderer->headElements([json_decode('{"one":"uno"}')]);
+        $this->assert->size($elements, 5);
+        $this->assert((string)$elements[3], '<foo></foo>');
+        $this->assert((string)$elements[4], '<bar></bar>');
     }
 }

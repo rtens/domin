@@ -1,11 +1,11 @@
 <?php
 namespace rtens\domin\delivery\web\renderers;
 
-use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\WebRenderer;
 
-class MapRenderer implements Renderer {
+class MapRenderer implements WebRenderer {
 
     /** @var RendererRegistry */
     private $renderers;
@@ -23,7 +23,7 @@ class MapRenderer implements Renderer {
     }
 
     /**
-     * @param mixed $array
+     * @param array $array
      * @return mixed
      */
     public function render($array) {
@@ -42,5 +42,20 @@ class MapRenderer implements Renderer {
         }
 
         return (string)new Element('dl', ['class' => 'dl-horizontal'], $descriptions);
+    }
+
+    /**
+     * @param array $array
+     * @return array|Element[]
+     */
+    public function headElements($array) {
+        $elements = [];
+        foreach ($array as $value) {
+            $renderer = $this->renderers->getRenderer($value);
+            if ($renderer instanceof WebRenderer) {
+                $elements = array_merge($elements, $renderer->headElements($value));
+            }
+        }
+        return $elements;
     }
 }

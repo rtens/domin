@@ -13,16 +13,16 @@ use rtens\domin\execution\RenderedResult;
 class Executor {
 
     /** @var ActionRegistry */
-    private $actions;
+    protected $actions;
 
     /** @var RendererRegistry */
-    private $renderers;
+    protected $renderers;
 
     /** @var FieldRegistry */
-    private $fields;
+    protected $fields;
 
     /** @var ParameterReader */
-    private $paramReader;
+    protected $paramReader;
 
     /**
      * @param ActionRegistry $actions <-
@@ -85,7 +85,7 @@ class Executor {
         return [$params, $missing];
     }
 
-    private function render($returned) {
-        return $this->renderers->getRenderer($returned)->render($returned);
+    protected function render($value) {
+        return $this->renderers->getRenderer($value)->render($value);
     }
 }

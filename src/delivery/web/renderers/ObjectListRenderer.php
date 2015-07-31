@@ -1,16 +1,17 @@
 <?php
 namespace rtens\domin\delivery\web\renderers;
 
-use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\table\TableConfiguration;
 use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
+use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\reflect\Property;
 
-class ObjectListRenderer implements Renderer {
+class ObjectListRenderer implements WebRenderer {
 
     /** @var RendererRegistry */
     private $renderers;
@@ -64,7 +65,7 @@ class ObjectListRenderer implements Renderer {
 
         $properties = $config->getProperties($value[0]);
 
-        return (string)new Element('table', ['class' => 'table table-striped'], array_merge([
+        return (string)new Element('table', ['class' => 'table table-striped data-table'], array_merge([
                 new Element('thead', [], [new Element('tr', [], $this->renderHeaders($properties, $config))])
             ], $this->renderRows($value, $properties, $config)));
     }
@@ -83,19 +84,19 @@ class ObjectListRenderer implements Renderer {
     }
 
     /**
-     * @param array|object[] $value
+     * @param array|object[] $list
      * @param Property[] $properties
      * @param TableConfiguration $config
      * @return array
      * @throws \Exception
      */
-    private function renderRows($value, $properties, TableConfiguration $config) {
+    private function renderRows($list, $properties, TableConfiguration $config) {
         $rows = [];
-        foreach ($value as $object) {
-            $row = [new Element('td', [], $this->links->createDropDown($object))];
+        foreach ($list as $item) {
+            $row = [new Element('td', [], $this->links->createDropDown($item))];
 
             foreach ($properties as $property) {
-                $propertyValue = $config->getValue($property, $object);
+                $propertyValue = $config->getValue($property, $item);
                 $renderer = $this->renderers->getRenderer($propertyValue);
 
                 $row[] = new Element('td', [], [$renderer->render($propertyValue)]);
@@ -104,5 +105,39 @@ class ObjectListRenderer implements Renderer {
             $rows[] = new Element('tr', [], $row);
         }
         return $rows;
+    }
+
+    /**
+     * @param mixed $value
+     * @return array|Element[]
+     */
+    public function headElements($value) {
+        $object = $value[0];
+
+        $config = $this->config->getConfiguration($object);
+        $properties = $config->getProperties($object);
+
+        $elements = [
+            HeadElements::style('//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css'),
+            HeadElements::script('//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js'),
+            new Element('script', [], ["
+                $(function () {
+                    $('.data-table').dataTable({
+                        columnDefs: [ { targets: 0, orderable: false } ],
+                        order: [],
+                        stateSave: true
+                    });
+                });
+            "])
+        ];
+        foreach ($properties as $property) {
+            $propertyValue = $config->getValue($property, $object);
+            $renderer = $this->renderers->getRenderer($propertyValue);
+
+            if ($renderer instanceof WebRenderer) {
+                $elements = array_merge($elements, $renderer->headElements($propertyValue));
+            }
+        }
+        return $elements;
     }
 }

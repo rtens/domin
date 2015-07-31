@@ -1,11 +1,11 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\charting;
 
-use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\WebRenderer;
 
-class ChartRenderer implements Renderer {
+class ChartRenderer implements WebRenderer {
 
     /**
      * @param mixed $value
@@ -44,7 +44,6 @@ class ChartRenderer implements Renderer {
         $id = uniqid("$type-chart-");
         return (string)new Element('div', [], [
             new Element('canvas', ['id' => $id]),
-            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'),
             new Element('script', [], ["
                 var ctx = document.getElementById('$id').getContext('2d');
                 new Chart(ctx).$type($data, $options);
@@ -52,4 +51,13 @@ class ChartRenderer implements Renderer {
         ]);
     }
 
+    /**
+     * @param mixed $value
+     * @return array|Element[]
+     */
+    public function headElements($value) {
+        return [
+            HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js')
+        ];
+    }
 }

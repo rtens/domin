@@ -5,7 +5,9 @@ use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebCommentParser;
+use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\renderers\link\ClassLink;
 use rtens\domin\delivery\web\renderers\link\Link;
@@ -250,5 +252,19 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->assert->isNull($link->confirm());
         $link->setConfirmation('Foo?');
         $this->assert($link->confirm(), 'Foo?');
+    }
+
+    function collectHeadElementsOfProperties() {
+        $propertyRenderer = Mockster::of(WebRenderer::class);
+        $this->renderers->add(Mockster::mock($propertyRenderer));
+        Mockster::stub($propertyRenderer->handles(Argument::any()))->will()->return_(true);
+        Mockster::stub($propertyRenderer->headElements('uno'))->will()->return_([new Element('one')]);
+        Mockster::stub($propertyRenderer->headElements('bar'))->will()->return_([new Element('foo')]);
+
+        $elements = $this->renderer->headElements(json_decode('{"one":"uno", "foo":"bar"}'));
+
+        $this->assert->size($elements, 2);
+        $this->assert((string)$elements[0], '<one></one>');
+        $this->assert((string)$elements[1], '<foo></foo>');
     }
 } 

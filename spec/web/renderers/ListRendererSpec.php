@@ -3,7 +3,9 @@ namespace spec\rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\ListRenderer;
+use rtens\domin\delivery\web\WebRenderer;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -53,5 +55,18 @@ class ListRendererSpec extends StaticTestSuite {
             "<li>two rendered</li>" . "\n" .
             "</ul>"
         );
+    }
+
+    function collectsHeadElementsOfItems() {
+        $itemRenderer = Mockster::of(WebRenderer::class);
+        $this->registry->add(Mockster::mock($itemRenderer));
+        Mockster::stub($itemRenderer->handles(Argument::any()))->will()->return_(true);
+        Mockster::stub($itemRenderer->headElements('foo'))->will()->return_([new Element('foo')]);
+        Mockster::stub($itemRenderer->headElements(Argument::object(\DateTime::class)))->will()->return_([new Element('bar')]);
+
+        $elements = $this->renderer->headElements(['foo', new \DateTime()]);
+        $this->assert->size($elements, 2);
+        $this->assert((string)$elements[0], '<foo></foo>');
+        $this->assert((string)$elements[1], '<bar></bar>');
     }
 } 

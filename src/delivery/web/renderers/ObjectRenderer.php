@@ -1,14 +1,14 @@
 <?php
 namespace rtens\domin\delivery\web\renderers;
 
-use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
+use rtens\domin\delivery\web\WebRenderer;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\TypeFactory;
 
-class ObjectRenderer implements Renderer {
+class ObjectRenderer implements WebRenderer {
 
     /** @var RendererRegistry */
     private $renderers;
@@ -38,17 +38,6 @@ class ObjectRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        $map = [];
-
-        $reader = new PropertyReader($this->types, get_class($value));
-        foreach ($reader->readInterface($value) as $property) {
-            if (!$property->canGet()) {
-                continue;
-            }
-
-            $map[$property->name()] = $property->get($value);
-        }
-
         return (string)new Element('div', ['class' => 'panel panel-info'], [
             new Element('div', ['class' => 'panel-heading clearfix'], [
                 new Element('h3', ['class' => 'panel-title'], [
@@ -57,8 +46,34 @@ class ObjectRenderer implements Renderer {
                 ])
             ]),
             new Element('div', ['class' => 'panel-body'], [
-                (new MapRenderer($this->renderers))->render($map)
+                (new MapRenderer($this->renderers))->render($this->getProperties($value))
             ])
         ]);
+    }
+
+    /**
+     * @param mixed $value
+     * @return array|Element[]
+     */
+    public function headElements($value) {
+        return (new MapRenderer($this->renderers))->headElements($this->getProperties($value));
+    }
+
+    /**
+     * @param $value
+     * @return array
+     */
+    private function getProperties($value) {
+        $reader = new PropertyReader($this->types, get_class($value));
+
+        $map = [];
+        foreach ($reader->readInterface($value) as $property) {
+            if (!$property->canGet()) {
+                continue;
+            }
+
+            $map[$property->name()] = $property->get($value);
+        }
+        return $map;
     }
 }
