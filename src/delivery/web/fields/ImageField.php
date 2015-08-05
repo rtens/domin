@@ -14,7 +14,7 @@ class ImageField extends FileField {
      * For available options see https://github.com/fengyuanchen/cropper/#options
      * @return array
      */
-    protected function getOptions() {
+    protected function getCropperOptions() {
         return [
             'autoCropArea' => 1,
             'minContainerHeight' => 400,
@@ -40,6 +40,17 @@ class ImageField extends FileField {
      */
     protected function getRotatingAngles() {
         return [15, 90];
+    }
+
+    /**
+     * See https://github.com/jhuckaby/webcamjs#configuration
+     * @return array
+     */
+    private function getWebcamOptions() {
+        return [
+            'width' => 640,
+            'height' => 480
+        ];
     }
 
     /**
@@ -85,6 +96,11 @@ class ImageField extends FileField {
                     ], $parameter->isRequired() && is_null($value) ? [
                         'required' => 'required'
                     ] : []))
+                ]),
+                new Element('span', ['class' => 'btn btn-success take-photo'], ['Take Photo']),
+                new Element('div', ['class' => 'photo-preview-container', 'style' => 'display: none; text-align: center;'], [
+                    new Element('p', [], ['Click on the preview to take a photo.']),
+                    new Element('div', ['class' => 'photo-preview', 'style' => 'margin: auto;'])
                 ]),
 
                 new Element("input", [
@@ -163,10 +179,17 @@ class ImageField extends FileField {
      * @return array|\rtens\domin\delivery\web\Element[]
      */
     public function headElements(Parameter $parameter) {
+        $script = file_get_contents(__DIR__ . '/js/ImageField.js');
+
         $script = str_replace(
             '$cropperOptions$',
-            json_encode($this->getOptions()),
-            file_get_contents(__DIR__ . '/js/ImageField.js')
+            json_encode($this->getCropperOptions()),
+            $script
+        );
+        $script = str_replace(
+            '$webcamjsOptions$',
+            json_encode($this->getWebcamOptions()),
+            $script
         );
 
         return [
@@ -175,6 +198,7 @@ class ImageField extends FileField {
             HeadElements::bootstrap(),
             HeadElements::script('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.js'),
             HeadElements::style('//cdnjs.cloudflare.com/ajax/libs/cropper/0.9.3/cropper.min.css'),
+            HeadElements::script('http://pixlcore.com/demos/webcamjs/webcam.js'),
             new Element('script', [], [$script]),
         ];
     }
