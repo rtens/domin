@@ -81,7 +81,7 @@
             <h1 class="panel-title"><a href="<?= $current ?>"><?= $action ?></a></h1>
         </div>
 
-        <? if ($fields) { ?>
+        <? if ($fields || $description) { ?>
         <div class="panel-body">
             <? if ($description) { ?>
             <div class="well"><?= $description ?></div>
