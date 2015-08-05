@@ -132,6 +132,7 @@ $(function () {
         preview.click(function () {
             Webcam.snap(function (data_uri) {
                 container.hide();
+                Webcam.reset();
 
                 startCropper(parent, data_uri, 'snapshort.' + format, 'image/' + format)
             });
