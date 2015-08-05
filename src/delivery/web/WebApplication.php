@@ -5,10 +5,10 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
+use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
-use rtens\domin\delivery\web\renderers\ObjectListRenderer;
-use rtens\domin\delivery\web\renderers\table\DefaultTableConfiguration;
-use rtens\domin\delivery\web\renderers\table\TableConfigurationRegistry;
+use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
+use rtens\domin\delivery\web\renderers\tables\TableRenderer;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
@@ -71,9 +71,6 @@ class WebApplication {
     /** @var WebCommentParser */
     public $parser;
 
-    /** @var TableConfigurationRegistry */
-    public $tables;
-
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -84,12 +81,10 @@ class WebApplication {
      * @param TypeFactory $types <-
      * @param MobileDetector $detect <-
      * @param WebCommentParser $parser <-
-     * @param TableConfigurationRegistry $tables <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser,
-                                TableConfigurationRegistry $tables) {
+                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser) {
         $factory->setSingleton($this);
 
         $this->factory = $factory;
@@ -101,7 +96,6 @@ class WebApplication {
         $this->identifiers = $identifiers;
         $this->detector = $detect;
         $this->parser = $parser;
-        $this->tables = $tables;
         $this->menu = new Menu($actions);
     }
 
@@ -117,9 +111,9 @@ class WebApplication {
     }
 
     public function registerRenderers(Url $baseUrl) {
-        $this->tables->add(new DefaultTableConfiguration($this->types));
         $links = new LinkPrinter($baseUrl, $this->links, $this->actions, $this->parser);
 
+        $this->renderers->add(new ElementRenderer());
         $this->renderers->add(new BooleanRenderer());
         $this->renderers->add(new PrimitiveRenderer());
         $this->renderers->add(new DateTimeRenderer());
@@ -128,7 +122,8 @@ class WebApplication {
         $this->renderers->add(new FileRenderer());
         $this->renderers->add(new ImageRenderer());
         $this->renderers->add(new ChartRenderer());
-        $this->renderers->add(new ObjectListRenderer($this->renderers, $this->types, $links, $this->tables));
+        $this->renderers->add(new DataTableRenderer($this->renderers, $links));
+        $this->renderers->add(new TableRenderer($this->renderers, $links));
         $this->renderers->add(new ListRenderer($this->renderers));
         $this->renderers->add(new MapRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
