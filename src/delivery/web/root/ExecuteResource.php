@@ -88,7 +88,9 @@ class ExecuteResource extends Resource {
                 $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
                 $fields = $this->assembleFields($action, $reader);
 
-                $fields['headElements'] = array_merge($fields['headElements'], $executor->getHeadElements());
+                $fields['headElements'] = HeadElements::filter(array_merge(
+                    $fields['headElements'],
+                    $executor->getHeadElements()));
             }
         } catch (\Exception $e) {
             $result = new FailedResult($e);
@@ -161,7 +163,7 @@ class ExecuteResource extends Resource {
             ];
         }
         return [
-            'headElements' => HeadElements::filter($headElements),
+            'headElements' => $headElements,
             'fields' => $fields
         ];
     }
