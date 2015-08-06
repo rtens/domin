@@ -1,8 +1,6 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\tables;
 
-use rtens\domin\delivery\web\renderers\link\LinkPrinter;
-
 interface Table {
 
     /**
@@ -11,8 +9,7 @@ interface Table {
     public function getHeaders();
 
     /**
-     * @param null|LinkPrinter $linkPrinter
-     * @return \mixed[][] Rows containing the cells
+     * @return mixed[][] Rows containing the cells
      */
-    public function getRows(LinkPrinter $linkPrinter = null);
+    public function getRows();
 }

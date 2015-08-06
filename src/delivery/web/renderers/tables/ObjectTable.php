@@ -1,21 +1,19 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\tables;
 
-use rtens\domin\delivery\web\Element;
-use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\collections\Map;
 use watoki\collections\Set;
 use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 
-class ObjectTable implements Table {
+class ObjectTable {
 
     /** @var object[] */
     private $objects;
 
     /** @var Map|Property[] */
-    private $properties = [];
+    private $properties;
 
     /** @var array|string[] */
     private $headers = [];
@@ -25,6 +23,7 @@ class ObjectTable implements Table {
 
     public function __construct(array $objects, TypeFactory $types) {
         $this->objects = $objects;
+        $this->properties = new Map();
 
         if ($objects) {
             $reader = new PropertyReader($types, get_class($objects[0]));
@@ -38,7 +37,7 @@ class ObjectTable implements Table {
      * @return string[] Header captions
      */
     public function getHeaders() {
-        $headers = [''];
+        $headers = [];
         foreach ($this->properties as $property) {
             if (array_key_exists($property->name(), $this->headers)) {
                 $headers[] = $this->headers[$property->name()];
@@ -50,29 +49,19 @@ class ObjectTable implements Table {
     }
 
     /**
-     * @param null|LinkPrinter $linkPrinter
-     * @return \mixed[][] Rows containing the Element of each cell
+     * @param object $object
+     * @return mixed[]
      */
-    public function getRows(LinkPrinter $linkPrinter = null) {
-        $rows = [];
-        foreach ($this->objects as $object) {
-            $row = [];
-            if ($linkPrinter) {
-                $row[] = new Element('div', [], $linkPrinter->createDropDown($object));
-            } else {
-                $row[] = '';
+    public function getCells($object) {
+        $row = [];
+        foreach ($this->properties as $property) {
+            $value = $property->get($object);
+            if (array_key_exists($property->name(), $this->filters)) {
+                $value = call_user_func($this->filters[$property->name()], $value);
             }
-
-            foreach ($this->properties as $property) {
-                $value = $property->get($object);
-                if (array_key_exists($property->name(), $this->filters)) {
-                    $value = call_user_func($this->filters[$property->name()], $value);
-                }
-                $row[] = $value;
-            }
-            $rows[] = $row;
+            $row[] = $value;
         }
-        return $rows;
+        return $row;
     }
 
     public function selectProperties($names) {
@@ -88,5 +77,12 @@ class ObjectTable implements Table {
     public function setFilter($propertyName, callable $filter) {
         $this->filters[$propertyName] = $filter;
         return $this;
+    }
+
+    /**
+     * @return object[]
+     */
+    public function getObjects() {
+        return $this->objects;
     }
 }

@@ -1,8 +1,6 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\tables;
 
-use rtens\domin\delivery\web\renderers\link\LinkPrinter;
-
 class ArrayTable implements Table {
 
     /** @var array */
@@ -33,10 +31,9 @@ class ArrayTable implements Table {
     }
 
     /**
-     * @param null|LinkPrinter $linkPrinter
-     * @return \string[][] Rows containing the cells
+     * @return mixed[][] Rows containing the cells
      */
-    public function getRows(LinkPrinter $linkPrinter = null) {
+    public function getRows() {
         $rows = [];
         foreach ($this->array as $item) {
             $row = [];

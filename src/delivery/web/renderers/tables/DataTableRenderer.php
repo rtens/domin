@@ -1,10 +1,20 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\tables;
 
+use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\WebRenderer;
 
-class DataTableRenderer extends TableRenderer {
+class DataTableRenderer implements WebRenderer {
+
+    /** @var RendererRegistry */
+    private $renderers;
+
+    public function __construct(RendererRegistry $renderers) {
+        $this->renderers = $renderers;
+    }
+
     /**
      * @param mixed $value
      * @return bool
@@ -18,8 +28,10 @@ class DataTableRenderer extends TableRenderer {
      * @return mixed
      */
     public function render($value) {
+        $table = $value->getTable();
+
         return new Element('div', ['class' => 'data-table'], [
-            parent::render($value),
+            $this->renderers->getRenderer($table)->render($table),
         ]);
     }
 
@@ -28,7 +40,13 @@ class DataTableRenderer extends TableRenderer {
      * @return array|Element[]
      */
     public function headElements($value) {
-        $elements = parent::headElements($value);
+        $elements = [];
+        $table = $value->getTable();
+
+        $renderer = $this->renderers->getRenderer($table);
+        if ($renderer instanceof WebRenderer) {
+            $elements = $renderer->headElements($table);
+        }
 
         $options = json_encode($value->getOptions());
 

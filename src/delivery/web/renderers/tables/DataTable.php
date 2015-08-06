@@ -1,9 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\tables;
 
-use rtens\domin\delivery\web\renderers\link\LinkPrinter;
-
-class DataTable implements Table {
+class DataTable {
 
     /** @return array */
     private static $defaultOptions = [
@@ -11,13 +9,13 @@ class DataTable implements Table {
         'stateSave' => true
     ];
 
-    /** @var Table */
+    /** @var Table|ObjectTable */
     private $table;
 
     /** @var array */
     private $options;
 
-    public function __construct(Table $table, $options = []) {
+    public function __construct($table, $options = []) {
         $this->table = $table;
         $this->options = array_merge(self::$defaultOptions, $options);
     }
@@ -30,17 +28,9 @@ class DataTable implements Table {
     }
 
     /**
-     * @return string[] Header captions
+     * @return ObjectTable|Table
      */
-    public function getHeaders() {
-        return $this->table->getHeaders();
-    }
-
-    /**
-     * @param null|LinkPrinter $linkPrinter
-     * @return \rtens\domin\delivery\web\Element[][] Rows containing the Element of each cell
-     */
-    public function getRows(LinkPrinter $linkPrinter = null) {
-        return $this->table->getRows($linkPrinter);
+    public function getTable() {
+        return $this->table;
     }
 }

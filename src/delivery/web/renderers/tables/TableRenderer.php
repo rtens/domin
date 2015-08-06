@@ -3,7 +3,6 @@ namespace rtens\domin\delivery\web\renderers\tables;
 
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
-use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\WebRenderer;
 use watoki\reflect\Property;
 
@@ -12,12 +11,8 @@ class TableRenderer implements WebRenderer {
     /** @var RendererRegistry */
     private $renderers;
 
-    /** @var LinkPrinter */
-    private $linkPrinter;
-
-    public function __construct(RendererRegistry $renderers, LinkPrinter $linkPrinter) {
+    public function __construct(RendererRegistry $renderers) {
         $this->renderers = $renderers;
-        $this->linkPrinter = $linkPrinter;
     }
 
     /**
@@ -38,17 +33,17 @@ class TableRenderer implements WebRenderer {
         ], $this->renderRows($value)));
     }
 
-    private function renderHeaders(Table $table) {
+    private function renderHeaders($table) {
         $headers = [];
-        foreach ($table->getHeaders() as $caption) {
+        foreach ($this->getHeaders($table) as $caption) {
             $headers[] = new Element('th', [], [$caption]);
         }
         return $headers;
     }
 
-    private function renderRows(Table $table) {
+    private function renderRows($table) {
         $rows = [];
-        foreach ($table->getRows($this->linkPrinter) as $tableRow) {
+        foreach ($this->getRows($table) as $tableRow) {
             $row = [];
             foreach ($tableRow as $cell) {
                 $row[] = new Element('td', [], [$this->renderers->getRenderer($cell)->render($cell)]);
@@ -65,7 +60,7 @@ class TableRenderer implements WebRenderer {
      */
     public function headElements($value) {
         $elements = [];
-        foreach ($value->getRows($this->linkPrinter) as $row) {
+        foreach ($this->getRows($value) as $row) {
             foreach ($row as $cell) {
                 $renderer = $this->renderers->getRenderer($cell);
                 if ($renderer instanceof WebRenderer) {
@@ -74,5 +69,21 @@ class TableRenderer implements WebRenderer {
             }
         }
         return $elements;
+    }
+
+    /**
+     * @param Table $table
+     * @return mixed
+     */
+    protected function getHeaders($table) {
+        return $table->getHeaders();
+    }
+
+    /**
+     * @param Table $table
+     * @return mixed
+     */
+    protected function getRows($table) {
+        return $table->getRows();
     }
 }
