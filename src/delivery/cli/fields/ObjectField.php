@@ -2,8 +2,8 @@
 namespace rtens\domin\delivery\cli\fields;
 
 use rtens\domin\delivery\cli\CliField;
-use rtens\domin\delivery\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\Parameter;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
@@ -19,18 +19,13 @@ class ObjectField implements CliField {
     /** @var FieldRegistry */
     private $fields;
 
-    /** @var Console */
-    private $console;
+    /** @var ParameterReader */
+    private $reader;
 
-    /**
-     * @param TypeFactory $types
-     * @param FieldRegistry $fields
-     * @param Console $console
-     */
-    public function __construct(TypeFactory $types, FieldRegistry $fields, Console $console) {
+    public function __construct(TypeFactory $types, FieldRegistry $fields, ParameterReader $reader) {
         $this->types = $types;
         $this->fields = $fields;
-        $this->console = $console;
+        $this->reader = $reader;
     }
 
     /**
@@ -51,21 +46,10 @@ class ObjectField implements CliField {
 
         $properties = [];
         foreach ($reader->readInterface() as $property) {
-            $param = new Parameter($property->name(), $property->type());
-            $prompt = $property->name();
-            if (!$property->isRequired()) {
-                $prompt = '[' . $prompt . ']';
-            }
+            $propertyParameter = new Parameter($parameter->getName() . '-' . $property->name(), $property->type());
 
-            $field = $this->getField($param);
-
-            $description = $field->getDescription($param);
-            if ($description !== null) {
-                $prompt .= ' ' . $description;
-            }
-
-            $input = $this->console->read('  ' . $prompt . ':');
-            $properties[$property->name()] = $field->inflate($param, $input);
+            $field = $this->getField($propertyParameter);
+            $properties[$property->name()] = $field->inflate($propertyParameter, $this->reader->read($propertyParameter));
         }
 
         $injector = new Injector(new Factory());

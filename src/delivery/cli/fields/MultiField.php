@@ -2,8 +2,8 @@
 namespace rtens\domin\delivery\cli\fields;
 
 use rtens\domin\delivery\cli\CliField;
-use rtens\domin\delivery\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\Parameter;
 use watoki\reflect\type\MultiType;
 
@@ -12,16 +12,12 @@ class MultiField implements CliField {
     /** @var FieldRegistry */
     private $fields;
 
-    /** @var Console */
-    private $console;
+    /** @var ParameterReader */
+    private $reader;
 
-    /**
-     * @param FieldRegistry $fields
-     * @param Console $console
-     */
-    public function __construct(FieldRegistry $fields, Console $console) {
+    public function __construct(FieldRegistry $fields, ParameterReader $reader) {
         $this->fields = $fields;
-        $this->console = $console;
+        $this->reader = $reader;
     }
 
     /**
@@ -40,8 +36,8 @@ class MultiField implements CliField {
     public function inflate(Parameter $parameter, $serialized) {
         $type = $this->getTypes($parameter)[(int)$serialized];
 
-        $optionParameter = new Parameter($parameter->getName(), $type);
-        return $this->getField($optionParameter)->inflate($optionParameter, $this->input($optionParameter));
+        $optionParameter = new Parameter($parameter->getName() . '-value', $type);
+        return $this->getField($optionParameter)->inflate($optionParameter, $this->reader->read($optionParameter));
     }
 
     /**
@@ -72,17 +68,5 @@ class MultiField implements CliField {
         }
 
         return $type->getTypes();
-    }
-
-    private function input(Parameter $parameter) {
-        $prompt = $parameter->getName();
-
-        $field = $this->getField($parameter);
-        $description = $field->getDescription($parameter);
-        if ($description !== null) {
-            $prompt .= ' ' . $description;
-        }
-
-        return $this->console->read($prompt . ':');
     }
 }

@@ -2,8 +2,8 @@
 namespace rtens\domin\delivery\cli\fields;
 
 use rtens\domin\delivery\cli\CliField;
-use rtens\domin\delivery\cli\Console;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\Parameter;
 use watoki\reflect\type\NullableType;
 
@@ -12,16 +12,16 @@ class NullableField implements CliField {
     /** @var FieldRegistry */
     private $fields;
 
-    /** @var Console */
-    private $console;
+    /** @var ParameterReader */
+    private $reader;
 
     /**
      * @param FieldRegistry $fields
-     * @param Console $console
+     * @param ParameterReader $reader
      */
-    public function __construct(FieldRegistry $fields, Console $console) {
+    public function __construct(FieldRegistry $fields, ParameterReader $reader) {
         $this->fields = $fields;
-        $this->console = $console;
+        $this->reader = $reader;
     }
 
     /**
@@ -38,20 +38,14 @@ class NullableField implements CliField {
      * @return mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
-        if (!$serialized || strtolower($serialized) == 'n') {
+        $innerParameter = $this->getInnerParameter($parameter);
+
+        if (!$this->reader->has($innerParameter) || !$serialized || strtolower($serialized) == 'n') {
             return null;
         }
 
-        $innerParameter = $this->getInnerParameter($parameter);
         $field = $this->getField($innerParameter);
-
-        $prompt = $parameter->getName();
-        $description = $field->getDescription($parameter);
-        if ($description !== null) {
-            $prompt .= ' ' . $description;
-        }
-
-        return $field->inflate($innerParameter, $this->console->read($prompt . ':'));
+        return $field->inflate($innerParameter, $this->reader->read($innerParameter));
     }
 
     private function getInnerParameter(Parameter $parameter) {
@@ -60,7 +54,7 @@ class NullableField implements CliField {
             throw new \InvalidArgumentException("[$type] is not a NullableType");
         }
 
-        return new Parameter($parameter->getName(), $type->getType());
+        return new Parameter($parameter->getName() . '-value', $type->getType());
     }
 
     /**

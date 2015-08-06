@@ -2,18 +2,18 @@
 namespace rtens\domin\delivery\cli\fields;
 
 use rtens\domin\delivery\cli\CliField;
-use rtens\domin\delivery\cli\Console;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\Parameter;
 use rtens\domin\parameters\Html;
 use watoki\reflect\type\ClassType;
 
 class HtmlField implements CliField {
 
-    /** @var Console */
-    private $console;
+    /** @var ParameterReader */
+    private $reader;
 
-    public function __construct(Console $console) {
-        $this->console = $console;
+    public function __construct(ParameterReader $reader) {
+        $this->reader = $reader;
     }
 
     /**
@@ -30,12 +30,16 @@ class HtmlField implements CliField {
      * @return Html
      */
     public function inflate(Parameter $parameter, $serialized) {
+        $lines = [];
+
         $line = $serialized;
         while ($line) {
-            $line = $this->console->read();
-            $serialized .= "\n" . $line;
+            $lines[] = $line;
+
+            $lineParameter = $this->lineParameter($parameter, count($lines));
+            $line = $this->reader->has($lineParameter) ? $this->reader->read($lineParameter) : null;
         }
-        return new Html($serialized);
+        return new Html(implode(PHP_EOL, $lines));
     }
 
     /**
@@ -43,5 +47,9 @@ class HtmlField implements CliField {
      * @return string
      */
     public function getDescription(Parameter $parameter) {
+    }
+
+    private function lineParameter(Parameter $parameter, $lineNumber) {
+        return new Parameter($parameter->getName() . '-' . $lineNumber, $parameter->getType());
     }
 }

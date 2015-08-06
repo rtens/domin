@@ -5,6 +5,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\cli\renderers\ChartRenderer;
 use rtens\domin\delivery\cli\renderers\TableRenderer;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Executor;
 use rtens\domin\reflection\CommentParser;
@@ -81,15 +82,34 @@ class CliApplication {
     }
 
     public static function run(Factory $factory, Console $console = null) {
+        global $argv;
+
         /** @var self $app */
         $app = $factory->getInstance(self::class);
-        $app->doRun($console ?: new Console());
+        $app->doRun($console ?: new Console($argv));
     }
 
     private function doRun(Console $console) {
-        $this->registerFields($console);
+        if ($console->getArguments()) {
+            $actionId = $console->getArguments()[0];
+            $reader = new CliParameterReader($console);
+        } else {
+            $actionId = $this->selectAction($console);
+            $reader = new InteractiveCliParameterReader($this->fields, $console);
+
+            $action = $this->actions->getAction($actionId);
+            $console->writeLine();
+            $console->writeLine($action->caption());
+        }
+
+        $this->registerFields($reader);
         $this->registerRenderers();
 
+        $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
+        $console->write($executor->execute($actionId));
+    }
+
+    private function selectAction(Console $console) {
         $i = 1;
         $actionIds = [];
         foreach ($this->actions->getAllActions() as $id => $action) {
@@ -99,26 +119,19 @@ class CliApplication {
 
         $actionIndex = $console->read('Action:');
 
-        $actionId = $actionIds[$actionIndex - 1];
-        $action = $this->actions->getAction($actionId);
-        $console->writeLine();
-        $console->writeLine($action->caption());
-
-        $reader = new CliParameterReader($this->fields, $console);
-        $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
-        $console->write($executor->execute($actionId));
+        return $actionIds[$actionIndex - 1];
     }
 
-    private function registerFields(Console $console) {
+    private function registerFields(ParameterReader $reader) {
         $this->fields->add(new PrimitiveField());
         $this->fields->add(new BooleanField());
         $this->fields->add(new FileField());
-        $this->fields->add(new HtmlField($console));
+        $this->fields->add(new HtmlField($reader));
         $this->fields->add(new DateTimeField());
-        $this->fields->add(new ArrayField($this->fields, $console));
-        $this->fields->add(new NullableField($this->fields, $console));
-        $this->fields->add(new ObjectField($this->types, $this->fields, $console));
-        $this->fields->add(new MultiField($this->fields, $console));
+        $this->fields->add(new ArrayField($this->fields, $reader));
+        $this->fields->add(new NullableField($this->fields, $reader));
+        $this->fields->add(new ObjectField($this->types, $this->fields, $reader));
+        $this->fields->add(new MultiField($this->fields, $reader));
         $this->fields->add(new IdentifierField($this->fields));
         $this->fields->add(new EnumerationField($this->fields));
     }
