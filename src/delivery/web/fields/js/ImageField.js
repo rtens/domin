@@ -130,6 +130,7 @@ $(function () {
         Webcam.attach('#' + id);
 
         preview.click(function () {
+            preview.unbind('click');
             Webcam.snap(function (data_uri) {
                 container.hide();
                 Webcam.reset();
