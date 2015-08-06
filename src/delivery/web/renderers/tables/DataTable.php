@@ -37,10 +37,10 @@ class DataTable implements Table {
     }
 
     /**
-     * @param LinkPrinter $linkPrinter
+     * @param null|LinkPrinter $linkPrinter
      * @return \rtens\domin\delivery\web\Element[][] Rows containing the Element of each cell
      */
-    public function getRows(LinkPrinter $linkPrinter) {
+    public function getRows(LinkPrinter $linkPrinter = null) {
         return $this->table->getRows($linkPrinter);
     }
 }

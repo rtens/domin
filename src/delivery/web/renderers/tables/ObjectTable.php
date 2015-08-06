@@ -50,15 +50,19 @@ class ObjectTable implements Table {
     }
 
     /**
-     * @param LinkPrinter $linkPrinter
+     * @param null|LinkPrinter $linkPrinter
      * @return \mixed[][] Rows containing the Element of each cell
      */
-    public function getRows(LinkPrinter $linkPrinter) {
+    public function getRows(LinkPrinter $linkPrinter = null) {
         $rows = [];
         foreach ($this->objects as $object) {
-            $row = [
-                new Element('div', [], $linkPrinter->createDropDown($object))
-            ];
+            $row = [];
+            if ($linkPrinter) {
+                $row[] = new Element('div', [], $linkPrinter->createDropDown($object));
+            } else {
+                $row[] = '';
+            }
+
             foreach ($this->properties as $property) {
                 $value = $property->get($object);
                 if (array_key_exists($property->name(), $this->filters)) {

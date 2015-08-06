@@ -11,8 +11,8 @@ interface Table {
     public function getHeaders();
 
     /**
-     * @param LinkPrinter $linkPrinter
+     * @param null|LinkPrinter $linkPrinter
      * @return \mixed[][] Rows containing the cells
      */
-    public function getRows(LinkPrinter $linkPrinter);
+    public function getRows(LinkPrinter $linkPrinter = null);
 }

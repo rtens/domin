@@ -33,10 +33,10 @@ class ArrayTable implements Table {
     }
 
     /**
-     * @param LinkPrinter $linkPrinter
+     * @param null|LinkPrinter $linkPrinter
      * @return \string[][] Rows containing the cells
      */
-    public function getRows(LinkPrinter $linkPrinter) {
+    public function getRows(LinkPrinter $linkPrinter = null) {
         $rows = [];
         foreach ($this->array as $item) {
             $row = [];
