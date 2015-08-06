@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\cli\renderers;
 
+use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\charting\Chart;
 use rtens\domin\delivery\web\renderers\charting\data\DataPointChart;
 use rtens\domin\delivery\web\renderers\charting\data\DataSetChart;

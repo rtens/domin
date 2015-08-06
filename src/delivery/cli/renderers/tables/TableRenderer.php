@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\delivery\cli\renderers;
+namespace rtens\domin\delivery\cli\renderers\tables;
 
 use League\CLImate\CLImate;
 use rtens\domin\delivery\Renderer;
@@ -45,10 +45,10 @@ class TableRenderer implements Renderer {
      * @return array
      */
     protected function prepareData($object) {
-        $headers = $object->getHeaders();
+        $headers = $this->getHeaders($object);
 
         $data = [];
-        foreach ($object->getRows() as $row) {
+        foreach ($this->getRows($object) as $row) {
             $dataRow = [];
             foreach ($row as $col => $value) {
                 $dataRow[$headers[$col]] = str_replace("\n", " ", $this->renderers->getRenderer($value)->render($value));
@@ -60,5 +60,21 @@ class TableRenderer implements Renderer {
 
     protected function canDrawTables() {
         return (extension_loaded('mbstring') && class_exists(CLImate::class));
+    }
+
+    /**
+     * @param Table $table
+     * @return mixed
+     */
+    protected function getRows($table) {
+        return $table->getRows();
+    }
+
+    /**
+     * @param Table $table
+     * @return mixed
+     */
+    protected function getHeaders($table) {
+        return $table->getHeaders();
     }
 }
