@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\delivery\cli;
 
+use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\cli\renderers\ChartRenderer;
 use rtens\domin\delivery\cli\renderers\TableRenderer;
@@ -91,6 +92,11 @@ class CliApplication {
 
     private function doRun(Console $console) {
         if ($console->getArguments()) {
+            if ($console->getArguments()[0] == '?') {
+                $this->printActions($console);
+                return;
+            }
+
             $actionId = $console->getArguments()[0];
             $reader = new CliParameterReader($console);
         } else {
@@ -113,13 +119,19 @@ class CliApplication {
         $i = 1;
         $actionIds = [];
         foreach ($this->actions->getAllActions() as $id => $action) {
-            $console->writeLine($i++ . " - " . $action->caption() . " [$id]");
+            $console->writeLine($i++ . " - " . $action->caption() . $this->shortDescription($action));
             $actionIds[] = $id;
         }
 
         $actionIndex = $console->read('Action:');
 
         return $actionIds[$actionIndex - 1];
+    }
+
+    private function printActions(Console $console) {
+        foreach ($this->actions->getAllActions() as $id => $action) {
+            $console->writeLine($id . ' - ' . $action->caption() . $this->shortDescription($action));
+        }
     }
 
     private function registerFields(ParameterReader $reader) {
@@ -147,5 +159,10 @@ class CliApplication {
         $this->renderers->add(new ChartRenderer($this->renderers));
         $this->renderers->add(new ArrayRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types));
+    }
+
+    private function shortDescription(Action $action) {
+        $description = $this->parser->shorten($action->description());
+        return $description ? " ($description)" : '';
     }
 }
