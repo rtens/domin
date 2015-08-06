@@ -116,8 +116,7 @@ $(function () {
 
         var id = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + Date.now();
 
-        preview.attr('id', id);
-        container.show();
+        Webcam.reset();
 
         var options = $webcamjsOptions$;
         Webcam.set(options);
@@ -127,10 +126,13 @@ $(function () {
             format = options.image_format;
         }
 
+        preview.attr('id', id);
         Webcam.attach('#' + id);
 
+        container.show();
+
+        preview.unbind('click');
         preview.click(function () {
-            preview.unbind('click');
             Webcam.snap(function (data_uri) {
                 container.hide();
                 Webcam.reset();
