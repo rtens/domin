@@ -31,6 +31,9 @@ class TableRenderer implements Renderer {
         $climate->output->defaultTo('buffer');
 
         $data = $this->prepareData($value);
+        if (!$data) {
+            return '(empty)';
+        }
 
         $climate->table($data);
 
