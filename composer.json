@@ -24,7 +24,8 @@
   },
   "suggest": {
     "mobiledetect/mobiledetectlib": "To enable mobile-specific client-side code only when on mobile.",
-    "erusev/parsedown": "To parse Action and Parameter descriptions for HTML output."
+    "erusev/parsedown": "To parse Action and Parameter descriptions for HTML output.",
+    "league/climate": "Used by some CLI components"
   },
   "require-dev": {
     "rtens/scrut": "dev-master",

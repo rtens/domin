@@ -2,6 +2,8 @@
 namespace rtens\domin\delivery\cli;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\delivery\cli\renderers\ChartRenderer;
+use rtens\domin\delivery\cli\renderers\TableRenderer;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\Executor;
@@ -91,7 +93,7 @@ class CliApplication {
         $i = 1;
         $actionIds = [];
         foreach ($this->actions->getAllActions() as $id => $action) {
-            $console->writeLine($i++ . ' - ' . $action->caption());
+            $console->writeLine($i++ . " - " . $action->caption() . " [$id]");
             $actionIds[] = $id;
         }
 
@@ -128,6 +130,8 @@ class CliApplication {
         $this->renderers->add(new HtmlRenderer());
         $this->renderers->add(new IdentifierRenderer());
         $this->renderers->add(new FileRenderer(''));
+        $this->renderers->add(new TableRenderer($this->renderers));
+        $this->renderers->add(new ChartRenderer($this->renderers));
         $this->renderers->add(new ArrayRenderer($this->renderers));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types));
     }
