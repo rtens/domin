@@ -37,7 +37,11 @@ class MethodAction implements Action {
      * @return string
      */
     public function caption() {
-        return ucfirst(preg_replace('/(.)([A-Z0-9])/', '$1 $2', $this->method->name));
+        return $this->unCamelize($this->method->getDeclaringClass()->getShortName()) . ': ' . $this->unCamelize($this->method->name);
+    }
+
+    private function unCamelize($camel) {
+        return ucfirst(preg_replace('/(.)([A-Z0-9])/', '$1 $2', $camel));
     }
 
     /**

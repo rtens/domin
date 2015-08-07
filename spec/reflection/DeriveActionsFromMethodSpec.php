@@ -25,7 +25,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
 
         $action = $this->createMethodAction('SomeEmptyMethod', 'doStuff');
 
-        $this->assert($action->caption(), 'Do Stuff');
+        $this->assert($action->caption(), 'Some Empty Method: Do Stuff');
         $this->assert($action->parameters(), []);
         $this->assert($action->fill(['foo', 'bar']), ['foo', 'bar']);
         $this->assert($action->execute([]), 'did it');
