@@ -22,20 +22,20 @@ class ChartRenderer extends TableRenderer {
     protected function prepareData($object) {
         if ($object instanceof DataPointChart) {
             $data = [];
-            foreach ($object->getDataPoints() as $point) {
-                $data[$point->getLabel()] = $point->getValue();
+            foreach ($object->getDataPoints() as $i => $point) {
+                $data[$point->getLabel() ?: 'val' . $i] = $point->getValue();
             }
             return [$data];
         } else if ($object instanceof DataSetChart) {
             $headers = $object->getLabels();
 
             $data = [];
-            foreach ($object->getDataSets() as $set) {
+            foreach ($object->getDataSets() as $i => $set) {
                 $dataSet = [
-                    '' => $set->getLabel()
+                    '' => $set->getLabel() ?: 'set' . $i
                 ];
-                foreach ($set->getValues() as $i => $value) {
-                    $dataSet[$headers[$i]] = $value;
+                foreach ($set->getValues() as $j => $value) {
+                    $dataSet[$headers[$j] ?: 'val' . $j] = $value;
                 }
                 $data[] = $dataSet;
             }
