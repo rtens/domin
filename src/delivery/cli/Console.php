@@ -6,7 +6,7 @@ class Console {
     private $argv;
 
     public function __construct(array $argv) {
-        $this->argv = array_slice($argv, 1);
+        $this->argv = $argv;
     }
 
     public function read($prompt = '') {
@@ -23,15 +23,19 @@ class Console {
     }
 
     public function getArguments() {
-        return $this->argv;
+        return array_slice($this->argv, 1);
     }
 
     public function getOption($name) {
-        foreach ($this->argv as $i => $arg) {
+        foreach ($this->getArguments() as $i => $arg) {
             if (substr($arg, 0, 1) == '-' && ltrim($arg, '-') == $name && array_key_exists($i + 1, $this->argv)) {
                 return $this->argv[$i + 1];
             }
         }
         throw new \InvalidArgumentException("No option [$name] given");
+    }
+
+    public function getScriptName() {
+        return $this->argv[0];
     }
 }

@@ -94,30 +94,33 @@ class CliApplication {
 
     private function doRun(Console $console) {
         if ($console->getArguments()) {
-            if ($console->getArguments()[0] == '?') {
-                $this->printActions($console);
-                return;
+            if ($console->getArguments()[0] == '!') {
+                $actionId = $this->selectAction($console);
+                $reader = new InteractiveCliParameterReader($this->fields, $console);
+
+                $this->printActionHeader($console, $actionId);
+            } else {
+                $actionId = $console->getArguments()[0];
+                $reader = new CliParameterReader($console);
             }
-
-            $actionId = $console->getArguments()[0];
-            $reader = new CliParameterReader($console);
         } else {
-            $actionId = $this->selectAction($console);
-            $reader = new InteractiveCliParameterReader($this->fields, $console);
-
-            $action = $this->actions->getAction($actionId);
-            $console->writeLine();
-            $console->writeLine($action->caption());
+            $this->printUsage($console);
+            $this->printActions($console);
+            return;
         }
 
         $this->registerFields($reader);
         $this->registerRenderers();
 
         $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
-        $console->write($executor->execute($actionId));
+        $console->write(PHP_EOL . $executor->execute($actionId));
     }
 
     private function selectAction(Console $console) {
+        $console->writeLine();
+        $console->writeLine('Available Actions');
+        $console->writeLine('~~~~~~~~~~~~~~~~~');
+
         $i = 1;
         $actionIds = [];
         foreach ($this->actions->getAllActions() as $id => $action) {
@@ -125,12 +128,37 @@ class CliApplication {
             $actionIds[] = $id;
         }
 
-        $actionIndex = $console->read('Action:');
+        $console->writeLine();
+        $actionIndex = $console->read('Action: ');
 
         return $actionIds[$actionIndex - 1];
     }
 
+    private function printActionHeader(Console $console, $actionId) {
+        $action = $this->actions->getAction($actionId);
+        $console->writeLine();
+        $console->writeLine($action->caption());
+        $console->writeLine(str_repeat('~', strlen($action->caption())));
+        $console->writeLine();
+
+        if ($action->description()) {
+            $console->writeLine($action->description());
+            $console->writeLine();
+        }
+    }
+
+    private function printUsage(Console $console) {
+        $console->writeLine();
+
+        $console->writeLine("Interactive mode: php {$console->getScriptName()} !");
+        $console->writeLine("Execute Action:   php {$console->getScriptName()} <actionId> --<parameterName> <parameterValue> ...");
+        $console->writeLine();
+    }
+
     private function printActions(Console $console) {
+        $console->writeLine('Available Actions');
+        $console->writeLine('~~~~~~~~~~~~~~~~~');
+
         foreach ($this->actions->getAllActions() as $id => $action) {
             $console->writeLine($id . ' - ' . $action->caption() . $this->shortDescription($action));
         }
