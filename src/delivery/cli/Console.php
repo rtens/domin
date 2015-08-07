@@ -23,13 +23,15 @@ class Console {
     }
 
     public function getArguments() {
-        return array_slice($this->argv, 1);
+        return array_values(array_slice($this->argv, 1));
     }
 
     public function getOption($name) {
-        foreach ($this->getArguments() as $i => $arg) {
-            if (substr($arg, 0, 1) == '-' && ltrim($arg, '-') == $name && array_key_exists($i + 1, $this->argv)) {
-                return $this->argv[$i + 1];
+        $arguments = $this->getArguments();
+
+        foreach ($arguments as $i => $arg) {
+            if (substr($arg, 0, 1) == '-' && ltrim($arg, '-') == $name && array_key_exists($i + 1, $arguments)) {
+                return $arguments[$i + 1];
             }
         }
         throw new \InvalidArgumentException("No option [$name] given");
