@@ -3,14 +3,15 @@ namespace rtens\domin\delivery\cli\renderers\tables;
 
 use League\CLImate\CLImate;
 use rtens\domin\delivery\Renderer;
+use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\renderers\tables\Table;
 
 class TableRenderer implements Renderer {
 
-    /** @var \rtens\domin\delivery\RendererRegistry */
+    /** @var RendererRegistry */
     private $renderers;
 
-    public function __construct(\rtens\domin\delivery\RendererRegistry $renderers) {
+    public function __construct(RendererRegistry $renderers) {
         $this->renderers = $renderers;
     }
 
