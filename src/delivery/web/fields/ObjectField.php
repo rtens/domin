@@ -2,11 +2,12 @@
 namespace rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
+use rtens\domin\Parameter;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
+use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\TypeFactory;
@@ -47,7 +48,7 @@ class ObjectField implements WebField {
         $properties = [];
         foreach ($reader->readInterface() as $property) {
             if ($serialized->has($property->name())) {
-                $param = new Parameter($parameter->getName(), $property->type());
+                $param = $this->makePropertyParameter($parameter, $property);
                 $properties[$property->name()] = $this->getField($param)->inflate($param, $serialized[$property->name()]);
             }
         }
@@ -75,7 +76,7 @@ class ObjectField implements WebField {
 
         $headElements = [];
         foreach ($reader->readInterface() as $property) {
-            $param = new Parameter($parameter->getName(), $property->type());
+            $param = $this->makePropertyParameter($parameter, $property);
             $headElements = array_merge($headElements, $this->getField($param)->headElements($param));
         }
         return $headElements;
@@ -102,7 +103,7 @@ class ObjectField implements WebField {
 
         $fields = [];
         foreach ($reader->readInterface($object) as $property) {
-            $param = new Parameter($parameter->getName() . '[' . $property->name() . ']', $property->type(), $property->isRequired());
+            $param = $this->makePropertyParameter($parameter, $property);
             $fields[] = new Element('div', ['class' => 'form-group'], [
                 new Element('label', [], [ucfirst($property->name()) . ($property->isRequired() ? '*' : '')]),
                 $this->getField($param)->render($param, $object ? $property->get($object) : null)
@@ -125,5 +126,9 @@ class ObjectField implements WebField {
      */
     private function getField(Parameter $param) {
         return $this->fields->getField($param);
+    }
+
+    private function makePropertyParameter(Parameter $parameter, Property $property) {
+        return new Parameter($parameter->getName() . '[' . $property->name() . ']', $property->type(), $property->isRequired());
     }
 }
