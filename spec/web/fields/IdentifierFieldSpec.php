@@ -13,7 +13,7 @@ use watoki\reflect\type\UnknownType;
 /**
  * @property \rtens\scrut\fixtures\ExceptionFixture try <-
  */
-class IdentifierTypeSpec extends StaticTestSuite {
+class IdentifierFieldSpec extends StaticTestSuite {
 
     /** @var IdentifiersProvider */
     private $identifiers;
