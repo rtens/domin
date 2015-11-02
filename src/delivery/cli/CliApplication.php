@@ -3,7 +3,9 @@ namespace rtens\domin\delivery\cli;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
+use rtens\domin\delivery\cli\fields\DateIntervalField;
 use rtens\domin\delivery\cli\renderers\ChartRenderer;
+use rtens\domin\delivery\cli\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\cli\renderers\tables\DataTableRenderer;
 use rtens\domin\delivery\cli\renderers\tables\ObjectTableRenderer;
 use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
@@ -170,6 +172,7 @@ class CliApplication {
         $this->fields->add(new FileField());
         $this->fields->add(new HtmlField($reader));
         $this->fields->add(new DateTimeField());
+        $this->fields->add(new DateIntervalField());
         $this->fields->add(new ArrayField($this->fields, $reader));
         $this->fields->add(new NullableField($this->fields, $reader));
         $this->fields->add(new ObjectField($this->types, $this->fields, $reader));
@@ -182,6 +185,7 @@ class CliApplication {
         $this->renderers->add(new BooleanRenderer());
         $this->renderers->add(new PrimitiveRenderer());
         $this->renderers->add(new DateTimeRenderer());
+        $this->renderers->add(new DateIntervalRenderer());
         $this->renderers->add(new HtmlRenderer());
         $this->renderers->add(new IdentifierRenderer());
         $this->renderers->add(new FileRenderer(''));

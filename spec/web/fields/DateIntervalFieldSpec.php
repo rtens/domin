@@ -36,6 +36,10 @@ class DateIntervalFieldSpec extends StaticTestSuite {
 
     function render() {
         $param = new Parameter('foo', new ClassType(\DateInterval::class));
+
+        $this->assert($this->field->render($param, null),
+            '<input class="form-control" type="text" name="foo" value="" placeholder="[d[\'d\']] hh:mm (eg \'3d 12:42\')"/>');
+
         $this->assert($this->field->render($param, new \DateInterval('P7DT45H76M')),
             '<input class="form-control" type="text" name="foo" value="7d 45:76" placeholder="[d[\'d\']] hh:mm (eg \'3d 12:42\')"/>');
 

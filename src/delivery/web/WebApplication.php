@@ -4,7 +4,9 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
+use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
@@ -118,6 +120,7 @@ class WebApplication {
         $this->renderers->add(new BooleanRenderer());
         $this->renderers->add(new PrimitiveRenderer());
         $this->renderers->add(new DateTimeRenderer());
+        $this->renderers->add(new DateIntervalRenderer());
         $this->renderers->add(new HtmlRenderer());
         $this->renderers->add(new IdentifierRenderer($links));
         $this->renderers->add(new FileRenderer());
@@ -139,6 +142,7 @@ class WebApplication {
         $this->fields->add(new ImageField());
         $this->fields->add(new HtmlField());
         $this->fields->add(new DateTimeField());
+        $this->fields->add(new DateIntervalField());
         $this->fields->add(new ArrayField($this->fields, $this->detector));
         $this->fields->add(new NullableField($this->fields));
         $this->fields->add(new ObjectField($this->types, $this->fields));
