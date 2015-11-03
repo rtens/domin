@@ -20,6 +20,11 @@ class DateIntervalFieldSpec extends StaticTestSuite {
         $this->assert->not($this->field->handles(new Parameter('foo', new ClassType(\DateTime::class))));
     }
 
+    function doNotInflateEmptyString() {
+        $param = new Parameter('foo', new ClassType(\DateInterval::class));
+        $this->assert->isNull($this->field->inflate($param, ''));
+    }
+
     function inflateStrings() {
         $this->assertInflated('foo:00', 0, 0, 0);
         $this->assertInflated('   bar:12    ', 0, 0, 12);

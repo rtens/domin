@@ -28,6 +28,10 @@ class DateIntervalField implements CliField {
      * @return \DateInterval
      */
     public function inflate(Parameter $parameter, $serialized) {
+        if (!$serialized) {
+            return null;
+        }
+
         $days = 0;
         if (strpos($serialized, ' ')) {
             list($days, $serialized) = explode(' ', $serialized);
