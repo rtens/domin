@@ -57,7 +57,7 @@ class ObjectRendererSpec extends StaticTestSuite {
             '<small class="pull-right"></small>' . "\n" .
             '</h3>' . "\n" .
             '</div>' . "\n" .
-            '<div class="panel-body"><dl class="dl-horizontal"></dl></div>' . "\n" .
+            '<div class="panel-body"><dl class="dl-horizontal" style="margin-bottom: 0;"></dl></div>' . "\n" .
             '</div>'
         );
     }
@@ -76,7 +76,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $object->bar = 'bas';
 
         $this->assert->contains($this->renderer->render($object),
-            '<dl class="dl-horizontal">' . "\n" .
+            '<dl class="dl-horizontal" style="margin-bottom: 0;">' . "\n" .
             '<dt>Foo</dt>' . "\n" .
             '<dd>fos rendered</dd>' . "\n" .
             '<dt>Bar</dt>' . "\n" .
@@ -97,7 +97,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $class = new \ReflectionClass('NotOnlyReadableProperties');
 
         $this->assert->contains($this->renderer->render($class->newInstance("uno")),
-            '<dl class="dl-horizontal">' . "\n" .
+            '<dl class="dl-horizontal" style="margin-bottom: 0;">' . "\n" .
             '<dt>Public</dt>' . "\n" .
             '<dd>foo</dd>' . "\n" .
             '<dt>Dynamic</dt>' . "\n" .
@@ -117,7 +117,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $class = new \ReflectionClass('APrettyEmptyProperty');
 
         $this->assert->contains($this->renderer->render($class->newInstance()),
-            '<dl class="dl-horizontal">' . "\n" .
+            '<dl class="dl-horizontal" style="margin-bottom: 0;">' . "\n" .
             '<dt><s>Public</s></dt>' . "\n" .
             '<dd></dd>' . "\n" .
             '</dl>'

@@ -27,6 +27,14 @@ class MapRenderer implements WebRenderer {
      * @return mixed
      */
     public function render($array) {
+        return new Element('div', ['class' => 'panel panel-default'], [
+            new Element('div', ['class' => 'panel-body'], [
+                $this->renderArray($array)
+            ])
+        ]);
+    }
+
+    public function renderArray(array $array) {
         $descriptions = [];
 
         foreach ($array as $key => $value) {
@@ -41,7 +49,7 @@ class MapRenderer implements WebRenderer {
             ]);
         }
 
-        return (string)new Element('dl', ['class' => 'dl-horizontal'], $descriptions);
+        return new Element('dl', ['class' => 'dl-horizontal', 'style' => 'margin-bottom: 0;'], $descriptions);
     }
 
     /**
