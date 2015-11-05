@@ -99,12 +99,11 @@ class ExecuteResource extends Resource {
         $resultModel = $this->assembleResult($result, $request);
         return array_merge(
             [
-                'menuItems' => $this->app->menu->assembleModel($request),
+                'menu' => $this->app->menu->render($request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
                 'current' => $crumbs ? array_slice($crumbs, -1)[0]['target'] : null,
                 'action' => $caption,
-                'description' => $description,
-                'baseUrl' => $request->getContext()->appended('')->toString()
+                'description' => $description
             ],
             $resultModel,
             $fields

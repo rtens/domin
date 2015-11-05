@@ -1,21 +1,13 @@
 <?php
 namespace rtens\domin\delivery\web\menu;
 
-class MenuItem {
+use watoki\curir\delivery\WebRequest;
 
-    private $actionId;
-    private $parameters;
+interface MenuItem {
 
-    public function __construct($actionId, $parameters = []) {
-        $this->actionId = $actionId;
-        $this->parameters = $parameters;
-    }
-
-    public function getActionId() {
-        return $this->actionId;
-    }
-
-    public function getParameters() {
-        return $this->parameters;
-    }
+    /**
+     * @param WebRequest $request
+     * @return \rtens\domin\delivery\web\Element
+     */
+    public function render(WebRequest $request);
 }

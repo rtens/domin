@@ -33,9 +33,7 @@ class IndexResource extends Container {
     }
 
     public function respond(Request $request) {
-        /** @var Url $baseUrl */
-        $baseUrl = $request->getContext();
-        $this->app->registerRenderers($baseUrl);
+        $this->app->registerRenderers($this->getBaseUrl($request));
         $this->app->registerFields();
 
         if (!$this->isContainerTarget($request)) {
@@ -53,7 +51,7 @@ class IndexResource extends Container {
     public function doGet(WebRequest $request) {
         $this->resetBreadCrumbs();
         return [
-            'menuItems' => $this->app->menu->assembleModel($request),
+            'menu' => $this->app->menu->render($request),
             'action' => $this->assembleActions($request->getContext()),
             'headElements' => [
                 (string)HeadElements::jquery(),
@@ -85,5 +83,13 @@ class IndexResource extends Container {
 
     protected function createDefaultRenderer() {
         return new PhpRenderer();
+    }
+
+    /**
+     * @param Request|WebRequest $request
+     * @return Url
+     */
+    private function getBaseUrl(Request $request) {
+        return $request->getContext();
     }
 }

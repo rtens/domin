@@ -1,57 +1,71 @@
 <?php
 namespace rtens\domin\delivery\web\menu;
 
-use rtens\domin\ActionRegistry;
-use watoki\collections\Map;
+use rtens\domin\delivery\web\Element;
 use watoki\curir\delivery\WebRequest;
 
 class Menu {
 
-    private $actions;
+    /** @var MenuItem[] */
+    private $left = [];
 
-    /** @var MenuItem[]MenuGroup[] */
-    private $items = [];
+    /** @var MenuItem[] */
+    private $right = [];
 
-    /**
-     * @param ActionRegistry $actions <-
-     */
-    public function __construct(ActionRegistry $actions) {
-        $this->actions = $actions;
-    }
+    /** @var string */
+    private $brand = 'domin';
 
     public function add(MenuItem $item) {
-        $this->items[] = $item;
+        $this->left[] = $item;
         return $this;
     }
 
-    public function addGroup(MenuGroup $group) {
-        $this->items[] = $group;
+    public function addRight(MenuItem $item) {
+        $this->right[] = $item;
         return $this;
     }
 
-    public function assembleModel(WebRequest $request) {
-        return array_map(function ($item) use ($request) {
-            if ($item instanceof MenuItem) {
-                return $this->assembleMenuItem($item, $request);
-            } else if ($item instanceof MenuGroup) {
-                return [
-                    'caption' => $item->getCaption(),
-                    'items' => array_map(function (MenuItem $item) use ($request) {
-                        return $this->assembleMenuItem($item, $request);
-                    }, $item->getItems())
-                ];
-            } else {
-                return null;
-            }
-        }, $this->items);
+    /**
+     * @param string $brand Displayed on the very left of the menu
+     * @return Menu
+     */
+    public function setBrand($brand) {
+        $this->brand = $brand;
+        return $this;
     }
 
-    private function assembleMenuItem(MenuItem $item, WebRequest $request) {
-        return [
-            'caption' => $this->actions->getAction($item->getActionId())->caption(),
-            'target' => (string)$request->getContext()
-                ->appended($item->getActionId())
-                ->withParameters(new Map($item->getParameters()))
-        ];
+    public function render(WebRequest $request) {
+        $render = function (MenuItem $item) use ($request) {
+            return $item->render($request);
+        };
+
+        return new Element('nav', ['class' => 'navbar navbar-default'], [
+            new Element('div', ['class' => 'container-fluid'], [
+                new Element('div', ['class' => 'navbar-header'], [
+                    new Element('button', [
+                        'type' => 'button',
+                        'class' => 'navbar-toggle collapsed',
+                        'data-toggle' => 'collapse',
+                        'data-target' => '#navbar',
+                        'aria-expanded' => 'false',
+                        'aria-controls' => 'navbar'
+                    ], [
+                        new Element('span', ['class' => 'sr-only'], ['Toggle navigation']),
+                        new Element('span', ['class' => 'icon-bar']),
+                        new Element('span', ['class' => 'icon-bar']),
+                        new Element('span', ['class' => 'icon-bar']),
+                    ]),
+                    new Element('a', ['class' => 'navbar-brand', 'href' => $request->getContext()->appended('')->toString()], [$this->brand])
+                ]),
+                new Element('div', ['id' => 'navbar', 'class' => 'navbar-collapse collapse'], [
+                    new Element('ul', ['class' => 'nav navbar-nav'],
+                        array_map($render, $this->left)
+                    ),
+                    new Element('ul', ['class' => 'nav navbar-nav navbar-right'],
+                        array_map($render, $this->right)
+                    )
+                ])
+            ])
+        ]);
     }
 }
