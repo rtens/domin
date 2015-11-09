@@ -103,6 +103,10 @@ class ObjectField implements WebField {
 
         $fields = [];
         foreach ($reader->readInterface($object) as $property) {
+            if (!$property->canSet()) {
+                continue;
+            }
+
             $param = $this->makePropertyParameter($parameter, $property);
             $fields[] = new Element('div', ['class' => 'form-group'], [
                 new Element('label', [], [ucfirst($property->name()) . ($property->isRequired() ? '*' : '')]),
