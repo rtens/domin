@@ -6,6 +6,7 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
+use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
 use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
@@ -125,6 +126,7 @@ class WebApplication {
         $this->renderers->add(new IdentifierRenderer($links));
         $this->renderers->add(new FileRenderer());
         $this->renderers->add(new ImageRenderer());
+        $this->renderers->add(new ScatterChartRenderer());
         $this->renderers->add(new ChartRenderer());
         $this->renderers->add(new ObjectTableRenderer($this->renderers, $links));
         $this->renderers->add(new DataTableRenderer($this->renderers));
