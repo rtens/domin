@@ -1,6 +1,5 @@
 <?php namespace rtens\domin\delivery\web\fields;
 
-use rtens\domin\delivery\cli\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
 use \rtens\domin\delivery\cli\fields\DateIntervalField as CliDateIntervalField;
@@ -14,17 +13,31 @@ class DateIntervalField extends CliDateIntervalField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
-        $renderer = new DateIntervalRenderer();
+        return (string)new Element('div', [], [
+            new Element('input', ['class' => 'form-control-inline', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[d]', 'value' => $value->d]),
+            new Element('span', [], ['days']),
+            new Element('input', ['class' => 'form-control-inline', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[h]', 'value' => $value->h]),
+            new Element('span', [], ['hours']),
+            new Element('input', ['class' => 'form-control-inline', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[i]', 'value' => $value->i]),
+            new Element('span', [], ['minutes']),
+        ]);
+    }
 
-        return (string)new Element('input', array_merge([
-            'class' => 'form-control',
-            'type' => 'text',
-            'name' => $parameter->getName(),
-            'value' => $renderer->render($value),
-            'placeholder' => $this->getDescription($parameter)
-        ], $parameter->isRequired() ? [
-            'required' => 'required'
-        ] : []));
+    /**
+     * @param Parameter $parameter
+     * @param string $serialized
+     * @return \DateInterval
+     */
+    public function inflate(Parameter $parameter, $serialized) {
+        if (!$serialized) {
+            return $parameter->isRequired() ? new \DateInterval('P0D') : null;
+        }
+
+        $days = $serialized['d'];
+        $hours = $serialized['h'];
+        $minutes = $serialized['i'];
+
+        return new \DateInterval("P{$days}DT{$hours}H{$minutes}M");
     }
 
     /**

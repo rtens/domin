@@ -1,5 +1,6 @@
 <?php namespace spec\rtens\domin\delivery\web\fields;
 
+use rtens\domin\delivery\cli\fields\DateIntervalField as CliDateIntervalField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\Parameter;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -26,13 +27,23 @@ class DateIntervalFieldSpec extends StaticTestSuite {
     }
 
     function inflateStrings() {
-        $this->assertInflated('foo:00', 0, 0, 0);
-        $this->assertInflated('   bar:12    ', 0, 0, 12);
-        $this->assertInflated('3:00', 0, 3, 0);
-        $this->assertInflated('23:59', 0, 23, 59);
-        $this->assertInflated('75:76', 0, 75, 76);
-        $this->assertInflated('412 75:42', 412, 75, 42);
-        $this->assertInflated('412d 75:42', 412, 75, 42);
+        $this->assertInflatedCli('foo:00', 0, 0, 0);
+        $this->assertInflatedCli('   bar:12    ', 0, 0, 12);
+        $this->assertInflatedCli('3:00', 0, 3, 0);
+        $this->assertInflatedCli('23:59', 0, 23, 59);
+        $this->assertInflatedCli('75:76', 0, 75, 76);
+        $this->assertInflatedCli('412 75:42', 412, 75, 42);
+        $this->assertInflatedCli('412d 75:42', 412, 75, 42);
+    }
+
+    function inflateWebInput() {
+        $param = new Parameter('foo', new ClassType(\DateInterval::class));
+
+        $this->assert($this->field->inflate($param, null), null);
+        $this->assert($this->field->inflate($param, ['d' => 2, 'h' => 5, 'i' => 3]), new \DateInterval('P2DT5H3M'));
+
+        $requiredParam = new Parameter('foo', new ClassType(\DateInterval::class), true);
+        $this->assert($this->field->inflate($requiredParam, null), new \DateInterval('P0D'));
     }
 
     function noHeadElements() {
@@ -43,24 +54,31 @@ class DateIntervalFieldSpec extends StaticTestSuite {
         $param = new Parameter('foo', new ClassType(\DateInterval::class));
 
         $this->assert($this->field->render($param, null),
-            '<input class="form-control" type="text" name="foo" value="" placeholder="[d[\'d\']] hh:mm (eg \'3d 12:42\')"/>');
+            '<div>' . "\n" .
+            '<input class="form-control-inline" type="number" size="3" name="foo[d]" value=""/>' . "\n" .
+            '<span>days</span>' . "\n" .
+            '<input class="form-control-inline" type="number" size="3" name="foo[h]" value=""/>' . "\n" .
+            '<span>hours</span>' . "\n" .
+            '<input class="form-control-inline" type="number" size="3" name="foo[i]" value=""/>' . "\n" .
+            '<span>minutes</span>' . "\n" .
+            '</div>');
 
-        $this->assert($this->field->render($param, new \DateInterval('P7DT45H76M')),
-            '<input class="form-control" type="text" name="foo" value="7d 45:76" placeholder="[d[\'d\']] hh:mm (eg \'3d 12:42\')"/>');
+        $rendered = $this->field->render($param, new \DateInterval('P7DT45H76M'));
+        $this->assert->contains($rendered, 'name="foo[d]" value="7"');
+        $this->assert->contains($rendered, 'name="foo[h]" value="45"');
+        $this->assert->contains($rendered, 'name="foo[i]" value="76"');
 
-        $this->assert->contains($this->field->render($param, new \DateInterval('P0DT0H0M')),
-            'value="00:00"');
-
-        $requiredParam = new Parameter('foo', new ClassType(\DateInterval::class), true);
-        $this->assert->contains($this->field->render($requiredParam, new \DateInterval('PT0S')),
-            'required="required"');
-
+        $rendered = $this->field->render($param, new \DateInterval('P0DT0H0M'));
+        $this->assert->contains($rendered, 'name="foo[d]" value="0"');
+        $this->assert->contains($rendered, 'name="foo[h]" value="0"');
+        $this->assert->contains($rendered, 'name="foo[i]" value="0"');
     }
 
-    private function assertInflated($string, $days, $hours, $minutes) {
+    private function assertInflatedCli($string, $days, $hours, $minutes) {
+        $field = new CliDateIntervalField;
         $param = new Parameter('foo', new ClassType(\DateInterval::class));
-        $this->assert($this->field->inflate($param, $string)->d, $days);
-        $this->assert($this->field->inflate($param, $string)->h, $hours);
-        $this->assert($this->field->inflate($param, $string)->i, $minutes);
+        $this->assert($field->inflate($param, $string)->d, $days);
+        $this->assert($field->inflate($param, $string)->h, $hours);
+        $this->assert($field->inflate($param, $string)->i, $minutes);
     }
 }
