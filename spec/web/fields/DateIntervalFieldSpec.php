@@ -41,6 +41,7 @@ class DateIntervalFieldSpec extends StaticTestSuite {
 
         $this->assert($this->field->inflate($param, null), null);
         $this->assert($this->field->inflate($param, ['d' => 2, 'h' => 5, 'i' => 3]), new \DateInterval('P2DT5H3M'));
+        $this->assert($this->field->inflate($param, ['d' => '', 'h' => '', 'i' => '']), new \DateInterval('P0DT0H0M'));
 
         $requiredParam = new Parameter('foo', new ClassType(\DateInterval::class), true);
         $this->assert($this->field->inflate($requiredParam, null), new \DateInterval('P0D'));
