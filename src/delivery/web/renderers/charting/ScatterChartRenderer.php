@@ -23,6 +23,7 @@ class ScatterChartRenderer extends ChartRenderer {
             'scaleShowLabels' => true,
             'scaleLabel' => "<%=value%>",
             'scaleArgLabel' => "<%=value%>",
+            'multiTooltipTemplate' => '<%=datasetLabel%>: <%=arg%>; <%=value%>',
             'scaleBeginAtZero' => true,
             'datasetStroke' => false
         ]);
