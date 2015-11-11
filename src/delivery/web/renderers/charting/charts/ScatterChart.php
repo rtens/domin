@@ -18,6 +18,19 @@ class ScatterChart extends Chart {
         $this->scatterData = $scatterData;
     }
 
+    protected function getDefaultOptions() {
+        return array_merge(parent::getDefaultOptions(), [
+            'showTooltips' => true,
+            'scaleShowHorizontalLines' => true,
+            'scaleShowLabels' => true,
+            'scaleLabel' => "<%=value%>",
+            'scaleArgLabel' => "<%=value%>",
+            'multiTooltipTemplate' => '<%=datasetLabel%>: <%=arg%>; <%=value%>',
+            'scaleBeginAtZero' => true,
+            'datasetStroke' => false
+        ]);
+    }
+
     public function chartType() {
         return "Scatter";
     }

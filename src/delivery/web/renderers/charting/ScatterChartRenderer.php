@@ -14,22 +14,6 @@ class ScatterChartRenderer extends ChartRenderer {
     }
 
     /**
-     * @return array
-     */
-    protected function getOptions() {
-        return array_merge(parent::getOptions(), [
-            'showTooltips' => true,
-            'scaleShowHorizontalLines' => true,
-            'scaleShowLabels' => true,
-            'scaleLabel' => "<%=value%>",
-            'scaleArgLabel' => "<%=value%>",
-            'multiTooltipTemplate' => '<%=datasetLabel%>: <%=arg%>; <%=value%>',
-            'scaleBeginAtZero' => true,
-            'datasetStroke' => false
-        ]);
-    }
-
-    /**
      * @param mixed $value
      * @return array|\rtens\domin\delivery\web\Element[]
      */

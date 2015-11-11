@@ -16,17 +16,6 @@ class ChartRenderer implements WebRenderer {
     }
 
     /**
-     * @return array
-     */
-    protected function getOptions() {
-        return [
-            'animation' => false,
-            'responsive' => true,
-            "multiTooltipTemplate" => "<%= datasetLabel %>: <%= value %>",
-        ];
-    }
-
-    /**
      * @param Chart $value
      * @return string
      */
@@ -38,7 +27,7 @@ class ChartRenderer implements WebRenderer {
         }
 
         $data = json_encode($data);
-        $options = json_encode($this->getOptions());
+        $options = json_encode($value->getOptions());
 
         $type = $value->chartType();
         $id = uniqid("$type-chart-");
