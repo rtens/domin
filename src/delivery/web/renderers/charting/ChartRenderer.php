@@ -27,7 +27,7 @@ class ChartRenderer implements WebRenderer {
         }
 
         $data = json_encode($data);
-        $options = json_encode($value->getOptions());
+        $options = json_encode($value->options());
 
         $type = $value->chartType();
         $id = uniqid("$type-chart-");

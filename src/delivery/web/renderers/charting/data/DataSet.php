@@ -1,6 +1,8 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\charting\data;
 
+use rtens\domin\parameters\Color;
+
 class DataSet {
 
     /** @var null|string */
@@ -9,14 +11,18 @@ class DataSet {
     /** @var int[] */
     private $values = [];
 
+    /** @var null|Color */
+    private $color;
+
     /**
-     * DataSet constructor.
-     * @param null|string $label
      * @param int[] $values
+     * @param null|string $label
+     * @param Color|null $color
      */
-    public function __construct($label = null, array $values = []) {
+    public function __construct(array $values = [], $label = '', Color $color = null) {
         $this->label = $label;
         $this->values = $values;
+        $this->color = $color;
     }
 
     /**
@@ -31,5 +37,12 @@ class DataSet {
      */
     public function getValues() {
         return $this->values;
+    }
+
+    /**
+     * @return null|Color
+     */
+    public function getColor() {
+        return $this->color;
     }
 }

@@ -3,8 +3,8 @@ namespace rtens\domin\delivery\cli\renderers;
 
 use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\charting\Chart;
-use rtens\domin\delivery\web\renderers\charting\data\DataPointChart;
-use rtens\domin\delivery\web\renderers\charting\data\DataSetChart;
+use rtens\domin\delivery\web\renderers\charting\charts\DataPointChart;
+use rtens\domin\delivery\web\renderers\charting\charts\DataSetChart;
 
 class ChartRenderer extends TableRenderer {
     /**

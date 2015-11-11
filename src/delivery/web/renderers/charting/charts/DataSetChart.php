@@ -1,7 +1,8 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\charting\data;
+namespace rtens\domin\delivery\web\renderers\charting\charts;
 
 use rtens\domin\delivery\web\renderers\charting\Chart;
+use rtens\domin\delivery\web\renderers\charting\data\DataSet;
 
 abstract class DataSetChart extends Chart {
 
@@ -30,10 +31,12 @@ abstract class DataSetChart extends Chart {
         return [
             "labels" => $this->makeLabels(),
             "datasets" => array_map(function (DataSet $set) {
-                return array_merge(array(
-                    "label" => $set->getLabel(),
-                    "data" => $set->getValues()
-                ), $this->makePalette($this->colors->next()));
+                return array_merge(
+                    [
+                        "label" => $set->getLabel(),
+                        "data" => $set->getValues()
+                    ],
+                    $this->makePalette($set->getColor() ?: $this->provideColor()));
             }, $dataSets)
         ];
     }

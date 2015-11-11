@@ -1,7 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\charting\charts;
 
-use rtens\domin\delivery\web\renderers\charting\data\DataPointChart;
+use rtens\domin\parameters\Color;
 
 class PieChart extends DataPointChart {
 
@@ -9,8 +9,8 @@ class PieChart extends DataPointChart {
         return 'Pie';
     }
 
-    public function makePalette(array $rgb) {
-        list($red, $green, $blue) = $rgb;
+    public function makePalette(Color $color) {
+        list($red, $green, $blue) = $color->asArray();
         return [
             'color' => "rgba($red,$green,$blue,1)",
             'highlight' => "rgba($red,$green,$blue,0.8)",

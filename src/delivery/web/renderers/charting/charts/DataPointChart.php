@@ -1,7 +1,8 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\charting\data;
+namespace rtens\domin\delivery\web\renderers\charting\charts;
 
 use rtens\domin\delivery\web\renderers\charting\Chart;
+use rtens\domin\delivery\web\renderers\charting\data\DataPoint;
 
 abstract class DataPointChart extends Chart {
 
@@ -17,11 +18,13 @@ abstract class DataPointChart extends Chart {
     }
 
     public function data() {
-        return array_map(function (DataPoint $set) {
-            return array_merge([
-                "label" => $set->getLabel(),
-                "value" => $set->getValue()
-            ], $this->makePalette($this->colors->next()));
+        return array_map(function (DataPoint $point) {
+            return array_merge(
+                [
+                    "label" => $point->getLabel(),
+                    "value" => $point->getValue()
+                ],
+                $this->makePalette($point->getColor() ?: $this->provideColor()));
         }, $this->getDataPoints());
     }
 
@@ -31,5 +34,4 @@ abstract class DataPointChart extends Chart {
     public function getDataPoints() {
         return $this->dataPoints;
     }
-
 }

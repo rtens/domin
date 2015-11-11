@@ -1,6 +1,8 @@
 <?php namespace rtens\domin\delivery\web\renderers\charting\data;
 
-class ScatterData {
+use rtens\domin\parameters\Color;
+
+class ScatterDataSet {
 
     /** @var string */
     private $label;
@@ -8,13 +10,18 @@ class ScatterData {
     /** @var ScatterDataPoint[] */
     private $dataPoints;
 
+    /** @var Color|null */
+    private $color;
+
     /**
-     * @param string $label
      * @param ScatterDataPoint[] $dataPoints
+     * @param string $label
+     * @param Color $color
      */
-    public function __construct($label, $dataPoints) {
+    public function __construct(array $dataPoints, $label = '', Color $color = null) {
         $this->label = $label;
         $this->dataPoints = $dataPoints;
+        $this->color = $color;
     }
 
     /**
@@ -29,5 +36,12 @@ class ScatterData {
      */
     public function getDataPoints() {
         return $this->dataPoints;
+    }
+
+    /**
+     * @return null|Color
+     */
+    public function getColor() {
+        return $this->color;
     }
 }

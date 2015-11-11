@@ -1,7 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\charting\charts;
 
-use rtens\domin\delivery\web\renderers\charting\data\DataSetChart;
+use rtens\domin\parameters\Color;
 
 class LineChart extends DataSetChart {
 
@@ -9,8 +9,8 @@ class LineChart extends DataSetChart {
         return "Line";
     }
 
-    public function makePalette(array $rgb) {
-        list($red, $green, $blue) = $rgb;
+    public function makePalette(Color $color) {
+        list($red, $green, $blue) = $color->asArray();
 
         $light = "rgba($red,$green,$blue,0.1)";
         $full = "rgba($red,$green,$blue,1)";

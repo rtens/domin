@@ -1,7 +1,7 @@
 <?php
 namespace rtens\domin\delivery\web\renderers\charting\charts;
 
-use rtens\domin\delivery\web\renderers\charting\data\DataSetChart;
+use rtens\domin\parameters\Color;
 
 class BarChart extends DataSetChart {
 
@@ -9,8 +9,8 @@ class BarChart extends DataSetChart {
         return "Bar";
     }
 
-    public function makePalette(array $rgb) {
-        list($red, $green, $blue) = $rgb;
+    public function makePalette(Color $color) {
+        list($red, $green, $blue) = $color->asArray();
 
         return [
             'fillColor' => "rgba($red,$green,$blue,1)",
