@@ -4,9 +4,11 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\fields\ColorField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
 use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
+use rtens\domin\delivery\web\renderers\ColorRenderer;
 use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
@@ -119,6 +121,7 @@ class WebApplication {
 
         $this->renderers->add(new ElementRenderer());
         $this->renderers->add(new BooleanRenderer());
+        $this->renderers->add(new ColorRenderer());
         $this->renderers->add(new PrimitiveRenderer());
         $this->renderers->add(new DateTimeRenderer());
         $this->renderers->add(new DateIntervalRenderer());
@@ -140,6 +143,7 @@ class WebApplication {
         $this->fields->add(new StringField());
         $this->fields->add(new NumberField());
         $this->fields->add(new BooleanField());
+        $this->fields->add(new ColorField());
         $this->fields->add(new FileField());
         $this->fields->add(new ImageField());
         $this->fields->add(new HtmlField());
