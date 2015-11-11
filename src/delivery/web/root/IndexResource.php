@@ -51,6 +51,7 @@ class IndexResource extends Container {
     public function doGet(WebRequest $request) {
         $this->resetBreadCrumbs();
         return [
+            'name' => $this->app->name,
             'menu' => $this->app->menu->render($request),
             'action' => $this->assembleActions($request->getContext()),
             'headElements' => [

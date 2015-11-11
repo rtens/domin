@@ -47,6 +47,9 @@ use watoki\factory\Factory;
 
 class WebApplication {
 
+    /** @var string */
+    public $name = 'domin';
+
     /** @var Factory */
     public $factory;
 
