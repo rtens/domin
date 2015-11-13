@@ -9,7 +9,13 @@ interface Table {
     public function getHeaders();
 
     /**
-     * @return mixed[][] Rows containing the cells
+     * @return mixed[] The table items
      */
-    public function getRows();
+    public function getItems();
+
+    /**
+     * @param $item
+     * @return mixed[] The cells of an item
+     */
+    public function getCells($item);
 }

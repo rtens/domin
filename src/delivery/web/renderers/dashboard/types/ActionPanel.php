@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\dashboard;
+namespace rtens\domin\delivery\web\renderers\dashboard\types;
 
 class ActionPanel {
 

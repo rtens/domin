@@ -5,13 +5,12 @@ use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
-use rtens\domin\delivery\web\renderers\link\ClassLink;
+use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
-use rtens\domin\delivery\web\renderers\tables\ObjectTable;
-use rtens\domin\delivery\web\renderers\tables\ObjectTableRenderer;
-use rtens\domin\delivery\web\renderers\tables\Table;
+use rtens\domin\delivery\web\renderers\tables\TableRenderer;
+use rtens\domin\delivery\web\renderers\tables\types\ObjectTable;
 use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\Mockster;
@@ -32,7 +31,7 @@ class ObjectTableRendererSpec extends StaticTestSuite {
     /** @var TypeFactory */
     private $types;
 
-    /** @var ObjectTableRenderer */
+    /** @var TableRenderer */
     private $tableRenderer;
 
     /** @var LinkPrinter */
@@ -46,17 +45,16 @@ class ObjectTableRendererSpec extends StaticTestSuite {
         $parser = new WebCommentParser();
         $this->printer = new LinkPrinter(Url::fromString('http://example.com/base'), $this->links, $this->actions, $parser);
 
-        $this->tableRenderer = new ObjectTableRenderer($this->renderers, $this->printer);
+        $this->tableRenderer = new TableRenderer($this->renderers, $this->printer);
     }
 
     function handlesObjectTables() {
         $this->assert($this->tableRenderer->handles(new ObjectTable([], $this->types)));
-        $this->assert->not($this->tableRenderer->handles(Mockster::mock(Table::class)));
     }
 
     function renderEmptyObjectTable() {
         $rendered = $this->tableRenderer->render(new ObjectTable([], $this->types));
-        $this->assert($rendered, '<table class="table table-striped"><thead><tr><th></th></tr></thead></table>');
+        $this->assert($rendered, null);
     }
 
     function renderObjectTable() {
@@ -72,18 +70,18 @@ class ObjectTableRendererSpec extends StaticTestSuite {
             '<table class="table table-striped">' . "\n" .
             '<thead>' . "\n" .
             '<tr>' . "\n" .
-            '<th></th>' . "\n" .
+            '<th width="1"></th>' . "\n" .
             '<th>One</th>' . "\n" .
             '<th>Two</th>' . "\n" .
             '</tr>' . "\n" .
             '</thead>' . "\n" .
             '<tr>' . "\n" .
-            '<td><div></div></td>' . "\n" .
+            '<td></td>' . "\n" .
             '<td>uno</td>' . "\n" .
             '<td>dos</td>' . "\n" .
             '</tr>' . "\n" .
             '<tr>' . "\n" .
-            '<td><div></div></td>' . "\n" .
+            '<td></td>' . "\n" .
             '<td>un</td>' . "\n" .
             '<td>deux</td>' . "\n" .
             '</tr>' . "\n" .

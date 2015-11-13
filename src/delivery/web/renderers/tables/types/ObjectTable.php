@@ -1,13 +1,14 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\tables;
+namespace rtens\domin\delivery\web\renderers\tables\types;
 
+use rtens\domin\delivery\web\renderers\tables\Table;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\collections\Map;
 use watoki\collections\Set;
 use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 
-class ObjectTable {
+class ObjectTable implements Table {
 
     /** @var object[] */
     private $objects;
@@ -49,6 +50,13 @@ class ObjectTable {
     }
 
     /**
+     * @return object[]
+     */
+    public function getItems() {
+        return $this->objects;
+    }
+
+    /**
      * @param object $object
      * @return mixed[]
      */
@@ -77,12 +85,5 @@ class ObjectTable {
     public function setFilter($propertyName, callable $filter) {
         $this->filters[$propertyName] = $filter;
         return $this;
-    }
-
-    /**
-     * @return object[]
-     */
-    public function getObjects() {
-        return $this->objects;
     }
 }

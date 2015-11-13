@@ -1,7 +1,7 @@
 <?php
 namespace rtens\domin\delivery\cli\renderers\tables;
 
-use rtens\domin\delivery\web\renderers\tables\ObjectTable;
+use rtens\domin\delivery\web\renderers\tables\types\ObjectTable;
 
 class ObjectTableRenderer extends TableRenderer {
 
@@ -19,7 +19,7 @@ class ObjectTableRenderer extends TableRenderer {
      */
     protected function getRows($table) {
         $rows = [];
-        foreach ($table->getObjects() as $object) {
+        foreach ($table->getItems() as $object) {
             $rows[] = $table->getCells($object);
         }
         return $rows;

@@ -9,7 +9,7 @@ use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\reflection\types\TypeFactory;
-use rtens\domin\delivery\web\renderers\link\ClassLink;
+use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\link\Link;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;

@@ -3,7 +3,7 @@ namespace rtens\domin\delivery\cli\renderers\tables;
 
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\delivery\web\renderers\tables\DataTable;
+use rtens\domin\delivery\web\renderers\tables\types\DataTable;
 
 class DataTableRenderer implements Renderer {
 

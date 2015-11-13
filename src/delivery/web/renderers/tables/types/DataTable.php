@@ -1,5 +1,7 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\tables;
+namespace rtens\domin\delivery\web\renderers\tables\types;
+
+use rtens\domin\delivery\web\renderers\tables\Table;
 
 class DataTable {
 

@@ -3,6 +3,7 @@ namespace rtens\domin\delivery\web\renderers;
 
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\WebRenderer;
 
 class MapRenderer implements WebRenderer {
@@ -10,8 +11,12 @@ class MapRenderer implements WebRenderer {
     /** @var RendererRegistry */
     protected $renderers;
 
-    public function __construct(RendererRegistry $renderers) {
+    /** @var LinkPrinter */
+    private $links;
+
+    public function __construct(RendererRegistry $renderers, LinkPrinter $links) {
         $this->renderers = $renderers;
+        $this->links = $links;
     }
 
     /**
@@ -27,11 +32,19 @@ class MapRenderer implements WebRenderer {
      * @return mixed
      */
     public function render($array) {
-        return new Element('div', ['class' => 'panel panel-default'], [
+        $content = [
             new Element('div', ['class' => 'panel-body'], [
                 $this->renderArray($array)
             ])
-        ]);
+        ];
+
+        $links = $this->links->createLinkElements($array);
+        if ($links) {
+            array_unshift($content, new Element('div', ['class' => 'panel-heading clearfix'], [
+                new Element('small', ['class' => 'pull-right'], $links)
+            ]));
+        }
+        return new Element('div', ['class' => 'panel panel-default'], $content);
     }
 
     public function renderArray(array $array) {

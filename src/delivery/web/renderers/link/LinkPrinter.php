@@ -29,7 +29,7 @@ class LinkPrinter {
     }
 
     /**
-     * @param object $object
+     * @param mixed $object
      * @return array
      */
     public function createLinkElements($object) {
@@ -37,7 +37,7 @@ class LinkPrinter {
     }
 
     /**
-     * @param object $object
+     * @param mixed $object
      * @param string|null $caption
      * @return array|\rtens\domin\delivery\web\Element[]
      */
@@ -45,6 +45,14 @@ class LinkPrinter {
         $links = $this->createLinks($object);
         if (empty($links)) {
             return [];
+        }
+
+        if (!$caption) {
+            if (is_object($object)) {
+                $caption = (new \ReflectionClass($object))->getShortName();
+            } else {
+                $caption = 'Actions';
+            }
         }
 
         return [
@@ -56,7 +64,7 @@ class LinkPrinter {
                     'aria-haspopup' => 'true',
                     'aria-expanded' => 'false'
                 ], [
-                    !is_null($caption) ? $caption : (new \ReflectionClass($object))->getShortName(),
+                    $caption,
                     new Element('span', ['class' => 'caret'])
                 ]),
                 new Element('ul', ['class' => 'dropdown-menu'], array_map(function (Element $element) {

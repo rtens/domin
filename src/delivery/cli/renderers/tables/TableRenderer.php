@@ -71,7 +71,7 @@ class TableRenderer implements Renderer {
      * @return mixed
      */
     protected function getRows($table) {
-        return $table->getRows();
+        return $table->getItems();
     }
 
     /**

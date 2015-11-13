@@ -6,6 +6,10 @@ class LinkRegistry {
     /** @var Link[] */
     private $links = [];
 
+    /**
+     * @param mixed $object
+     * @return array|Link[]
+     */
     public function getLinks($object) {
         return array_filter($this->links, function (Link $link) use ($object) {
             return $link->handles($object);

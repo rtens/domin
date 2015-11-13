@@ -15,7 +15,6 @@ use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
-use rtens\domin\delivery\web\renderers\tables\ObjectTableRenderer;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
@@ -138,11 +137,10 @@ class WebApplication {
         $this->renderers->add(new ChartRenderer());
         $this->renderers->add(new DashboardItemRenderer($this->renderers));
         $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $baseUrl));
-        $this->renderers->add(new ObjectTableRenderer($this->renderers, $links));
         $this->renderers->add(new DataTableRenderer($this->renderers));
-        $this->renderers->add(new TableRenderer($this->renderers));
-        $this->renderers->add(new ListRenderer($this->renderers));
-        $this->renderers->add(new MapRenderer($this->renderers));
+        $this->renderers->add(new TableRenderer($this->renderers, $links));
+        $this->renderers->add(new ListRenderer($this->renderers, $links));
+        $this->renderers->add(new MapRenderer($this->renderers, $links));
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
 

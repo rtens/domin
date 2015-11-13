@@ -46,7 +46,7 @@ class ObjectRenderer implements WebRenderer {
                 ])
             ]),
             new Element('div', ['class' => 'panel-body'], [
-                (new MapRenderer($this->renderers))->renderArray($this->getProperties($value))
+                (new MapRenderer($this->renderers, $this->links))->renderArray($this->getProperties($value))
             ])
         ]);
     }
@@ -56,7 +56,7 @@ class ObjectRenderer implements WebRenderer {
      * @return array|Element[]
      */
     public function headElements($value) {
-        return (new MapRenderer($this->renderers))->headElements($this->getProperties($value));
+        return (new MapRenderer($this->renderers, $this->links))->headElements($this->getProperties($value));
     }
 
     /**

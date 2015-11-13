@@ -1,8 +1,9 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\dashboard;
+namespace rtens\domin\delivery\web\renderers\dashboard\types;
 
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\renderers\dashboard\DashboardItem;
 
 class Row implements DashboardItem {
 

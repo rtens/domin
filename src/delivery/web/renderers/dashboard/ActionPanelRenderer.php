@@ -4,6 +4,8 @@ namespace rtens\domin\delivery\web\renderers\dashboard;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\renderers\dashboard\types\ActionPanel;
+use rtens\domin\delivery\web\renderers\dashboard\types\Panel;
 use rtens\domin\delivery\web\WebRenderer;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;

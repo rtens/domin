@@ -4,7 +4,7 @@ namespace spec\rtens\domin\delivery\web\renderers;
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\renderers\IdentifierRenderer;
-use rtens\domin\delivery\web\renderers\link\IdentifierLink;
+use rtens\domin\delivery\web\renderers\link\types\IdentifierLink;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
 use rtens\domin\delivery\web\WebCommentParser;

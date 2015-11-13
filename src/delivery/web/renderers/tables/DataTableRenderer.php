@@ -4,6 +4,7 @@ namespace rtens\domin\delivery\web\renderers\tables;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\renderers\tables\types\DataTable;
 use rtens\domin\delivery\web\WebRenderer;
 
 class DataTableRenderer implements WebRenderer {
@@ -29,9 +30,14 @@ class DataTableRenderer implements WebRenderer {
      */
     public function render($value) {
         $table = $value->getTable();
+        $rendered = $this->renderers->getRenderer($table)->render($table);
+
+        if (!$rendered) {
+            return null;
+        }
 
         return new Element('div', ['class' => 'data-table'], [
-            $this->renderers->getRenderer($table)->render($table),
+            $rendered,
         ]);
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace rtens\domin\delivery\web\renderers\link;
+namespace rtens\domin\delivery\web\renderers\link\types;
 
 class ClassLink extends GenericLink {
 

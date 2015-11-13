@@ -3,6 +3,7 @@ namespace rtens\domin\delivery\web\renderers\tables;
 
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\WebRenderer;
 use watoki\reflect\Property;
 
@@ -11,8 +12,12 @@ class TableRenderer implements WebRenderer {
     /** @var RendererRegistry */
     private $renderers;
 
-    public function __construct(RendererRegistry $renderers) {
+    /** @var LinkPrinter */
+    private $printer;
+
+    public function __construct(RendererRegistry $renderers, LinkPrinter $printer) {
         $this->renderers = $renderers;
+        $this->printer = $printer;
     }
 
     /**
@@ -28,24 +33,35 @@ class TableRenderer implements WebRenderer {
      * @return mixed
      */
     public function render($value) {
+        $rows = $this->renderRows($value);
+
+        if (!$rows) {
+            return null;
+        };
+
         return (string)new Element('table', ['class' => 'table table-striped'], array_merge([
             new Element('thead', [], [new Element('tr', [], $this->renderHeaders($value))])
-        ], $this->renderRows($value)));
+        ], $rows));
     }
 
     private function renderHeaders($table) {
-        $headers = [];
+        $headers = [new Element('th', ['width' => '1'])];
         foreach ($this->getHeaders($table) as $caption) {
             $headers[] = new Element('th', [], [$caption]);
         }
         return $headers;
     }
 
+    /**
+     * @param Table $table
+     * @return array
+     * @throws \Exception
+     */
     private function renderRows($table) {
         $rows = [];
-        foreach ($this->getRows($table) as $tableRow) {
-            $row = [];
-            foreach ($tableRow as $cell) {
+        foreach ($table->getItems() as $item) {
+            $row = [new Element('td', [], $this->printer->createDropDown($item))];
+            foreach ($table->getCells($item) as $cell) {
                 $row[] = new Element('td', [], [$this->renderers->getRenderer($cell)->render($cell)]);
             }
 
@@ -60,11 +76,11 @@ class TableRenderer implements WebRenderer {
      */
     public function headElements($value) {
         $elements = [];
-        foreach ($this->getRows($value) as $row) {
-            foreach ($row as $cell) {
+        foreach ($value->getItems() as $item) {
+            foreach ($value->getCells($item) as $cell) {
                 $renderer = $this->renderers->getRenderer($cell);
                 if ($renderer instanceof WebRenderer) {
-                    $elements = array_merge($elements, $renderer->headElements($value));
+                    $elements = array_merge($elements, $renderer->headElements($cell));
                 }
             }
         }
@@ -77,13 +93,5 @@ class TableRenderer implements WebRenderer {
      */
     protected function getHeaders($table) {
         return $table->getHeaders();
-    }
-
-    /**
-     * @param Table $table
-     * @return mixed
-     */
-    protected function getRows($table) {
-        return $table->getRows();
     }
 }
