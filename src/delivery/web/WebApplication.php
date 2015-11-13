@@ -9,6 +9,8 @@ use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
 use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
 use rtens\domin\delivery\web\renderers\ColorRenderer;
+use rtens\domin\delivery\web\renderers\dashboard\ActionPanelRenderer;
+use rtens\domin\delivery\web\renderers\dashboard\DashboardItemRenderer;
 use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
@@ -134,6 +136,8 @@ class WebApplication {
         $this->renderers->add(new ImageRenderer());
         $this->renderers->add(new ScatterChartRenderer());
         $this->renderers->add(new ChartRenderer());
+        $this->renderers->add(new DashboardItemRenderer($this->renderers));
+        $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $baseUrl));
         $this->renderers->add(new ObjectTableRenderer($this->renderers, $links));
         $this->renderers->add(new DataTableRenderer($this->renderers));
         $this->renderers->add(new TableRenderer($this->renderers));
