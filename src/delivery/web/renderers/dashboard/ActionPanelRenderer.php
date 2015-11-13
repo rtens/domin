@@ -47,6 +47,7 @@ class ActionPanelRenderer implements WebRenderer {
     public function render($value) {
         $heading = $this->actions->getAction($value->getActionId())->caption();
         return (string)(new Panel($heading, $this->getContent($value)))
+            ->setMaxHeight($value->getMaxHeight())
             ->setRightHeading([new Element('a', [
                 'href' => $this->baseUrl
                     ->appended($value->getActionId())
