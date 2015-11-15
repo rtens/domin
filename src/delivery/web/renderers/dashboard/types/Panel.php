@@ -57,7 +57,9 @@ class Panel implements DashboardItem {
                 new Element('div', ['class' => 'pull-right'], [
                     new Element('a', [
                         'href' => 'javascript:',
-                        'onclick' => "$(this).closest('.panel').find('.panel-body').css('max-height', 'none');" .
+                        'onclick' => "var body = $(this).closest('.panel').find('.panel-body');" .
+                            "body.css('max-height', 'none');" .
+                            "body.css('overflow', 'hidden');" .
                             "$(this).hide(); " .
                             "$(this).next().show();",
                         'class' => 'show-all'
@@ -69,6 +71,7 @@ class Panel implements DashboardItem {
                         'href' => 'javascript:',
                         'onclick' => "var body = $(this).closest('.panel').find('.panel-body');" .
                             "body.css('max-height', body.data('maxheight'));" .
+                            "body.css('overflow', 'visible');" .
                             "$(this).hide();" .
                             "$(this).prev().show();",
                         'class' => 'show-less',
