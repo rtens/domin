@@ -45,7 +45,7 @@
     <form id="form" method="post" action="?" enctype="multipart/form-data">
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <h1 class="panel-title"><a href="<?= $current ?>"><?= $action ?></a></h1>
+            <h1 class="panel-title" style="font-size: 22pt"><a href="<?= $current ?>"><?= $action ?></a></h1>
         </div>
 
         <? if ($fields || $description) { ?>
@@ -72,6 +72,7 @@
         </div>
         <? } ?>
 
+        <? if ($fields) { ?>
         <div class="panel-footer">
             <input type="submit" class="btn btn-primary" value="Execute">
 
@@ -79,6 +80,7 @@
             <a href="javascript:history.back()" class="btn btn-default">Back</a>
             <? } ?>
         </div>
+        <? } ?>
     </div>
     </form>
 
