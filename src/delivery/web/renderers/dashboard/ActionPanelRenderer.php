@@ -2,11 +2,13 @@
 namespace rtens\domin\delivery\web\renderers\dashboard;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\dashboard\types\ActionPanel;
 use rtens\domin\delivery\web\renderers\dashboard\types\Panel;
 use rtens\domin\delivery\web\WebRenderer;
+use rtens\domin\Parameter;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;
 
@@ -23,15 +25,20 @@ class ActionPanelRenderer implements WebRenderer {
 
     private $results = [];
 
+    /** @var FieldRegistry */
+    private $fields;
+
     /**
      * @param RendererRegistry $renderers
      * @param ActionRegistry $actions
+     * @param FieldRegistry $fields
      * @param Url $baseUrl
      */
-    public function __construct(RendererRegistry $renderers, ActionRegistry $actions, Url $baseUrl) {
+    public function __construct(RendererRegistry $renderers, ActionRegistry $actions, FieldRegistry $fields, Url $baseUrl) {
         $this->renderers = $renderers;
         $this->actions = $actions;
         $this->baseUrl = $baseUrl;
+        $this->fields = $fields;
     }
 
     /**
@@ -53,7 +60,7 @@ class ActionPanelRenderer implements WebRenderer {
             ->setRightHeading([new Element('a', [
                 'href' => $this->baseUrl
                     ->appended($value->getActionId())
-                    ->withParameters(new Map($value->getParameters()))
+                    ->withParameters(Map::toCollections($value->getParameters()))
             ], [new Element('span', ['class' => 'glyphicon glyphicon-circle-arrow-right'])])])
             ->render($this->renderers);
     }
@@ -76,8 +83,24 @@ class ActionPanelRenderer implements WebRenderer {
 
         if (!isset($this->results[$key])) {
             $action = $this->actions->getAction($value->getActionId());
-            $this->results[$key] = $action->execute($value->getParameters());
+            $this->results[$key] = $action->execute($this->inflate($action->parameters(), $value->getParameters()));
         }
         return $this->results[$key];
+    }
+
+    /**
+     * @param Parameter[] $parameters
+     * @param mixed[] $values
+     * @return mixed[]
+     */
+    private function inflate($parameters, $values) {
+        $inflated = [];
+        foreach ($parameters as $parameter) {
+            $name = $parameter->getName();
+            if (isset($values[$name])) {
+                $inflated[$name] = $this->fields->getField($parameter)->inflate($parameter, $values[$name]);
+            }
+        }
+        return $inflated;
     }
 }
