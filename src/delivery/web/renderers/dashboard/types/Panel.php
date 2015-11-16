@@ -48,7 +48,7 @@ class Panel implements DashboardItem {
         if ($this->maxHeight) {
             $content[] = new Element('div', [
                 'class' => 'panel-body',
-                'style' => 'overflow: hidden; max-height: ' . $this->maxHeight,
+                'style' => 'overflow-x: auto; overflow-y: hidden; max-height: ' . $this->maxHeight,
                 'data-maxheight' => $this->maxHeight
             ], [
                 $renderers->getRenderer($this->content)->render($this->content)
@@ -59,7 +59,7 @@ class Panel implements DashboardItem {
                         'href' => 'javascript:',
                         'onclick' => "var body = $(this).closest('.panel').find('.panel-body');" .
                             "body.css('max-height', 'none');" .
-                            "body.css('overflow', 'visible');" .
+                            "body.css('overflow-y', 'visible');" .
                             "$(this).hide(); " .
                             "$(this).next().show();",
                         'class' => 'show-all'
@@ -71,7 +71,7 @@ class Panel implements DashboardItem {
                         'href' => 'javascript:',
                         'onclick' => "var body = $(this).closest('.panel').find('.panel-body');" .
                             "body.css('max-height', body.data('maxheight'));" .
-                            "body.css('overflow', 'hidden');" .
+                            "body.css('overflow-y', 'hidden');" .
                             "$(this).hide();" .
                             "$(this).prev().show();",
                         'class' => 'show-less',

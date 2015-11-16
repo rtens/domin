@@ -67,7 +67,6 @@ class ObjectTableRendererSpec extends StaticTestSuite {
         ], $this->types));
 
         $this->assert($rendered,
-            '<div class="table-responsive">' . "\n" .
             '<table class="table table-striped">' . "\n" .
             '<thead>' . "\n" .
             '<tr>' . "\n" .
@@ -86,8 +85,7 @@ class ObjectTableRendererSpec extends StaticTestSuite {
             '<td>un</td>' . "\n" .
             '<td>deux</td>' . "\n" .
             '</tr>' . "\n" .
-            '</table>' . "\n" .
-            '</div>');
+            '</table>');
     }
 
     function printLinks() {

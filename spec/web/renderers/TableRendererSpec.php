@@ -87,7 +87,6 @@ class TableRendererSpec extends StaticTestSuite {
         ]));
 
         $this->assert($rendered,
-            '<div class="table-responsive">' . "\n" .
             '<table class="table table-striped">' . "\n" .
             '<thead>' . "\n" .
             '<tr>' . "\n" .
@@ -106,8 +105,7 @@ class TableRendererSpec extends StaticTestSuite {
             '<td>un</td>' . "\n" .
             '<td>deux</td>' . "\n" .
             '</tr>' . "\n" .
-            '</table>' . "\n" .
-            '</div>');
+            '</table>');
     }
 
     function renderArrayWithInconsistentKeys() {
@@ -124,7 +122,6 @@ class TableRendererSpec extends StaticTestSuite {
         ]));
 
         $this->assert($rendered,
-            '<div class="table-responsive">' . "\n" .
             '<table class="table table-striped">' . "\n" .
             '<thead>' . "\n" .
             '<tr>' . "\n" .
@@ -146,8 +143,7 @@ class TableRendererSpec extends StaticTestSuite {
             '<td></td>' . "\n" .
             '<td>trois</td>' . "\n" .
             '</tr>' . "\n" .
-            '</table>' . "\n" .
-            '</div>');
+            '</table>');
     }
 
     function renderCells() {

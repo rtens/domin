@@ -39,11 +39,9 @@ class TableRenderer implements WebRenderer {
             return null;
         };
 
-        return (string)new Element('div', ['class' => 'table-responsive'], [
-            new Element('table', ['class' => 'table table-striped'], array_merge([
-                new Element('thead', [], [new Element('tr', [], $this->renderHeaders($value))])
-            ], $rows))
-        ]);
+        return (string)new Element('table', ['class' => 'table table-striped'], array_merge([
+            new Element('thead', [], [new Element('tr', [], $this->renderHeaders($value))])
+        ], $rows));
     }
 
     private function renderHeaders($table) {
