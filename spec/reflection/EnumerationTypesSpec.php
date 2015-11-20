@@ -21,7 +21,10 @@ class EnumerationTypesSpec extends StaticTestSuite {
         $reader = new PropertyReader(new TypeFactory(), 'EnumerationHintToOwnConstants');
         $properties = $reader->readInterface();
 
-        $this->assert($properties['foo']->type(), new EnumerationType(['one', 'two'], new StringType()));
+        $this->assert($properties['foo']->type(), new EnumerationType([
+            'one' => 'One',
+            'two' => 'Two'
+        ], new StringType()));
     }
 
     function determineTypeByHintToOtherConstants() {
@@ -37,6 +40,9 @@ class EnumerationTypesSpec extends StaticTestSuite {
         $reader = new PropertyReader(new TypeFactory(), 'EnumerationHintToOtherConstants');
         $properties = $reader->readInterface();
 
-        $this->assert($properties['foo']->type(), new EnumerationType(['one', 'two'], new StringType()));
+        $this->assert($properties['foo']->type(), new EnumerationType([
+            'one' => 'One',
+            'two' => 'Two'
+        ], new StringType()));
     }
 }

@@ -51,9 +51,9 @@ class IdentifierFieldSpec extends StaticTestSuite {
         $parameter = new Parameter('foo', new IdentifierType('Foo', new StringType()));
         $this->assert($this->field->render($parameter, 'two'),
             '<select name="foo" class="form-control">' . "\n" .
-            '<option value="one">Uno</option>' . "\n" .
-            '<option value="two" selected="selected">Dos</option>' . "\n" .
-            '<option value="three">Tres</option>' . "\n" .
+            '<option value="one">uno</option>' . "\n" .
+            '<option value="two" selected="selected">dos</option>' . "\n" .
+            '<option value="three">tres</option>' . "\n" .
             '</select>');
     }
 }

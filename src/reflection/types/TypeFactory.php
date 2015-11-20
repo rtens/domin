@@ -30,7 +30,7 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
             $options = [];
             foreach ($reflection->getConstants() as $name => $value) {
                 if (substr($name, 0, strlen($constant)) == $constant) {
-                    $options[] = $value;
+                    $options[$value] = ucfirst($value);
                 }
             }
 

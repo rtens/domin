@@ -18,12 +18,15 @@ class EnumerationType implements Type {
         $this->optionType = $optionType;
     }
 
+    /**
+     * @return array key/value pairs
+     */
     public function getOptions() {
         return $this->options;
     }
 
     public function is($value) {
-        return in_array($value, $this->getOptions());
+        return array_key_exists($value, $this->getOptions());
     }
 
     public function __toString() {

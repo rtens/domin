@@ -58,7 +58,7 @@ class EnumerationField implements WebField {
             ], $key == $value ? [
                 'selected' => 'selected'
             ] : []), [
-                ucfirst((string)$caption)
+                $caption
             ]);
         }
         return $options;
@@ -77,11 +77,7 @@ class EnumerationField implements WebField {
      * @return array With captions indexed by values
      */
     protected function getOptions(Parameter $parameter) {
-        $options = [];
-        foreach ($this->getType($parameter)->getOptions() as $option) {
-            $options[$option] = $option;
-        }
-        return $options;
+        return $this->getType($parameter)->getOptions();
     }
 
     /**

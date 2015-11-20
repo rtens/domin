@@ -37,21 +37,21 @@ class EnumerationFieldSpec extends StaticTestSuite {
     }
 
     function renderOptions() {
-        $parameter = new Parameter('foo', new EnumerationType(['foo', 'bar'], new StringType()));
+        $parameter = new Parameter('foo', new EnumerationType(['one' => 'foo', 'two' => 'bar'], new StringType()));
         $this->assert($this->field->render($parameter, null),
             '<select name="foo" class="form-control">' . "\n" .
-            '<option value="foo">Foo</option>' . "\n" .
-            '<option value="bar">Bar</option>' . "\n" .
+            '<option value="one">foo</option>' . "\n" .
+            '<option value="two">bar</option>' . "\n" .
             '</select>');
     }
 
     function renderWithSelectedOption() {
         $parameter = new Parameter('foo', new EnumerationType(['foo', 'bar', 'baz'], new StringType()));
-        $this->assert($this->field->render($parameter, 'bar'),
+        $this->assert($this->field->render($parameter, 1),
             '<select name="foo" class="form-control">' . "\n" .
-            '<option value="foo">Foo</option>' . "\n" .
-            '<option value="bar" selected="selected">Bar</option>' . "\n" .
-            '<option value="baz">Baz</option>' . "\n" .
+            '<option value="0">foo</option>' . "\n" .
+            '<option value="1" selected="selected">bar</option>' . "\n" .
+            '<option value="2">baz</option>' . "\n" .
             '</select>');
     }
 }
