@@ -17,6 +17,7 @@ class GenericObjectAction extends ObjectAction {
 
     public function setCaption($caption) {
         $this->caption = $caption;
+        return $this;
     }
 
     public function caption() {
@@ -50,6 +51,7 @@ class GenericObjectAction extends ObjectAction {
         $this->execute = function ($object) use ($oldExecute, $callback) {
             return $callback(call_user_func($oldExecute, $object));
         };
+        return $this;
     }
 
     /**
