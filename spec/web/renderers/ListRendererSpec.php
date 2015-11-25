@@ -4,6 +4,7 @@ namespace spec\rtens\domin\delivery\web\renderers;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\ListRenderer;
 use rtens\domin\delivery\web\WebRenderer;
 use rtens\mockster\arguments\Argument;
@@ -11,6 +12,9 @@ use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class ListRendererSpec extends StaticTestSuite {
+
+    /** @var LinkPrinter */
+    private $links;
 
     /** @var ListRenderer */
     private $renderer;
@@ -20,7 +24,8 @@ class ListRendererSpec extends StaticTestSuite {
 
     protected function before() {
         $this->registry = new RendererRegistry();
-        $this->renderer = new ListRenderer($this->registry);
+        $this->links = Mockster::mock(LinkPrinter::class);
+        $this->renderer = new ListRenderer($this->registry, $this->links);
     }
 
     function handlesArraysWithNumericKeys() {
@@ -47,7 +52,7 @@ class ListRendererSpec extends StaticTestSuite {
             return $item . ' rendered';
         });
 
-        $this->renderer = new ListRenderer($this->registry);
+        $this->renderer = new ListRenderer($this->registry, $this->links);
 
         $this->assert($this->renderer->render(['one', 'two']),
             '<ul class="list-unstyled">' . "\n" .

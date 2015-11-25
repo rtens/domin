@@ -175,6 +175,7 @@ class TableRendererSpec extends StaticTestSuite {
     }
 
     function renderDataTables() {
+        $this->renderers->add(new PrimitiveRenderer());
         $this->renderers->add(new DataTableRenderer($this->renderers, $this->printer));
         $this->renderers->add(new TableRenderer($this->renderers, $this->printer));
 
@@ -187,7 +188,7 @@ class TableRendererSpec extends StaticTestSuite {
         $rendered = $tableRenderer->render($table);
         $this->assert($rendered, null);
 
-        $rendered = $tableRenderer->render(new DataTable(new ArrayTable(['foo' => 'bar'])));
+        $rendered = $tableRenderer->render(new DataTable(new ArrayTable([['foo' => 'bar']])));
         $this->assert->contains((string)$rendered, '<div class="data-table">');
 
         $elements = $tableRenderer->headElements($table);
@@ -273,7 +274,7 @@ class TableRendererSpec extends StaticTestSuite {
         $this->renderers->add($this->tableRenderer);
 
         $tableInTable = new ArrayTable([
-            ['table' => new ArrayTable(['one' => 'uno', 'two' => 'dos']),]
+            ['table' => new ArrayTable([['one' => 'uno', 'two' => 'dos']]),]
         ]);
 
         $this->tableRenderer->render($tableInTable);
