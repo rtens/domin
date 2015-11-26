@@ -52,20 +52,20 @@ class ExecuteResource extends Resource {
 
     /**
      * @param string $__action
-     * @param WebRequest $request <-
+     * @param WebRequest $__request <-
      * @return array
      */
-    public function doPost($__action, WebRequest $request) {
-        return $this->doGet($__action, $request);
+    public function doPost($__action, WebRequest $__request) {
+        return $this->doGet($__action, $__request);
     }
 
     /**
      * @param string $__action
-     * @param WebRequest $request <-
+     * @param WebRequest $__request <-
      * @return array
      * @throws \Exception
      */
-    public function doGet($__action, WebRequest $request) {
+    public function doGet($__action, WebRequest $__request) {
         $fields = [
             'headElements' => self::baseHeadElements(),
             'fields' => []
@@ -74,7 +74,7 @@ class ExecuteResource extends Resource {
         $description = null;
         $crumbs = [];
 
-        $reader = new RequestParameterReader($request);
+        $reader = new RequestParameterReader($__request);
 
         try {
             $action = $this->app->actions->getAction($__action);
@@ -85,7 +85,7 @@ class ExecuteResource extends Resource {
             $result = $executor->execute($__action);
 
             if (!($result instanceof RedirectResult)) {
-                $crumbs = $this->updateCrumbs($__action, $result, $request, $reader);
+                $crumbs = $this->updateCrumbs($__action, $result, $__request, $reader);
                 $fields = $this->assembleFields($action, $reader);
 
                 $fields['headElements'] = HeadElements::filter(array_merge(
@@ -96,11 +96,11 @@ class ExecuteResource extends Resource {
             $result = new FailedResult($e);
         }
 
-        $resultModel = $this->assembleResult($result, $request);
+        $resultModel = $this->assembleResult($result, $__request);
         return array_merge(
             [
                 'name' => $this->app->name,
-                'menu' => $this->app->menu->render($request),
+                'menu' => $this->app->menu->render($__request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
                 'current' => $crumbs ? array_slice($crumbs, -1)[0]['target'] : null,
                 'action' => $caption,
