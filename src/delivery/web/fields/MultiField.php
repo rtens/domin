@@ -7,6 +7,8 @@ use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebField;
 use watoki\collections\Map;
+use watoki\reflect\Type;
+use watoki\reflect\type\ClassType;
 use watoki\reflect\type\MultiType;
 
 class MultiField implements WebField {
@@ -103,10 +105,18 @@ class MultiField implements WebField {
             ], $type->is($value) ? [
                 'selected' => 'selected'
             ] : []), [
-                (string)$type
+                $this->toString($type)
             ]);
         }
         return $options;
+    }
+
+    private function toString(Type $type) {
+        if ($type instanceof ClassType) {
+            return (new \ReflectionClass($type->getClass()))->getShortName();
+        } else {
+            return (string)$type;
+        }
     }
 
     private function getTypes(Parameter $parameter) {
