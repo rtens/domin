@@ -57,7 +57,7 @@ class ShowMenuSpec extends StaticTestSuite {
         $this->assert->contains($this->rendered,
             '<ul class="nav navbar-nav">' . "\n" .
             '<li><a href="http://example.com/base/foo">My Foo</a></li>' . "\n" .
-            '<li><a href="http://example.com/base/bar?one=uno&two=dos">My Bar</a></li>' . "\n" .
+            '<li><a href="http://example.com/base/bar?one=uno&amp;two=dos">My Bar</a></li>' . "\n" .
             '</ul>');
     }
 
