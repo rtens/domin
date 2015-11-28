@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $name ?> | <?= $action ?></title>
+    <title><?= $name ?> | <?= $caption ?></title>
 
     <? if ($redirect) { ?>
     <meta http-equiv="refresh" content="2; URL=<?= $redirect ?>">
@@ -35,7 +35,7 @@
     <? } ?>
 
     <? if ($success) { ?>
-    <div class="alert alert-success">Action "<?= $action ?>" was successfully executed</div>
+    <div class="alert alert-success">Action "<?= $caption ?>" was successfully executed</div>
     <? } ?>
 
     <? if ($redirect) { ?>
@@ -43,45 +43,25 @@
     <? } else { ?>
 
     <form id="form" method="post" action="?" enctype="multipart/form-data">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h1 class="panel-title" style="font-size: 22pt"><a href="<?= $current ?>"><?= $action ?></a></h1>
-        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h1 class="panel-title" style="font-size: 22pt"><a href="<?= $current ?>"><?= $caption ?></a></h1>
+            </div>
 
-        <? if ($fields || $description) { ?>
-        <div class="panel-body">
-            <? if ($description) { ?>
-            <div class="well"><?= $description ?></div>
-            <? } ?>
+            <? if ($action) { ?>
+            <div class="panel-body">
+                <?= $action ?>
+            </div>
 
-            <? foreach ($fields as $field) { ?>
-            <div class="form-group">
-                <label>
-                    <?= $field[caption] . ($field[required] ? '*' : '') ?>
-                </label>
-                <? if ($field[description]) { ?>
-                <a class="description">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                </a>
+            <div class="panel-footer">
+                <input type="submit" class="btn btn-primary" value="Execute">
 
-                <div class="description-content sr-only"><?= $field[description] ?></div>
+                <? if ($missing) { ?>
+                <a href="javascript:history.back()" class="btn btn-default">Back</a>
                 <? } ?>
-                <?= $field[control] ?>
             </div>
             <? } ?>
         </div>
-        <? } ?>
-
-        <? if ($fields) { ?>
-        <div class="panel-footer">
-            <input type="submit" class="btn btn-primary" value="Execute">
-
-            <? if ($missing) { ?>
-            <a href="javascript:history.back()" class="btn btn-default">Back</a>
-            <? } ?>
-        </div>
-        <? } ?>
-    </div>
     </form>
 
     <? } ?>
@@ -101,18 +81,6 @@
     <? } ?>
 
     <script>
-        $(function () {
-            $('.description').popover({
-                trigger: 'hover',
-                delay: {show: 100, hide: 1000},
-                html: true,
-                placement: 'auto top',
-                content: function () {
-                    return $(this).siblings('.description-content').html();
-                }
-            });
-        });
-
         document.onsubmit = function () {
             window.onbeforeunload = function () {
             };

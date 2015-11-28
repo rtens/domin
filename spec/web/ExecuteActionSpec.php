@@ -54,102 +54,8 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
         $this->thenItShouldDisplayTheError('No field found to handle [one:type of one]');
-        $this->thenThereShouldBe_Fields(0);
+        $this->thenThereShouldBeNoAction();
         $this->thenThereShouldBe_HeadElements(4);
-    }
-
-    function showFields() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'one');
-        $this->action->given_HasTheParameter('foo', 'two');
-
-        $this->givenAWebFieldRenderingWith(function (Parameter $p) {
-            return $p->getName() . ':';
-        });
-
-        $this->whenIExecute('foo');
-
-        $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldBe(1, "one");
-        $this->thenField_ShouldBe(2, "two");
-        $this->thenField_ShouldBeRenderedAs(1, "one:");
-        $this->thenField_ShouldBeRenderedAs(2, "two:");
-    }
-
-    function fillFieldsWithParameters() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'one');
-        $this->action->given_HasTheParameter('foo', 'two');
-
-        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
-            return $p->getName() . ':' . $value;
-        });
-
-        $this->whenIExecute_With('foo', ['two' => 'dos']);
-        $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldBeRenderedAs(1, "one:");
-        $this->thenField_ShouldBeRenderedAs(2, "two:two_dos(inflated)");
-    }
-
-    function markRequiredFields() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'one');
-        $this->action->given_HasTheRequiredParameter('foo', 'two');
-
-        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
-            return $p->getName() . ($p->isRequired() ? '*' : '') . ':' . $value;
-        });
-
-        $this->whenIExecute_With('foo', ['three' => 'tres']);
-        $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldNotBeRequired(1);
-        $this->thenField_ShouldBeRequired(2);
-        $this->thenField_ShouldBeRenderedAs(1, "one:");
-        $this->thenField_ShouldBeRenderedAs(2, "two*:");
-    }
-
-    function collectHeadElementsFromFields() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'bar');
-        $this->action->given_HasTheParameter('foo', 'bas');
-
-        $this->givenAWebFieldRequiringTheHeadElements(function (Parameter $parameter) {
-            return [
-                new Element('one'),
-                new Element($parameter->getName()),
-            ];
-        });
-
-        $this->whenIExecute('foo');
-
-        $this->thenThereShouldBe_HeadElements(7);
-        $this->thenHeadElement_ShouldBe(1, HeadElements::jquery());
-        $this->thenHeadElement_ShouldBe(2, HeadElements::jqueryUi());
-        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrap());
-        $this->thenHeadElement_ShouldBe(4, HeadElements::bootstrapJs());
-        $this->thenHeadElement_ShouldBe(5, '<one></one>');
-        $this->thenHeadElement_ShouldBe(6, '<bar></bar>');
-        $this->thenHeadElement_ShouldBe(7, '<bas></bas>');
-    }
-
-    function fillParametersByAction() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'bar');
-        $this->action->given_HasTheParameter('foo', 'bas');
-
-        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
-            return $p->getName() . ':' . $value;
-        });
-
-        $this->action->given_FillsParametersWith('foo', function ($params) {
-            $params['bas'] = $params['bar'] . '!';
-            return $params;
-        });
-
-        $this->whenIExecute_With('foo', ['bar' => 'hey']);
-
-        $this->thenField_ShouldBeRenderedAs(1, 'bar:bar_hey(inflated)');
-        $this->thenField_ShouldBeRenderedAs(2, 'bas:bar_hey(inflated)!');
     }
 
     function redirectResult() {
@@ -163,28 +69,44 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute('foo');
         $this->thenThereShouldBeASuccessMessageFor('Foo');
         $this->thenIShouldBeRedirectedTo('http://example.com/base/bar?one=two');
-        $this->thenThereShouldBe_Fields(0);
+        $this->thenThereShouldBeNoAction();
     }
 
-    function showActionDescription() {
+    function collectHeadElements() {
         $this->action->givenTheAction('foo');
-        $this->action->given_HasTheDescription('foo', 'Some Description');
-        $this->whenIExecute('foo');
-        $this->thenTheDescriptionShouldBe('Some Description');
-    }
 
-    function showFieldDescription() {
-        $this->action->givenTheAction('foo');
-        $this->action->given_HasTheParameter('foo', 'one');
-        $this->action->given_HasTheParameter_WithTheDescription('foo', 'two', 'This is "foo"');
-        $this->givenAWebFieldRenderingWith(function () {
-            return '!';
+        $this->givenAWebFieldRequiringTheHeadElements(function (Parameter $parameter) {
+            return [
+                new Element('one'),
+                new Element($parameter->getName()),
+            ];
         });
 
         $this->whenIExecute('foo');
-        $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldHaveTheDescription(1, null);
-        $this->thenField_ShouldHaveTheDescription(2, 'This is "foo"');
+
+        $this->thenThereShouldBe_HeadElements(6);
+        $this->thenHeadElement_ShouldBe(1, HeadElements::jquery());
+        $this->thenHeadElement_ShouldBe(2, HeadElements::jqueryUi());
+        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrap());
+        $this->thenHeadElement_ShouldBe(4, HeadElements::bootstrapJs());
+        $this->thenHeadElement_ShouldBe(5, '<one></one>');
+        $this->thenHeadElement_ShouldBe(6, '<foo></foo>');
+    }
+
+    function passParametersToActionField() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
+        $this->action->given_HasTheParameter('foo', 'two');
+
+        $this->givenAWebFieldRenderingWith(function (Parameter $action, $parameters) {
+            array_walk($parameters, function (&$v, $k) {
+                $v ="$k:$v";
+            });
+            return $action->getName() . ' - ' . implode(',', $parameters);
+        });
+
+        $this->whenIExecute_With('foo', ['two' => 'dos', 'three' => 'not a parameter']);
+        $this->thenTheActionShouldBeRenderedAs('foo - two:two_dos(inflated)');
     }
 
     /** @var RendererRegistry */
@@ -248,35 +170,11 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenThereShouldBeASuccessMessageFor($actionId) {
         $this->assert($this->web->model['success']);
-        $this->assert($this->web->model['action'], $actionId);
+        $this->assert($this->web->model['caption'], $actionId);
     }
 
     private function thenItShouldShow($value) {
         $this->assert($this->web->model['output'], $value);
-    }
-
-    private function thenThereShouldBe_Fields($count) {
-        $this->assert->size($this->web->model['fields'], $count);
-    }
-
-    private function thenField_ShouldBe($pos, $name) {
-        $this->assert($this->web->model['fields'][$pos - 1]['name'], $name);
-    }
-
-    private function thenField_ShouldBeRenderedAs($pos, $rendered) {
-        $this->assert($this->web->model['fields'][$pos - 1]['control'], $rendered);
-    }
-
-    private function thenField_ShouldBeRequired($pos) {
-        $this->assert($this->web->model['fields'][$pos - 1]['required']);
-    }
-
-    private function thenField_ShouldHaveTheDescription($pos, $string) {
-        $this->assert($this->web->model['fields'][$pos - 1]['description'], $string);
-    }
-
-    private function thenField_ShouldNotBeRequired($pos) {
-        $this->assert->not($this->web->model['fields'][$pos - 1]['required']);
     }
 
     private function thenThereShouldBe_HeadElements($int) {
@@ -291,7 +189,11 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->assert($this->web->model['redirect'], $url);
     }
 
-    private function thenTheDescriptionShouldBe($string) {
-        $this->assert($this->web->model['description'], $string);
+    private function thenThereShouldBeNoAction() {
+        $this->thenTheActionShouldBeRenderedAs(null);
+    }
+
+    private function thenTheActionShouldBeRenderedAs($string) {
+        $this->assert($this->web->model['action'], $string);
     }
 }

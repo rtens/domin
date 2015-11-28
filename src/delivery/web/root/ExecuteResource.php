@@ -14,6 +14,7 @@ use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
+use rtens\domin\Parameter;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -21,6 +22,7 @@ use watoki\curir\delivery\WebRequest;
 use watoki\curir\rendering\PhpRenderer;
 use watoki\curir\Resource;
 use watoki\factory\Factory;
+use watoki\reflect\type\ClassType;
 
 class ExecuteResource extends Resource {
 
@@ -66,12 +68,9 @@ class ExecuteResource extends Resource {
      * @throws \Exception
      */
     public function doGet($__action, WebRequest $__request) {
-        $fields = [
-            'headElements' => self::baseHeadElements(),
-            'fields' => []
-        ];
+        $headElements = self::baseHeadElements();
+        $renderedAction = null;
         $caption = 'Error';
-        $description = null;
         $crumbs = [];
 
         $reader = new RequestParameterReader($__request);
@@ -79,35 +78,40 @@ class ExecuteResource extends Resource {
         try {
             $action = $this->app->actions->getAction($__action);
             $caption = $action->caption();
-            $description = $action->description();
 
             $executor = new WebExecutor($this->app->actions, $this->app->fields, $this->app->renderers, $reader);
             $result = $executor->execute($__action);
 
             if (!($result instanceof RedirectResult)) {
                 $crumbs = $this->updateCrumbs($__action, $result, $__request, $reader);
-                $fields = $this->assembleFields($action, $reader);
+                $headElements = array_merge($headElements, $executor->getHeadElements());
 
-                $fields['headElements'] = HeadElements::filter(array_merge(
-                    $fields['headElements'],
-                    $executor->getHeadElements()));
+                $actionParameter = new Parameter($__action, new ClassType(get_class($action)));
+                $actionField = $this->app->fields->getField($actionParameter);
+                if (!($actionField instanceof WebField)) {
+                    throw new \Exception(get_class($actionField) . " must implement WebField");
+                }
+
+                $renderedAction = $actionField->render($actionParameter, $this->readParameters($action, $reader));
+                $headElements = array_merge($headElements, $actionField->headElements($actionParameter));
             }
         } catch (\Exception $e) {
             $result = new FailedResult($e);
         }
 
         $resultModel = $this->assembleResult($result, $__request);
+
         return array_merge(
             [
                 'name' => $this->app->name,
                 'menu' => $this->app->menu->render($__request),
                 'breadcrumbs' => $crumbs ? array_slice($crumbs, 0, -1) : null,
                 'current' => $crumbs ? array_slice($crumbs, -1)[0]['target'] : null,
-                'action' => $caption,
-                'description' => $description
+                'caption' => $caption,
+                'action' => $renderedAction,
+                'headElements' => HeadElements::filter($headElements)
             ],
-            $resultModel,
-            $fields
+            $resultModel
         );
     }
 
@@ -137,39 +141,6 @@ class ExecuteResource extends Resource {
         }
 
         return $model;
-    }
-
-    private function assembleFields(Action $action, ParameterReader $reader) {
-        $headElements = self::baseHeadElements();
-        $fields = [];
-
-        $values = $this->collectParameters($action, $reader);
-
-        foreach ($action->parameters() as $parameter) {
-            $field = $this->app->fields->getField($parameter);
-
-            if (!($field instanceof WebField)) {
-                throw new \Exception("[$parameter] is not a WebField");
-            }
-
-            $headElements = array_merge($headElements, $field->headElements($parameter));
-
-            $fields[] = [
-                'name' => $parameter->getName(),
-                'description' => $parameter->getDescription(),
-                'caption' => ucfirst($parameter->getName()),
-                'required' => $parameter->isRequired(),
-                'control' => $field->render($parameter, $values[$parameter->getName()]),
-            ];
-        }
-        return [
-            'headElements' => $headElements,
-            'fields' => $fields
-        ];
-    }
-
-    private function collectParameters(Action $action, ParameterReader $reader) {
-        return $action->fill($this->readParameters($action, $reader));
     }
 
     private function readParameters(Action $action, ParameterReader $reader) {

@@ -4,6 +4,7 @@ namespace rtens\domin\delivery\web;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\fields\ActionField;
 use rtens\domin\delivery\web\fields\ColorField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
@@ -156,9 +157,15 @@ class WebApplication {
         $this->fields->add(new DateIntervalField());
         $this->fields->add(new ArrayField($this->fields, $this->detector));
         $this->fields->add(new NullableField($this->fields));
+        $this->fields->add(new ActionField($this->fields, $this->actions));
         $this->fields->add(new ObjectField($this->types, $this->fields));
         $this->fields->add(new MultiField($this->fields));
         $this->fields->add(new IdentifierField($this->fields, $this->identifiers));
         $this->fields->add(new EnumerationField($this->fields));
+    }
+
+    public function setNameAndBrand($name) {
+        $this->name = $name;
+        $this->menu->setBrand($name);
     }
 }

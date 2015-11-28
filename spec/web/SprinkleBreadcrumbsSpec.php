@@ -2,6 +2,7 @@
 namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\Action;
+use rtens\domin\delivery\web\fields\ActionField;
 use rtens\domin\delivery\web\fields\DateTimeField;
 use rtens\domin\delivery\web\fields\StringField;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
@@ -124,6 +125,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     function redirectToLastCrumbIfNoResult() {
+        $this->app->fields->add(new ActionField($this->app->fields, $this->app->actions));
+
         $this->givenTheSavedCrumbs([
             ['target' => 'path/to/bar', 'caption' => 'My Bar'],
             ['target' => 'path/to/foo', 'caption' => 'My Foo'],
