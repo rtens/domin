@@ -1,6 +1,7 @@
 <?php
 namespace rtens\domin\reflection;
 
+use rtens\domin\Parameter;
 use rtens\domin\reflection\types\TypeFactory;
 
 class GenericObjectAction extends ObjectAction {
@@ -9,6 +10,7 @@ class GenericObjectAction extends ObjectAction {
     private $fill;
     private $caption;
     private $description;
+    private $paramMap = [];
 
     public function __construct($class, TypeFactory $types, CommentParser $parser, callable $execute) {
         parent::__construct($class, $types, $parser);
@@ -51,7 +53,29 @@ class GenericObjectAction extends ObjectAction {
         $this->execute = function ($object) use ($oldExecute, $callback) {
             return $callback(call_user_func($oldExecute, $object));
         };
+    }
+
+    /**
+     * @param string $name
+     * @param callable $map Receives Parameter and returns Parameter
+     * @return static
+     */
+    public function mapParameter($name, callable $map) {
+        $this->paramMap[$name] = $map;
         return $this;
+    }
+
+    /**
+     * @return \rtens\domin\Parameter[]
+     * @throws \Exception
+     */
+    public function parameters() {
+        return array_map(function (Parameter $parameter) {
+            if (array_key_exists($parameter->getName(), $this->paramMap)) {
+                return call_user_func($this->paramMap[$parameter->getName()], $parameter);
+            }
+            return $parameter;
+        }, parent::parameters());
     }
 
     /**

@@ -11,6 +11,7 @@ use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
 
@@ -113,10 +114,14 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         (new MethodActionGenerator($actions, new TypeFactory(), new CommentParser()))
             ->fromObject($object)
             ->configure($object, 'doThis', function (GenericMethodAction $action) {
-                $action->setFill(function ($p) {
-                    $p['one'] = 'foo';
-                    return $p;
-                });
+                $action
+                    ->setFill(function ($p) {
+                        $p['one'] = 'foo';
+                        return $p;
+                    })
+                    ->mapParameter('one', function (Parameter $one) {
+                        return new Parameter('one', new ArrayType($one->getType()));
+                    });
             })
             ->configure($object, 'doThat', function (GenericMethodAction $action) {
                 $action
@@ -127,18 +132,23 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
             });
 
         $this->assert->size($actions->getAllActions(), 2);
-        $this->assert($actions->getAction('ClassWithSomeMethods:doThis')->execute([
+
+        $doThis = $actions->getAction('ClassWithSomeMethods:doThis');
+        $this->assert($doThis->execute([
             'one' => 'foo',
             'two' => 'bar'
         ]), 'foo:bar');
-        $this->assert($actions->getAction('ClassWithSomeMethods:doThis')->fill([
+        $this->assert($doThis->fill([
             'one' => 'bar'
         ]), [
             'one' => 'foo',
             'two' => 'default'
         ]);
-        $this->assert($actions->getAction('ClassWithSomeMethods:doThat')->execute([]), 'foo!');
-        $this->assert($actions->getAction('ClassWithSomeMethods:doThat')->caption(), 'That');
+        $this->assert($doThis->parameters()[0], new Parameter('one', new ArrayType(new StringType())));
+
+        $doThat = $actions->getAction('ClassWithSomeMethods:doThat');
+        $this->assert($doThat->execute([]), 'foo!');
+        $this->assert($doThat->caption(), 'That');
     }
 
     private function createMethodAction($class, $method) {

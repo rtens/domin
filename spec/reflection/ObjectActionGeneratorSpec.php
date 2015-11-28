@@ -2,6 +2,8 @@
 namespace spec\rtens\domin\reflection;
 
 use rtens\domin\ActionRegistry;
+use rtens\domin\Parameter;
+use rtens\domin\parameters\Html;
 use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\GenericObjectAction;
 use rtens\domin\reflection\ObjectActionGenerator;
@@ -9,6 +11,9 @@ use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument as A;
 use rtens\mockster\Mockster as M;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\reflect\type\ClassType;
+use watoki\reflect\type\NullableType;
+use watoki\reflect\type\StringType;
 
 /**
  * @property \rtens\scrut\fixtures\FilesFixture file <-
@@ -114,6 +119,36 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
             });
 
         $this->assert($actions->getAction('fooObjectAction')->fill([]), ['one' => 'default', 'two' => 'foo']);
+    }
+
+    function mapParameters() {
+        $this->file->givenTheFile_Containing('folder/foo.php', '<?php
+        namespace params;
+        class FooObjectAction {
+            /** @var string */
+            public $one;
+            /** @var string */
+            public $two;
+        }');
+
+        $actions = new ActionRegistry();
+        $this->createGenerator($actions)
+            ->fromFolder($this->file->fullPath('folder'), 'is_null')
+            ->configure('params\FooObjectAction', function (GenericObjectAction $action) {
+                $action
+                    ->mapParameter('one', function () {
+                        return new Parameter('one', new ClassType(Html::class));
+                    })
+                    ->mapParameter('two', function (Parameter $two) {
+                        return new Parameter('two', new NullableType($two->getType()));
+                    });
+            });;
+
+        $parameters = $actions->getAction('fooObjectAction')->parameters();
+        $this->assert($parameters, [
+            new Parameter('one', new ClassType(Html::class)),
+            new Parameter('two', new NullableType(new StringType()))
+        ]);
     }
 
     private function createGenerator(ActionRegistry $actions) {
