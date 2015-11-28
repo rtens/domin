@@ -54,7 +54,7 @@ class Element {
     private function makeAttributes() {
         $attributes = [];
         foreach ($this->attributes as $key => $value) {
-            $attributes[] = $key . '="' . $value . '"';
+            $attributes[] = $key . '="' . htmlentities($value) . '"';
         }
 
         if (empty($attributes)) {
