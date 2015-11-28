@@ -63,6 +63,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         /** @var GenericObjectAction $action */
         $action = M::stub($registry->add('barObjectAction', A::any()))->has()->inCall(0)->argument('action');
         $this->assert($action->execute(['one' => 'foo', 'two' => 'bar']), 'foo:bar');
+        $this->assert($action->description(), '');
     }
 
     function extendExecute() {
@@ -76,11 +77,11 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $generator = $this->createGenerator($actions);
         $generator->fromFolder($this->file->fullPath('folder'), $execute);
 
-        $generator->get('extendExecute\FooObjectAction')->setExecute(function ($object) use ($execute) {
-            return '(' . $execute($object) . ')';
+        $generator->get('extendExecute\FooObjectAction')->generic()->setExecute(function ($params) {
+            return '(' . implode(',', $params) . ')';
         });
-        $this->assert($actions->getAction('fooObjectAction')->execute([]), '(extendExecute\FooObjectAction)');
-        $this->assert($actions->getAction('barObjectAction')->execute([]), 'extendExecute\BarObjectAction');
+        $this->assert($actions->getAction('fooObjectAction')->execute(['foo']), '(foo)');
+        $this->assert($actions->getAction('barObjectAction')->execute(['bar']), 'extendExecute\BarObjectAction');
     }
 
     function afterExecute() {
@@ -92,12 +93,18 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
                 return get_class($object);
             })
             ->configure('after\execute\FooObjectAction', function (GenericObjectAction $action) {
-                $action->setAfterExecute(function ($result) {
-                    return $result . '!';
-                });
+                $action->generic()
+                    ->setAfterExecute(function ($result) {
+                        return $result . '!';
+                    })
+                    ->setDescription('My description')
+                    ->setCaption('My caption');
             });
 
-        $this->assert($actions->getAction('fooObjectAction')->execute([]), 'after\execute\FooObjectAction!');
+        $action = $actions->getAction('fooObjectAction');
+        $this->assert($action->execute([]), 'after\execute\FooObjectAction!');
+        $this->assert($action->description(), 'My description');
+        $this->assert($action->caption(), 'My caption');
     }
 
     function fillParameters() {
@@ -112,7 +119,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $this->createGenerator($actions)
             ->fromFolder($this->file->fullPath('folder'), 'is_null')
             ->configure('fill\FooObjectAction', function (GenericObjectAction $action) {
-                $action->setFill(function ($parameters) {
+                $action->generic()->setFill(function ($parameters) {
                     $parameters['two'] = 'foo';
                     return $parameters;
                 });
@@ -135,7 +142,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $this->createGenerator($actions)
             ->fromFolder($this->file->fullPath('folder'), 'is_null')
             ->configure('params\FooObjectAction', function (GenericObjectAction $action) {
-                $action
+                $action->generic()
                     ->mapParameter('one', function () {
                         return new Parameter('one', new ClassType(Html::class));
                     })

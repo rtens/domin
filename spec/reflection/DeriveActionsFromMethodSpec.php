@@ -114,17 +114,19 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         (new MethodActionGenerator($actions, new TypeFactory(), new CommentParser()))
             ->fromObject($object)
             ->configure($object, 'doThis', function (GenericMethodAction $action) {
-                $action
+                $action->generic()
                     ->setFill(function ($p) {
                         $p['one'] = 'foo';
                         return $p;
                     })
+                    ->setDescription('My description')
+                    ->setCaption('My caption')
                     ->mapParameter('one', function (Parameter $one) {
                         return new Parameter('one', new ArrayType($one->getType()));
                     });
             })
             ->configure($object, 'doThat', function (GenericMethodAction $action) {
-                $action
+                $action->generic()
                     ->setAfterExecute(function ($s) {
                         return $s . '!';
                     })
@@ -134,6 +136,8 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         $this->assert->size($actions->getAllActions(), 2);
 
         $doThis = $actions->getAction('ClassWithSomeMethods:doThis');
+        $this->assert($doThis->description(), 'My description');
+        $this->assert($doThis->caption(), 'My caption');
         $this->assert($doThis->execute([
             'one' => 'foo',
             'two' => 'bar'
@@ -147,6 +151,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         $this->assert($doThis->parameters()[0], new Parameter('one', new ArrayType(new StringType())));
 
         $doThat = $actions->getAction('ClassWithSomeMethods:doThat');
+        $this->assert($doThat->description(), '');
         $this->assert($doThat->execute([]), 'foo!');
         $this->assert($doThat->caption(), 'That');
     }
