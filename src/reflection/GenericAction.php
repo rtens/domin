@@ -24,11 +24,11 @@ class GenericAction implements Action {
     /** @var array|callable[] by parameter name */
     private $paramMap = [];
 
-    /** @var Action */
-    private $action;
-
     /** @var null|Parameter[] */
     private $parameters;
+
+    /** @var Action */
+    private $action;
 
     public function __construct(Action $action) {
         $this->action = $action;
@@ -124,5 +124,12 @@ class GenericAction implements Action {
             $parameters = $this->action->fill($parameters);
         }
         return $parameters;
+    }
+
+    /**
+     * @return Action
+     */
+    public function action() {
+        return $this->action;
     }
 }
