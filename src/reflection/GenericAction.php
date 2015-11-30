@@ -109,7 +109,7 @@ class GenericAction implements Action {
                 return call_user_func($this->paramMap[$parameter->getName()], $parameter);
             }
             return $parameter;
-        }, $this->parameters ?: $this->action->parameters());
+        }, !is_null($this->parameters) ? $this->parameters : $this->action->parameters());
     }
 
     public function setFill(callable $fill) {

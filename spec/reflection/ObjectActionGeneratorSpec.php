@@ -80,6 +80,7 @@ class ObjectActionGeneratorSpec extends StaticTestSuite {
         $generator->get('extendExecute\FooObjectAction')->generic()->setExecute(function ($params) {
             return '(' . implode(',', $params) . ')';
         });
+        $actions->getAction('fooObjectAction')->parameters();
         $this->assert($actions->getAction('fooObjectAction')->execute(['foo']), '(foo)');
         $this->assert($actions->getAction('barObjectAction')->execute(['bar']), 'extendExecute\BarObjectAction');
     }
