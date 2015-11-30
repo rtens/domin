@@ -1,20 +1,24 @@
 <?php
 namespace spec\rtens\domin\delivery\web;
 
+use rtens\domin\AccessControl;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\execution\RedirectResult;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\root\IndexResource;
+use rtens\domin\delivery\web\WebAccessControl;
+use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\delivery\web\WebField;
+use rtens\domin\execution\RedirectResult;
+use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\collections\Map;
+use watoki\curir\delivery\WebRequest;
 
 /**
  * @property \spec\rtens\domin\fixtures\ActionFixture action <-
@@ -109,6 +113,52 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheActionShouldBeRenderedAs('foo - two:two_dos(inflated)');
     }
 
+    function denyInvisibleAction() {
+        $this->action->givenTheAction('foo');
+
+        $access = Mockster::of(AccessControl::class);
+
+        WebApplication::init(function (WebApplication $app) use ($access) {
+            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access)));
+        }, $this->web->factory);
+
+        $this->whenIExecute('foo');
+        $this->assert($this->web->model['error'], 'Action [foo] is not registered.');
+    }
+
+    function denyExecution() {
+        $this->action->givenTheAction('foo');
+
+        $access = Mockster::of(AccessControl::class);
+        Mockster::stub($access->isVisible('foo'))->will()->return_(true);
+
+        WebApplication::init(function (WebApplication $app) use ($access) {
+            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access)));
+        }, $this->web->factory);
+
+        $this->whenIExecute('foo');
+        $this->assert($this->web->model['error'], 'You are not permitted to execute this action.');
+        $this->assert->isNull($this->web->model['redirect']);
+    }
+
+    function redirectToAcquirePermission() {
+        $this->action->givenTheAction('foo');
+
+        $access = Mockster::of(AccessControl::class);
+        Mockster::stub($access->isVisible('foo'))->will()->return_(true);
+
+        WebApplication::init(function (WebApplication $app) use ($access) {
+            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access), function (WebRequest $request) {
+                return $request->getContext()->appended('acquire_this');
+            }));
+        }, $this->web->factory);
+
+        $this->whenIExecute('foo');
+        $this->assert($this->web->model['redirect'], 'http://example.com/base/acquire_this');
+    }
+
+    ####################################################################################################
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -118,6 +168,11 @@ class ExecuteActionSpec extends StaticTestSuite {
     protected function before() {
         $this->renderers = new RendererRegistry();
         $this->fields = new FieldRegistry();
+
+        $this->web->factory->setSingleton($this->action->registry);
+        $this->web->factory->setSingleton($this->fields);
+        $this->web->factory->setSingleton($this->renderers);
+        $this->web->factory->setSingleton(new Menu($this->action->registry));
     }
 
     private function givenAllValuesAreRenderedWith($callback) {
@@ -155,11 +210,6 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function whenIExecute_With($id, $parameters) {
-        $this->web->factory->setSingleton($this->action->registry);
-        $this->web->factory->setSingleton($this->fields);
-        $this->web->factory->setSingleton($this->renderers);
-        $this->web->factory->setSingleton(new Menu($this->action->registry));
-
         $this->web->request = $this->web->request->withArguments(new Map($parameters));
         $this->web->whenIGet_From($id, IndexResource::class);
     }

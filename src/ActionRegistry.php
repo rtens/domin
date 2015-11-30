@@ -3,6 +3,9 @@ namespace rtens\domin;
 
 class ActionRegistry {
 
+    /** @var null|AccessControl */
+    private $access;
+
     /** @var array|Action[] indexed by ID */
     private $actions = [];
 
@@ -10,7 +13,15 @@ class ActionRegistry {
      * @return Action[] indexed by ID
      */
     public function getAllActions() {
-        return $this->actions;
+        $actions = $this->actions;
+
+        if ($this->access) {
+            $actions = array_filter($actions, function ($id) {
+                return $this->access->isVisible($id);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        return $actions;
     }
 
     /**
@@ -19,7 +30,7 @@ class ActionRegistry {
      * @throws \Exception
      */
     public function getAction($id) {
-        if (!array_key_exists($id, $this->actions)) {
+        if (!array_key_exists($id, $this->actions) || $this->access && !$this->access->isVisible($id)) {
             throw new \Exception("Action [$id] is not registered.");
         }
 
@@ -40,6 +51,13 @@ class ActionRegistry {
         $this->actions[$id] = $action;
 
         return $action;
+    }
+
+    /**
+     * @param AccessControl $access
+     */
+    public function restrictAccess(AccessControl $access) {
+        $this->access = $access;
     }
 
 } 

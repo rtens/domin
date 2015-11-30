@@ -32,9 +32,12 @@ class IndexResource extends Container {
         $this->app = $app;
     }
 
+    /**
+     * @param Request|WebRequest $request
+     * @return \watoki\curir\delivery\WebResponse
+     */
     public function respond(Request $request) {
-        $this->app->registerRenderers($this->getBaseUrl($request));
-        $this->app->registerFields();
+        $this->app->prepare($request);
 
         if (!$this->isContainerTarget($request)) {
             $request = $request
@@ -84,13 +87,5 @@ class IndexResource extends Container {
 
     protected function createDefaultRenderer() {
         return new PhpRenderer();
-    }
-
-    /**
-     * @param Request|WebRequest $request
-     * @return Url
-     */
-    private function getBaseUrl(Request $request) {
-        return $request->getContext();
     }
 }

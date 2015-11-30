@@ -12,6 +12,7 @@ use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
+use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\RenderedResult;
 use rtens\domin\Parameter;
@@ -80,6 +81,7 @@ class ExecuteResource extends Resource {
             $caption = $action->caption();
 
             $executor = new WebExecutor($this->app->actions, $this->app->fields, $this->app->renderers, $reader);
+            $executor->restrictAccess($this->app->getAccessControl($__request));
             $result = $executor->execute($__action);
 
             if (!($result instanceof RedirectResult)) {
@@ -138,6 +140,9 @@ class ExecuteResource extends Resource {
             $model['redirect'] = $request->getContext()
                 ->appended($result->getActionId())
                 ->withParameters(new Map($result->getParameters()));
+        } else if ($result instanceof NotPermittedResult) {
+            $model['error'] = 'You are not permitted to execute this action.';
+            $model['redirect'] = $this->app->getAccessControl($request)->acquirePermission();
         }
 
         return $model;

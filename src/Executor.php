@@ -8,6 +8,7 @@ use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
+use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\RenderedResult;
 
 class Executor {
@@ -24,6 +25,9 @@ class Executor {
     /** @var ParameterReader */
     protected $paramReader;
 
+    /** @var null|AccessControl */
+    private $access;
+
     /**
      * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
@@ -35,6 +39,10 @@ class Executor {
         $this->fields = $fields;
         $this->renderers = $renderers;
         $this->paramReader = $reader;
+    }
+
+    public function restrictAccess(AccessControl $access) {
+        $this->access = $access;
     }
 
     /**
@@ -49,6 +57,10 @@ class Executor {
 
             if (!empty($missing)) {
                 return new MissingParametersResult($missing);
+            }
+
+            if ($this->access && !$this->access->isExecutionPermitted($id, $params)) {
+                return new NotPermittedResult();
             }
 
             $returned = $action->execute($params);

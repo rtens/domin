@@ -17,6 +17,7 @@ use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
+use rtens\domin\execution\access\NoneAccessControl;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
@@ -44,6 +45,7 @@ use rtens\domin\delivery\web\fields\MultiField;
 use rtens\domin\delivery\web\fields\NullableField;
 use rtens\domin\delivery\web\fields\ObjectField;
 use rtens\domin\delivery\web\fields\StringField;
+use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\factory\Factory;
 
@@ -82,6 +84,9 @@ class WebApplication {
     /** @var WebCommentParser */
     public $parser;
 
+    /** @var null|callable */
+    private $accessFactory;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -108,6 +113,8 @@ class WebApplication {
         $this->detector = $detect;
         $this->parser = $parser;
         $this->menu = new Menu($actions);
+
+        $this->accessFactory = WebAccessControl::factory(new NoneAccessControl());
     }
 
     /**
@@ -121,7 +128,36 @@ class WebApplication {
         return $factory;
     }
 
-    public function registerRenderers(Url $baseUrl) {
+    /**
+     * @param callable $accessControlFactory Received the current WebRequest
+     */
+    public function restrictAccess(callable $accessControlFactory) {
+        $this->accessFactory = $accessControlFactory;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setNameAndBrand($name) {
+        $this->name = $name;
+        $this->menu->setBrand($name);
+    }
+
+    public function prepare(WebRequest $request) {
+        $this->registerRenderers($request->getContext());
+        $this->registerFields();
+        $this->actions->restrictAccess($this->getAccessControl($request));
+    }
+
+    /**
+     * @param WebRequest $request
+     * @return WebAccessControl
+     */
+    public function getAccessControl(WebRequest $request) {
+        return call_user_func($this->accessFactory, $request);
+    }
+
+    private function registerRenderers(Url $baseUrl) {
         $links = new LinkPrinter($baseUrl, $this->links, $this->actions, $this->parser);
 
         $this->renderers->add(new ElementRenderer());
@@ -145,7 +181,7 @@ class WebApplication {
         $this->renderers->add(new ObjectRenderer($this->renderers, $this->types, $links));
     }
 
-    public function registerFields() {
+    private function registerFields() {
         $this->fields->add(new StringField());
         $this->fields->add(new NumberField());
         $this->fields->add(new BooleanField());
@@ -162,10 +198,5 @@ class WebApplication {
         $this->fields->add(new MultiField($this->fields));
         $this->fields->add(new IdentifierField($this->fields, $this->identifiers));
         $this->fields->add(new EnumerationField($this->fields));
-    }
-
-    public function setNameAndBrand($name) {
-        $this->name = $name;
-        $this->menu->setBrand($name);
     }
 }
