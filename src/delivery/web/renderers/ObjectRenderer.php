@@ -38,6 +38,10 @@ class ObjectRenderer implements WebRenderer {
      * @return mixed
      */
     public function render($value) {
+        if (method_exists($value, '__toString')) {
+            return (string)$value;
+        }
+
         return (string)new Element('div', ['class' => 'panel panel-info'], [
             new Element('div', ['class' => 'panel-heading clearfix'], [
                 new Element('h3', ['class' => 'panel-title'], [

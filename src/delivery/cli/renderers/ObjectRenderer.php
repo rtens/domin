@@ -32,6 +32,10 @@ class ObjectRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
+        if (method_exists($value, '__toString')) {
+            return (string)$value;
+        }
+
         $output = [
             '### ' . (new \ReflectionClass($value))->getShortName() . ' ###',
         ];

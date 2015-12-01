@@ -62,6 +62,25 @@ class ObjectRendererSpec extends StaticTestSuite {
         );
     }
 
+    function usesToStringMethod() {
+        $this->renderers->add(new PrimitiveRenderer());
+
+        eval('class ObjectWithToStringMethod {
+            public $not = "bar";
+            function __toString() {
+                return "Foo!";
+            }
+        }');
+        $class = new \ReflectionClass('ObjectWithToStringMethod');
+        $rendered = $this->renderer->render($class->newInstance());
+
+        $this->assert->not()->contains($rendered,
+            '<dt>Not</dt>' . "\n" .
+            '<dd>bar</dd>'
+        );
+        $this->assert->contains($rendered, 'Foo!');
+    }
+
     function renderProperties() {
         $propertyRenderer = Mockster::of(Renderer::class);
         $this->renderers->add(Mockster::mock($propertyRenderer));
