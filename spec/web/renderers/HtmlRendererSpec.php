@@ -22,6 +22,6 @@ class HtmlRendererSpec extends StaticTestSuite {
 
     function rendersContent() {
         $this->assert($this->renderer->render(new Html('some <html/>')),
-            '<div style="border: 1px solid silver;">some <html/></div>');
+            '<div style="border: 1px solid black; padding: 5pt;">some <html/></div>');
     }
 }
