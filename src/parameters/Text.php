@@ -1,7 +1,6 @@
-<?php
-namespace rtens\domin\parameters;
+<?php namespace rtens\domin\parameters;
 
-class Html {
+class Text {
 
     /** @var string */
     private $content;
@@ -19,4 +18,4 @@ class Html {
     public function getContent() {
         return $this->content;
     }
-} 
+}
