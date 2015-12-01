@@ -1,6 +1,5 @@
 <?php namespace rtens\domin\delivery\web\menu;
 
-use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
 use watoki\collections\Map;
 use watoki\curir\delivery\WebRequest;
@@ -13,13 +12,13 @@ class ActionMenuItem implements MenuItem {
     /** @var array */
     private $parameters;
 
-    /** @var ActionRegistry */
-    private $actions;
+    /** @var string */
+    private $caption;
 
-    public function __construct(ActionRegistry $actions, $actionId, $parameters = []) {
+    public function __construct($caption, $actionId, $parameters = []) {
         $this->actionId = $actionId;
         $this->parameters = $parameters;
-        $this->actions = $actions;
+        $this->caption = $caption;
     }
 
     public function render(WebRequest $request) {
@@ -35,6 +34,6 @@ class ActionMenuItem implements MenuItem {
     }
 
     private function getCaption() {
-        return $this->actions->getAction($this->actionId)->caption();
+        return $this->caption;
     }
 }

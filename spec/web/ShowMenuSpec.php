@@ -44,11 +44,11 @@ class ShowMenuSpec extends StaticTestSuite {
     }
 
     function menuWithItems() {
-        $this->givenTheAction_WithCaption('foo', 'My Foo');
-        $this->givenTheAction_WithCaption('bar', 'My Bar');
+        $this->givenTheAction('foo');
+        $this->givenTheAction('bar');
 
-        $this->menu->add(new ActionMenuItem($this->actions, 'foo'));
-        $this->menu->add(new ActionMenuItem($this->actions, 'bar', [
+        $this->menu->add(new ActionMenuItem('My Foo', 'foo'));
+        $this->menu->add(new ActionMenuItem('My Bar', 'bar', [
             'one' => 'uno',
             'two' => 'dos'
         ]));
@@ -62,8 +62,8 @@ class ShowMenuSpec extends StaticTestSuite {
     }
 
     function itemsOnRightSide() {
-        $this->givenTheAction_WithCaption('foo', 'My Foo');
-        $this->menu->addRight(new ActionMenuItem($this->actions, 'foo'));
+        $this->givenTheAction('foo');
+        $this->menu->addRight(new ActionMenuItem('My Foo', 'foo'));
 
         $this->whenIRenderTheMenu();
         $this->assert->contains($this->rendered,
@@ -75,12 +75,12 @@ class ShowMenuSpec extends StaticTestSuite {
     }
 
     function menuWithGroups() {
-        $this->givenTheAction_WithCaption('foo', 'My Foo');
-        $this->givenTheAction_WithCaption('bar', 'My Bar');
+        $this->givenTheAction('foo');
+        $this->givenTheAction('bar');
 
         $this->menu->add((new MenuGroup('My Group'))
-            ->add(new ActionMenuItem($this->actions, 'foo', ['foo' => 'bar']))
-            ->add(new ActionMenuItem($this->actions, 'bar', ['one' => 'two'])));
+            ->add(new ActionMenuItem('My Foo', 'foo', ['foo' => 'bar']))
+            ->add(new ActionMenuItem('My Bar', 'bar', ['one' => 'two'])));
 
         $this->whenIRenderTheMenu();
         $this->assert->contains($this->rendered,
@@ -113,9 +113,7 @@ class ShowMenuSpec extends StaticTestSuite {
         $this->rendered = (string)$this->menu->render(new WebRequest(Url::fromString('http://example.com/base'), new Path()));
     }
 
-    private function givenTheAction_WithCaption($id, $caption) {
-        $action = Mockster::of(Action::class);
-        Mockster::stub($action->caption())->will()->return_($caption);
-        $this->actions->add($id, Mockster::mock($action));
+    private function givenTheAction($id) {
+        $this->actions->add($id, Mockster::mock(Mockster::of(Action::class)));
     }
 }
