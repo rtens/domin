@@ -194,7 +194,7 @@ class TableRendererSpec extends StaticTestSuite {
         $elements = $tableRenderer->headElements($table);
         $this->assert->contains((string)$elements[0], 'jquery.dataTables.min.css');
         $this->assert->contains((string)$elements[1], 'jquery.dataTables.min.js');
-        $this->assert->contains((string)$elements[2], "$('.data-table table').dataTable({");
+        $this->assert->contains((string)$elements[2], "$('.data-table > table').dataTable({");
     }
 
     function printLinks() {
