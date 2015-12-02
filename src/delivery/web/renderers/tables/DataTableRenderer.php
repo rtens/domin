@@ -60,7 +60,7 @@ class DataTableRenderer implements WebRenderer {
         $elements[] = HeadElements::script('//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js');
         $elements[] = new Element('script', [], ["
             $(function () {
-                $('.data-table table').dataTable($options);
+                $('.data-table > table').dataTable($options);
             });
         "]);
 
