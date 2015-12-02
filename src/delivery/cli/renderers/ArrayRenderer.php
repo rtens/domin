@@ -28,8 +28,11 @@ class ArrayRenderer implements Renderer {
     public function render($value) {
         $delimiter = PHP_EOL;
 
-        return PHP_EOL . implode($delimiter, array_map(function ($item) {
-            return $this->renderers->getRenderer($item)->render($item);
-        }, $value));
+        $lines = [];
+        foreach ($value as $key => $item) {
+            $lines[] = $key . ': ' . $this->renderers->getRenderer($item)->render($item);
+        }
+
+        return PHP_EOL . implode($delimiter, $lines) . PHP_EOL;
     }
 }
