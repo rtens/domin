@@ -16,7 +16,10 @@ class FailedResult implements ExecutionResult {
         return $this->exception->getMessage();
     }
 
-    public function __toString() {
-        return $this->getMessage();
+    /**
+     * @return \Exception
+     */
+    public function getException() {
+        return $this->exception;
     }
 }

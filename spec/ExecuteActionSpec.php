@@ -6,7 +6,6 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
@@ -173,7 +172,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var ParameterReader */
     private $reader;
 
-    /** @var ExecutionResult|RenderedResult|FailedResult|MissingParametersResult */
+    /** @var RenderedResult|FailedResult|MissingParametersResult */
     private $result;
 
     private $parameters = [];

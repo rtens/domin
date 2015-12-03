@@ -18,8 +18,4 @@ class MissingParametersResult implements ExecutionResult {
     public function getParameters() {
         return $this->parameters;
     }
-
-    public function __toString() {
-        return "Missing parameters " . json_encode($this->parameters);
-    }
 }

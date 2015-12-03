@@ -3,21 +3,9 @@ namespace rtens\domin\delivery\cli;
 
 use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
-use rtens\domin\delivery\cli\fields\DateIntervalField;
-use rtens\domin\delivery\cli\renderers\ChartRenderer;
-use rtens\domin\delivery\cli\renderers\DateIntervalRenderer;
-use rtens\domin\delivery\cli\renderers\tables\DataTableRenderer;
-use rtens\domin\delivery\cli\renderers\tables\ObjectTableRenderer;
-use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
-use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\ParameterReader;
-use rtens\domin\delivery\RendererRegistry;
-use rtens\domin\Executor;
-use rtens\domin\reflection\CommentParser;
-use rtens\domin\reflection\types\TypeFactory;
-use watoki\factory\Factory;
 use rtens\domin\delivery\cli\fields\ArrayField;
 use rtens\domin\delivery\cli\fields\BooleanField;
+use rtens\domin\delivery\cli\fields\DateIntervalField;
 use rtens\domin\delivery\cli\fields\DateTimeField;
 use rtens\domin\delivery\cli\fields\EnumerationField;
 use rtens\domin\delivery\cli\fields\FileField;
@@ -29,14 +17,37 @@ use rtens\domin\delivery\cli\fields\ObjectField;
 use rtens\domin\delivery\cli\fields\PrimitiveField;
 use rtens\domin\delivery\cli\renderers\ArrayRenderer;
 use rtens\domin\delivery\cli\renderers\BooleanRenderer;
+use rtens\domin\delivery\cli\renderers\ChartRenderer;
+use rtens\domin\delivery\cli\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\cli\renderers\DateTimeRenderer;
 use rtens\domin\delivery\cli\renderers\FileRenderer;
 use rtens\domin\delivery\cli\renderers\HtmlRenderer;
 use rtens\domin\delivery\cli\renderers\IdentifierRenderer;
 use rtens\domin\delivery\cli\renderers\ObjectRenderer;
 use rtens\domin\delivery\cli\renderers\PrimitiveRenderer;
+use rtens\domin\delivery\cli\renderers\tables\DataTableRenderer;
+use rtens\domin\delivery\cli\renderers\tables\ObjectTableRenderer;
+use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
+use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
+use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\execution\ExecutionResult;
+use rtens\domin\execution\FailedResult;
+use rtens\domin\execution\MissingParametersResult;
+use rtens\domin\execution\NoResult;
+use rtens\domin\execution\NotPermittedResult;
+use rtens\domin\execution\RedirectResult;
+use rtens\domin\execution\RenderedResult;
+use rtens\domin\Executor;
+use rtens\domin\reflection\CommentParser;
+use rtens\domin\reflection\types\TypeFactory;
+use watoki\factory\Factory;
+use watoki\reflect\ValuePrinter;
 
 class CliApplication {
+
+    const OK = 0;
+    const ERROR = 1;
 
     /** @var Factory */
     public $factory;
@@ -65,7 +76,7 @@ class CliApplication {
      * @param CommentParser $parser <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
-                         RendererRegistry $renderers, TypeFactory $types, CommentParser $parser) {
+                                RendererRegistry $renderers, TypeFactory $types, CommentParser $parser) {
         $this->factory = $factory;
 
         $this->actions = $actions;
@@ -91,7 +102,7 @@ class CliApplication {
 
         /** @var self $app */
         $app = $factory->getInstance(self::class);
-        $app->doRun($console ?: new Console($argv));
+        exit($app->doRun($console ?: new Console($argv)));
     }
 
     private function doRun(Console $console) {
@@ -108,14 +119,42 @@ class CliApplication {
         } else {
             $this->printUsage($console);
             $this->printActions($console);
-            return;
+            return self::OK;
         }
 
         $this->registerFields($reader);
         $this->registerRenderers();
 
         $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
-        $console->write(PHP_EOL . $executor->execute($actionId));
+        return $this->printResult($console, $executor->execute($actionId));
+    }
+
+    private function printResult(Console $console, ExecutionResult $result) {
+        if ($result instanceof RenderedResult) {
+            $console->writeLine((string)$result->getOutput());
+            return self::OK;
+        } else if ($result instanceof MissingParametersResult) {
+            $console->writeLine("Missing parameters " . ValuePrinter::serialize($result->getParameters()));
+            return self::ERROR;
+        } else if ($result instanceof NotPermittedResult) {
+            $console->writeLine('Permission denied');
+            return self::ERROR;
+        } else if ($result instanceof FailedResult) {
+            $console->writeLine("Error: " . $result->getMessage());
+
+            $exception = $result->getException();
+            $console->error(
+                $exception->getMessage() . ' ' .
+                '[' . $exception->getFile() . ':' . $exception->getLine() . ']' . "\n" .
+                $exception->getTraceAsString()
+            );
+            return $exception->getCode() ?: self::ERROR;
+        } else if ($result instanceof NoResult || $result instanceof RedirectResult) {
+            return self::OK;
+        } else {
+            $console->writeLine('Cannot print [' . (new \ReflectionClass($result))->getShortName() . ']');
+            return self::OK;
+        }
     }
 
     private function selectAction(Console $console) {

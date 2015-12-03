@@ -18,6 +18,12 @@ class Console {
         echo $string;
     }
 
+    public function error($message) {
+        $stderr = fopen('php://stderr', 'w');
+        fwrite($stderr,$message);
+        fclose($stderr);
+    }
+
     public function writeLine($string = '') {
         $this->write($string . PHP_EOL);
     }

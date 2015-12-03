@@ -15,8 +15,4 @@ class RenderedResult implements ExecutionResult {
     public function getOutput() {
         return $this->output;
     }
-
-    public function __toString() {
-        return $this->getOutput();
-    }
 }

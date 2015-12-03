@@ -28,8 +28,4 @@ class RedirectResult implements ExecutionResult {
     public function getParameters() {
         return $this->parameters;
     }
-
-    public function __toString() {
-        return $this->actionId . ': ' . json_encode($this->parameters);
-    }
 }
