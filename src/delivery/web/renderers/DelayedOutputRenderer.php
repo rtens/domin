@@ -7,6 +7,11 @@ use rtens\domin\delivery\web\WebRenderer;
 class DelayedOutputRenderer implements WebRenderer {
 
     /**
+     * @var int If >0, the buffer is filled with null bytes to be forced to flush.
+     */
+    public static $bufferSize = 0;
+
+    /**
      * @param mixed $value
      * @return bool
      */
@@ -26,6 +31,12 @@ class DelayedOutputRenderer implements WebRenderer {
         $value->surroundWith("<pre>", "</pre>");
         $value->setPrinter(function ($string) {
             echo $string;
+
+            $length = strlen($string);
+            if (self::$bufferSize > $length) {
+                echo str_repeat("\x00", self::$bufferSize - $length);
+            }
+
             flush();
             ob_flush();
         });
