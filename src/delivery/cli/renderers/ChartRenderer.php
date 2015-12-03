@@ -5,6 +5,7 @@ use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\charting\Chart;
 use rtens\domin\delivery\web\renderers\charting\charts\DataPointChart;
 use rtens\domin\delivery\web\renderers\charting\charts\DataSetChart;
+use rtens\domin\delivery\web\renderers\charting\charts\ScatterChart;
 
 class ChartRenderer extends TableRenderer {
     /**
@@ -24,8 +25,10 @@ class ChartRenderer extends TableRenderer {
             return $this->prepareDataPoints($object);
         } else if ($object instanceof DataSetChart) {
             return $this->prepareDataSets($object);
+        } else if ($object instanceof ScatterChart) {
+            return $this->prepareScatterDate($object);
         }
-        throw new \InvalidArgumentException("Cannot render chart");
+        throw new \InvalidArgumentException("Cannot render [" . get_class($object) . "]");
     }
 
     private function prepareDataPoints(DataPointChart $chart) {
@@ -49,6 +52,23 @@ class ChartRenderer extends TableRenderer {
             }
             $data[] = $dataSet;
         }
+        return $data;
+    }
+
+    private function prepareScatterDate(ScatterChart $chart) {
+        $data = [];
+
+        foreach ($chart->getScatterData() as $set) {
+            foreach ($set->getDataPoints() as $point) {
+                $data[] = [
+                    '' => $set->getLabel(),
+                    'x' => $point->getX(),
+                    'y' => $point->getY(),
+                    'r' => $point->getR()
+                ];
+            }
+        }
+
         return $data;
     }
 }

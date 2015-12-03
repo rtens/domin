@@ -19,6 +19,13 @@ class ScatterChart extends Chart {
         $this->scatterData = $scatterData;
     }
 
+    /**
+     * @return array|\rtens\domin\delivery\web\renderers\charting\data\ScatterDataSet[]
+     */
+    public function getScatterData() {
+        return $this->scatterData;
+    }
+
     protected function defaultOptions() {
         return array_merge(parent::defaultOptions(), [
             'showTooltips' => true,
