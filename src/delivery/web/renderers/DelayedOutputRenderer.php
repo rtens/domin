@@ -34,7 +34,7 @@ class DelayedOutputRenderer implements WebRenderer {
 
             $length = strlen($string);
             if (self::$bufferSize > $length) {
-                echo str_repeat("\x00", self::$bufferSize - $length);
+                echo str_repeat("\x00", self::$bufferSize - $length + 1);
             }
 
             flush();
