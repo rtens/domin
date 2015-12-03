@@ -20,6 +20,7 @@ use rtens\domin\delivery\cli\renderers\BooleanRenderer;
 use rtens\domin\delivery\cli\renderers\ChartRenderer;
 use rtens\domin\delivery\cli\renderers\DateIntervalRenderer;
 use rtens\domin\delivery\cli\renderers\DateTimeRenderer;
+use rtens\domin\delivery\cli\renderers\DelayedOutputRenderer;
 use rtens\domin\delivery\cli\renderers\FileRenderer;
 use rtens\domin\delivery\cli\renderers\HtmlRenderer;
 use rtens\domin\delivery\cli\renderers\IdentifierRenderer;
@@ -228,6 +229,7 @@ class CliApplication {
         $this->renderers->add(new HtmlRenderer());
         $this->renderers->add(new IdentifierRenderer());
         $this->renderers->add(new FileRenderer(''));
+        $this->renderers->add(new DelayedOutputRenderer());
         $this->renderers->add(new ObjectTableRenderer($this->renderers));
         $this->renderers->add(new DataTableRenderer($this->renderers));
         $this->renderers->add(new TableRenderer($this->renderers));

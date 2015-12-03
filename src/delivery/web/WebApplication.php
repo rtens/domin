@@ -14,6 +14,7 @@ use rtens\domin\delivery\web\renderers\ColorRenderer;
 use rtens\domin\delivery\web\renderers\dashboard\ActionPanelRenderer;
 use rtens\domin\delivery\web\renderers\dashboard\DashboardItemRenderer;
 use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
+use rtens\domin\delivery\web\renderers\DelayedOutputRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
 use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
@@ -175,6 +176,7 @@ class WebApplication {
         $this->renderers->add(new ImageRenderer());
         $this->renderers->add(new ScatterChartRenderer());
         $this->renderers->add(new ChartRenderer());
+        $this->renderers->add(new DelayedOutputRenderer());
         $this->renderers->add(new DashboardItemRenderer($this->renderers));
         $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $this->fields, $baseUrl));
         $this->renderers->add(new DataTableRenderer($this->renderers));
