@@ -103,7 +103,7 @@ class CliApplication {
 
         /** @var self $app */
         $app = $factory->getInstance(self::class);
-        exit($app->doRun($console ?: new Console($argv)));
+        return $app->doRun($console ?: new Console($argv));
     }
 
     private function doRun(Console $console) {
