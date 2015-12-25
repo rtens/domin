@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $name ?> | <?= $caption ?></title>
 
-    <? if ($redirect) { ?>
-    <meta http-equiv="refresh" content="2; URL=<?= $redirect ?>">
+    <? if ($result[redirect]) { ?>
+    <meta http-equiv="refresh" content="2; URL=<?= $result[redirect] ?>">
     <? } ?>
 
     <? foreach ($headElements as $element) { ?>
@@ -30,16 +30,16 @@
     </ol>
     <? } ?>
 
-    <? if ($error) { ?>
-    <div class="alert alert-danger"><?= $error ?></div>
+    <? if ($resul[error]) { ?>
+    <div class="alert alert-danger"><?= $result[error] ?></div>
     <? } ?>
 
-    <? if ($success) { ?>
+    <? if ($result[success]) { ?>
     <div class="alert alert-success">Action "<?= $caption ?>" was successfully executed</div>
     <? } ?>
 
-    <? if ($redirect) { ?>
-    <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $redirect ?>">click here</a></div>
+    <? if ($result[redirect]) { ?>
+    <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $result[redirect ]?>">click here</a></div>
     <? } else { ?>
 
     <form id="form" method="post" action="?" enctype="multipart/form-data">
@@ -48,7 +48,7 @@
                 <h1 class="panel-title" style="font-size: 22pt">
                     <?= $caption ?>
 
-                    <? if ($action && !$missing) { ?>
+                    <? if ($result) { ?>
                     <div class="pull-right">
                         <span class="show-form glyphicon glyphicon-chevron-down"></span>
                         <span class="hide-form glyphicon glyphicon-chevron-up" style="display: none;"></span>
@@ -61,22 +61,22 @@
             <div class="collapsed panel-body">
                 <?= $action ?>
             </div>
+            <? } ?>
 
             <div class="collapsed panel-footer">
                 <input type="submit" class="btn btn-primary" value="Execute">
 
-                <? if ($missing) { ?>
+                <? if (!$result) { ?>
                 <a href="javascript:history.back()" class="btn btn-default">Back</a>
                 <? } ?>
             </div>
-            <? } ?>
         </div>
     </form>
 
     <? } ?>
 
-    <? if ($output) { ?>
-    <div><?= $output ?></div>
+    <? if ($result[output]) { ?>
+    <div><?= $result[output] ?></div>
     <? } ?>
 
     <script>
@@ -92,7 +92,7 @@
         };
     </script>
 
-    <? if ($missing) { ?>
+    <? if (!$result) { ?>
     <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {
@@ -100,7 +100,7 @@
             };
         };
     </script>
-    <? } else if ($action) { ?>
+    <? } else { ?>
     <script>
         var panel = $('form > .panel');
         var showForm = panel.find('.show-form');

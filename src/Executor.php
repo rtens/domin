@@ -9,21 +9,18 @@ use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\NotPermittedResult;
-use rtens\domin\execution\RenderedResult;
+use rtens\domin\execution\ValueResult;
 
 class Executor {
 
     /** @var ActionRegistry */
-    protected $actions;
-
-    /** @var RendererRegistry */
-    protected $renderers;
+    private $actions;
 
     /** @var FieldRegistry */
-    protected $fields;
+    private $fields;
 
     /** @var ParameterReader */
-    protected $paramReader;
+    private $paramReader;
 
     /** @var null|AccessControl */
     private $access;
@@ -31,13 +28,11 @@ class Executor {
     /**
      * @param ActionRegistry $actions <-
      * @param FieldRegistry $fields <-
-     * @param RendererRegistry $renderers <-
      * @param ParameterReader $reader <-
      */
-    public function __construct(ActionRegistry $actions, FieldRegistry $fields, RendererRegistry $renderers, ParameterReader $reader) {
+    public function __construct(ActionRegistry $actions, FieldRegistry $fields, ParameterReader $reader) {
         $this->actions = $actions;
         $this->fields = $fields;
-        $this->renderers = $renderers;
         $this->paramReader = $reader;
     }
 
@@ -70,7 +65,7 @@ class Executor {
             } else if ($returned instanceof ExecutionResult) {
                 return $returned;
             } else {
-                return new RenderedResult($this->render($returned));
+                return new ValueResult($returned);
             }
         } catch (\Exception $e) {
             return new FailedResult($e);
@@ -95,9 +90,5 @@ class Executor {
             }
         }
         return [$params, $missing];
-    }
-
-    protected function render($value) {
-        return $this->renderers->getRenderer($value)->render($value);
     }
 }

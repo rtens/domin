@@ -104,4 +104,11 @@ class MethodAction implements Action {
 
         return $this->method->invokeArgs($this->object, $arguments);
     }
+
+    /**
+     * @return boolean True if the action modifies the state of the application
+     */
+    public function isModifying() {
+        return true;
+    }
 }

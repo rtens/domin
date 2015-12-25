@@ -90,6 +90,13 @@ abstract class ObjectAction implements Action {
     }
 
     /**
+     * @return boolean True if the action modifies the state of the application
+     */
+    public function isModifying() {
+        return true;
+    }
+
+    /**
      * @param mixed[] $parameters Values indexed by name
      * @return mixed the result of the execution
      * @throws \Exception if Action cannot be executed

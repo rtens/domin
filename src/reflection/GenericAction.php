@@ -30,6 +30,9 @@ class GenericAction implements Action {
     /** @var Action */
     private $action;
 
+    /** @var boolean */
+    private $isModifying;
+
     public function __construct(Action $action) {
         $this->action = $action;
     }
@@ -110,6 +113,22 @@ class GenericAction implements Action {
             }
             return $parameter;
         }, !is_null($this->parameters) ? $this->parameters : $this->action->parameters());
+    }
+
+    /**
+     * @return boolean True if the action modifies the state of the application
+     */
+    public function isModifying() {
+        return $this->isModifying;
+    }
+
+    /**
+     * @param boolean $isModifying
+     * @return GenericAction
+     */
+    public function setModifying($isModifying) {
+        $this->isModifying = $isModifying;
+        return $this;
     }
 
     public function setFill(callable $fill) {

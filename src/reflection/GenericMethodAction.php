@@ -21,6 +21,7 @@ class GenericMethodAction extends MethodAction {
             ->setCaption(parent::caption())
             ->setDescription(parent::description())
             ->setParameters(parent::parameters())
+            ->setModifying(parent::isModifying())
             ->setExecute(function ($parameters) {
                 return parent::execute($parameters);
             })
@@ -51,5 +52,9 @@ class GenericMethodAction extends MethodAction {
 
     public function parameters() {
         return $this->generic->parameters();
+    }
+
+    public function isModifying() {
+        return $this->generic->isModifying();
     }
 }

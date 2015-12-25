@@ -1,10 +1,10 @@
 <?php
 namespace rtens\domin\delivery\web\root;
 
+use rtens\domin\delivery\web\BreadCrumbs;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebApplication;
 use watoki\curir\Container;
-use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
@@ -52,7 +52,8 @@ class IndexResource extends Container {
      * @return array
      */
     public function doGet(WebRequest $request) {
-        $this->resetBreadCrumbs();
+        (new BreadCrumbs($this->cookies, $request))->reset();
+
         return [
             'name' => $this->app->name,
             'menu' => $this->app->menu->render($request),
@@ -79,10 +80,6 @@ class IndexResource extends Container {
             ];
         }
         return $actions;
-    }
-
-    private function resetBreadCrumbs() {
-        $this->cookies->create(new Cookie([]), ExecuteResource::BREADCRUMB_COOKIE);
     }
 
     protected function createDefaultRenderer() {

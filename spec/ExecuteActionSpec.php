@@ -9,7 +9,7 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
-use rtens\domin\execution\RenderedResult;
+use rtens\domin\execution\ValueResult;
 use rtens\domin\Executor;
 use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
@@ -35,26 +35,16 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     function passOnResult() {
-        $this->action->givenTheAction_Returning('foo', new RenderedResult('hello'));
+        $this->action->givenTheAction_Returning('foo', new ValueResult('hello'));
 
         $this->whenIExecute('foo');
         $this->thenTheResultShouldBe('hello');
     }
 
-    function noMatchingRenderer() {
+    function doNotRenderReturnedValue() {
         $this->action->givenTheAction_Returning('foo', 'bar');
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBeTheError("No Renderer found to handle 'bar'");
-    }
-
-    function renderResult() {
-        $this->action->givenTheAction_Returning('foo', 'this is foo');
-        $this->givenTheRenderer(function ($in) {
-            return $in . ' rendered';
-        });
-
-        $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('this is foo rendered');
+        $this->thenTheResultShouldBe('bar');
     }
 
     function noMatchingField() {
@@ -75,14 +65,10 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenAFieldInflatingWith(function (Parameter $p, $s) {
             return $p->getName() . ':' . $s . '!';
         });
-        $this->givenTheRenderer(function ($in) {
-            return $in . ' rendered';
-        });
-
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('one:uno! rendered');
+        $this->thenTheResultShouldBe('one:uno!');
     }
 
     function checkForMissingParameters() {
@@ -134,33 +120,12 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenAFieldHandling_InflatingWith('bas', function (Parameter $p, $s) {
             return $p->getName() . '_' . $s . '!';
         });
-        $this->givenTheRenderer(function ($in) {
-            return $in . ' rendered';
-        });
 
         $this->givenTheParameter_Is('one', 'uno');
         $this->givenTheParameter_Is('two', 'dos');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('one_uno? two_dos! rendered');
-    }
-
-    function chooseRendererForReturnedValue() {
-        $this->action->givenTheAction_Returning('foo', 'this is foo');
-        $this->action->givenTheAction_Returning('bar', 'this is bar');
-
-        $this->givenARendererFor_RenderingWith('this is foo', function ($s) {
-            return $s . ' with foo';
-        });
-        $this->givenARendererFor_RenderingWith('this is bar', function ($s) {
-            return $s . ' with bar';
-        });
-
-        $this->whenIExecute('foo');
-        $this->thenTheResultShouldBe('this is foo with foo');
-
-        $this->whenIExecute('bar');
-        $this->thenTheResultShouldBe('this is bar with bar');
+        $this->thenTheResultShouldBe('one_uno? two_dos!');
     }
 
     /** @var Renderer[] */
@@ -172,7 +137,7 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var ParameterReader */
     private $reader;
 
-    /** @var RenderedResult|FailedResult|MissingParametersResult */
+    /** @var ValueResult|FailedResult|MissingParametersResult */
     private $result;
 
     private $parameters = [];
@@ -206,18 +171,6 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->parameters[$key] = $value;
     }
 
-    private function givenTheRenderer($callback) {
-        $this->givenARendererFor_RenderingWith(Argument::any(), $callback);
-    }
-
-    private function givenARendererFor_RenderingWith($value, $callback) {
-        $renderer = Mockster::of(Renderer::class);
-        $this->renderers[] = $renderer;
-
-        Mockster::stub($renderer->handles($value))->will()->return_(true);
-        Mockster::stub($renderer->render(Argument::any()))->will()->forwardTo($callback);
-    }
-
     private function whenIExecute($id) {
         $fields = new FieldRegistry();
         foreach ($this->fields as $field) {
@@ -229,13 +182,13 @@ class ExecuteActionSpec extends StaticTestSuite {
             $renderers->add(Mockster::mock($renderer));
         }
 
-        $executor = new Executor($this->action->registry, $fields, $renderers, Mockster::mock($this->reader));
+        $executor = new Executor($this->action->registry, $fields, Mockster::mock($this->reader));
         $this->result = $executor->execute($id);
     }
 
     private function thenTheResultShouldBe($value) {
-        $this->assert->isInstanceOf($this->result, RenderedResult::class);
-        $this->assert($this->result->getOutput(), $value);
+        $this->assert->isInstanceOf($this->result, ValueResult::class);
+        $this->assert($this->result->getValue(), $value);
     }
 
     private function thenThereShouldBeNoResult() {

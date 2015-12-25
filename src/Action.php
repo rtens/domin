@@ -14,6 +14,11 @@ interface Action {
     public function description();
 
     /**
+     * @return boolean True if the action modifies the state of the application
+     */
+    public function isModifying();
+
+    /**
      * @return Parameter[]
      */
     public function parameters();

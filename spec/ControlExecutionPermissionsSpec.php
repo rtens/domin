@@ -87,10 +87,7 @@ class ControlExecutionPermissionsSpec {
         $this->reader = Mockster::of(ParameterReader::class);
         $fields = new FieldRegistry();
         $this->executor = new Executor(
-            $this->registry,
-            $fields,
-            Mockster::mock(RendererRegistry::class),
-            Mockster::mock($this->reader));
+            $this->registry, $fields, Mockster::mock($this->reader));
         $this->executor->restrictAccess(Mockster::mock($this->access));
 
         $fields->add(new StringField());

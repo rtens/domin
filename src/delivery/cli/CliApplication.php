@@ -38,7 +38,7 @@ use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
 use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\RedirectResult;
-use rtens\domin\execution\RenderedResult;
+use rtens\domin\execution\ValueResult;
 use rtens\domin\Executor;
 use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\types\TypeFactory;
@@ -126,13 +126,14 @@ class CliApplication {
         $this->registerFields($reader);
         $this->registerRenderers();
 
-        $executor = new Executor($this->actions, $this->fields, $this->renderers, $reader);
+        $executor = new Executor($this->actions, $this->fields, $reader);
         return $this->printResult($console, $executor->execute($actionId));
     }
 
     private function printResult(Console $console, ExecutionResult $result) {
-        if ($result instanceof RenderedResult) {
-            $console->writeLine((string)$result->getOutput());
+        if ($result instanceof ValueResult) {
+            $value = $result->getValue();
+            $console->writeLine((string)$this->renderers->getRenderer($value)->render($value));
             return self::OK;
         } else if ($result instanceof MissingParametersResult) {
             $console->writeLine("Missing parameters " . ValuePrinter::serialize($result->getParameters()));

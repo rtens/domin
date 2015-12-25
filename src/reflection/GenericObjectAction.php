@@ -19,6 +19,7 @@ class GenericObjectAction extends ObjectAction {
             ->setCaption(parent::caption())
             ->setDescription(parent::description())
             ->setParameters(parent::parameters())
+            ->setModifying(parent::isModifying())
             ->setExecute(function ($parameters) {
                 return parent::execute($parameters);
             })
@@ -53,5 +54,9 @@ class GenericObjectAction extends ObjectAction {
 
     public function fill(array $parameters) {
         return $this->generic->fill(parent::fill($parameters));
+    }
+
+    public function isModifying() {
+        return $this->generic->isModifying();
     }
 }
