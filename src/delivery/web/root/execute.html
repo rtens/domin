@@ -48,7 +48,7 @@
                 <h1 class="panel-title" style="font-size: 22pt">
                     <?= $caption ?>
 
-                    <? if ($result) { ?>
+                    <? if ($result && !$result[missing]) { ?>
                     <div class="pull-right">
                         <span class="show-form glyphicon glyphicon-chevron-down"></span>
                         <span class="hide-form glyphicon glyphicon-chevron-up" style="display: none;"></span>
@@ -66,7 +66,7 @@
             <div class="collapsed panel-footer">
                 <input type="submit" class="btn btn-primary" value="Execute">
 
-                <? if (!$result) { ?>
+                <? if (!$result || $result[missing]) { ?>
                 <a href="javascript:history.back()" class="btn btn-default">Back</a>
                 <? } ?>
             </div>
@@ -92,7 +92,7 @@
         };
     </script>
 
-    <? if (!$result) { ?>
+    <? if (!$result || $result[missing]) { ?>
     <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {

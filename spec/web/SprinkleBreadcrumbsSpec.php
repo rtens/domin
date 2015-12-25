@@ -153,7 +153,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     private function whenIExecute_With($action, $parameters) {
-        $this->model = $this->resource->doGet($action, $this->makeRequest($parameters));
+        $this->model = $this->resource->doGet($this->makeRequest($parameters), $action);
     }
 
     private function makeRequest($parameters = []) {

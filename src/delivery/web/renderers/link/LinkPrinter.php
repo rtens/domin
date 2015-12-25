@@ -3,6 +3,7 @@ namespace rtens\domin\delivery\web\renderers\link;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\root\ExecuteResource;
 use rtens\domin\delivery\web\WebCommentParser;
 use watoki\collections\Map;
 use watoki\curir\protocol\Url;
@@ -78,7 +79,14 @@ class LinkPrinter {
         return array_map(function (Link $link) use ($object, $classes) {
             $action = $this->actions->getAction($link->actionId());
 
-            $url = $this->baseUrl->appended($link->actionId())->withParameters(new Map($link->parameters($object)));
+            $url = $this->baseUrl
+                ->appended($link->actionId())
+                ->withParameters(new Map($link->parameters($object)));
+
+            if ($link->force()) {
+                $url = $url->withParameter(ExecuteResource::FORCE_ARG, true);
+            }
+
             $attributes = ['class' => $classes, 'href' => $url];
             if ($link->confirm() !== null) {
                 $attributes['onclick'] = "return confirm('{$link->confirm()}');";

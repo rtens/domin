@@ -18,6 +18,7 @@ use watoki\factory\Factory;
 class ExecuteResource extends Resource {
 
     const ACTION_ARG = '__action';
+    const FORCE_ARG = '__force';
 
     /** @var CookieStore */
     private $cookies;
@@ -43,13 +44,13 @@ class ExecuteResource extends Resource {
     }
 
     /**
-     * @param string $__action
      * @param WebRequest $__request <-
+     * @param string $__action
+     * @param bool $__force
      * @return array
-     * @throws \Exception
      */
-    public function doGet($__action, WebRequest $__request) {
-        return $this->doExecute($__action, $__request);
+    public function doGet(WebRequest $__request, $__action, $__force = false) {
+        return $this->doExecute($__action, $__request, $__force);
     }
 
     /**

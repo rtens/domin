@@ -9,6 +9,7 @@ class GenericLink implements Link {
     private $parameters;
     private $handles;
     private $confirmation;
+    private $force = false;
 
     public function __construct($actionId, callable $handles, callable $parameters = null) {
         $this->actionId = $actionId;
@@ -64,4 +65,19 @@ class GenericLink implements Link {
         return $this->confirmation;
     }
 
+    /**
+     * @return boolean Whether to force execution
+     */
+    public function force() {
+        return $this->force;
+    }
+
+    /**
+     * @param boolean $force
+     * @return GenericLink
+     */
+    public function setForce($force) {
+        $this->force = $force;
+        return $this;
+    }
 }
