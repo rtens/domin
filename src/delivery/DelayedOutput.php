@@ -8,6 +8,9 @@ class DelayedOutput {
     /** @var callable */
     private $printer;
 
+    /** @var callable */
+    private $exceptionHandler;
+
     /**
      * @param callable $runner Will be called with the object itself, returns void
      */
@@ -16,6 +19,25 @@ class DelayedOutput {
         $this->printer = function ($string) {
             echo $string;
         };
+        $this->exceptionHandler = function (\Exception $exception) {
+            $message = get_class($exception) . ': ' . $exception->getMessage() . ' ' .
+                '[' . $exception->getFile() . ':' . $exception->getLine() . ']' . "\n" .
+                $exception->getTraceAsString();
+
+            $stderr = fopen('php://stderr', 'w');
+            fwrite($stderr, $message);
+            fclose($stderr);
+            exit(1);
+        };
+    }
+
+    function __toString() {
+        try {
+            call_user_func($this->runner, $this);
+        } catch (\Exception $e) {
+            $this->handleException($e);
+        }
+        return '';
     }
 
     public function write($message) {
@@ -26,24 +48,21 @@ class DelayedOutput {
         $this->write($message . "\n");
     }
 
-    function __toString() {
-        call_user_func($this->runner, $this);
-        return '';
-    }
-
-    public function surroundWith($before, $after) {
-        $oldRunner = $this->runner;
-        $this->runner = function (DelayedOutput $output) use ($oldRunner, $before, $after) {
-            $this->write($before);
-            call_user_func($oldRunner, $output);
-            $this->write($after);
-        };
-    }
-
     /**
      * @param callable $printer
      */
     public function setPrinter(callable $printer) {
         $this->printer = $printer;
+    }
+
+    /**
+     * @param callable $exceptionHandler
+     */
+    public function setExceptionHandler($exceptionHandler) {
+        $this->exceptionHandler = $exceptionHandler;
+    }
+
+    public function handleException($message) {
+        call_user_func($this->exceptionHandler, $message);
     }
 }

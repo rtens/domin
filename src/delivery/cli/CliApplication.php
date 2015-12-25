@@ -145,7 +145,7 @@ class CliApplication {
 
             $exception = $result->getException();
             $console->error(
-                $exception->getMessage() . ' ' .
+                get_class($exception) . ': ' . $exception->getMessage() . ' ' .
                 '[' . $exception->getFile() . ':' . $exception->getLine() . ']' . "\n" .
                 $exception->getTraceAsString()
             );

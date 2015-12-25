@@ -28,7 +28,6 @@ class DelayedOutputRenderer implements WebRenderer {
         header('X-Accel-Buffering: no');
         ob_end_flush();
 
-        $value->surroundWith("<pre>", "</pre>");
         $value->setPrinter(function ($string) {
             echo $string;
 
@@ -40,7 +39,18 @@ class DelayedOutputRenderer implements WebRenderer {
             flush();
             ob_flush();
         });
-        return $value;
+        $value->setExceptionHandler(function (\Exception $exception) {
+            echo '</pre>';
+            echo new Element('div', ['class' => 'alert alert-danger'], [
+                $exception->getMessage()
+            ]);
+        });
+
+        return new DelayedOutput(function () use ($value) {
+            $value->write('<pre>');
+            $value->__toString();
+            $value->write('</pre>');
+        });
     }
 
     /**

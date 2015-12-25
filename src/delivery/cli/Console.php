@@ -20,7 +20,7 @@ class Console {
 
     public function error($message) {
         $stderr = fopen('php://stderr', 'w');
-        fwrite($stderr,$message);
+        fwrite($stderr, $message);
         fclose($stderr);
     }
 
