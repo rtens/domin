@@ -42,7 +42,7 @@ class DelayedOutputRenderer implements WebRenderer {
         $value->setExceptionHandler(function (\Exception $exception) {
             echo '</pre>';
             echo new Element('div', ['class' => 'alert alert-danger'], [
-                $exception->getMessage()
+                htmlentities($exception->getMessage())
             ]);
         });
 
