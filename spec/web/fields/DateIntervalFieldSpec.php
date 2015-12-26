@@ -55,12 +55,12 @@ class DateIntervalFieldSpec extends StaticTestSuite {
         $param = new Parameter('foo', new ClassType(\DateInterval::class));
 
         $this->assert($this->field->render($param, null),
-            '<div>' . "\n" .
-            '<input class="form-control-inline" type="number" size="3" name="foo[d]" value=""/>' . "\n" .
+            '<div class="form-inline">' . "\n" .
+            '<input class="form-control" type="number" size="3" name="foo[d]" value=""/>' . "\n" .
             '<span>days</span>' . "\n" .
-            '<input class="form-control-inline" type="number" size="3" name="foo[h]" value=""/>' . "\n" .
+            '<input class="form-control" type="number" size="3" name="foo[h]" value=""/>' . "\n" .
             '<span>hours</span>' . "\n" .
-            '<input class="form-control-inline" type="number" size="3" name="foo[i]" value=""/>' . "\n" .
+            '<input class="form-control" type="number" size="3" name="foo[i]" value=""/>' . "\n" .
             '<span>minutes</span>' . "\n" .
             '</div>');
 
