@@ -31,10 +31,15 @@ class EnumerationField implements CliField {
      * @param Parameter $parameter
      * @param string $serialized
      * @return mixed
+     * @throws \Exception
      */
     public function inflate(Parameter $parameter, $serialized) {
         $param = new Parameter($parameter->getName(), $this->getType($parameter)->getOptionType());
-        return $this->fields->getField($param)->inflate($param, $this->getType($parameter)->getOptions()[(int)$serialized]);
+        $options = $this->getType($parameter)->getOptions();
+        if (!array_key_exists($serialized, $options)) {
+            throw new \Exception("[$serialized] is not an option in [" . implode(',', array_keys($options)) . ']');
+        }
+        return $this->fields->getField($param)->inflate($param, $options[$serialized]);
     }
 
     /**
