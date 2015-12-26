@@ -16,11 +16,11 @@ class HeadElements {
     }
 
     public static function bootstrap() {
-        return self::style('//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css');
+        return self::style('//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
     }
 
     public static function bootstrapJs() {
-        return self::script('//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js');
+        return self::script('//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js');
     }
 
     public static function fontAwesome() {
