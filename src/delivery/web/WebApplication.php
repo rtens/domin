@@ -7,6 +7,7 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\fields\ActionField;
 use rtens\domin\delivery\web\fields\ColorField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
+use rtens\domin\delivery\web\fields\RangeField;
 use rtens\domin\delivery\web\fields\TextField;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
 use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
@@ -189,6 +190,7 @@ class WebApplication {
     private function registerFields() {
         $this->fields->add(new StringField());
         $this->fields->add(new NumberField());
+        $this->fields->add(new RangeField($this->detector));
         $this->fields->add(new BooleanField());
         $this->fields->add(new ColorField());
         $this->fields->add(new FileField());

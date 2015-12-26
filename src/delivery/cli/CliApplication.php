@@ -15,6 +15,7 @@ use rtens\domin\delivery\cli\fields\MultiField;
 use rtens\domin\delivery\cli\fields\NullableField;
 use rtens\domin\delivery\cli\fields\ObjectField;
 use rtens\domin\delivery\cli\fields\PrimitiveField;
+use rtens\domin\delivery\cli\fields\RangeField;
 use rtens\domin\delivery\cli\renderers\ArrayRenderer;
 use rtens\domin\delivery\cli\renderers\BooleanRenderer;
 use rtens\domin\delivery\cli\renderers\ChartRenderer;
@@ -209,6 +210,7 @@ class CliApplication {
 
     private function registerFields(ParameterReader $reader) {
         $this->fields->add(new PrimitiveField());
+        $this->fields->add(new RangeField());
         $this->fields->add(new BooleanField());
         $this->fields->add(new FileField());
         $this->fields->add(new HtmlField($reader));

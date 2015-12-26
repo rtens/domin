@@ -35,6 +35,15 @@ class TypeFactory extends \watoki\reflect\TypeFactory {
             }
 
             return new EnumerationType($options, new StringType());
+
+        } else if (preg_match('#\[\d+;\d+(;\d+)?\]#', $hint)) {
+
+            $parts = explode(';', substr($hint, 1, -1));
+            $min = array_shift($parts);
+            $max = array_shift($parts);
+            $step = $parts ? array_shift($parts) : 1;
+
+            return new RangeType($min, $max, $step);
         }
 
         return parent::fromTypeHint($hint, $class);

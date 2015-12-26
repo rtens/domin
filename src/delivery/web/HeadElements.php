@@ -8,7 +8,11 @@ class HeadElements {
     }
 
     public static function jqueryUi() {
-        return self::script('//code.jquery.com/ui/1.11.4/jquery-ui.js');
+        return self::script('//code.jquery.com/ui/1.11.4/jquery-ui.min.js');
+    }
+
+    public static function jqueryUiCss() {
+        return self::style('//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css');
     }
 
     public static function bootstrap() {
