@@ -40,7 +40,7 @@ class RangeField extends CliRangeField implements WebField {
                 'class' => 'amount form-control',
                 'type' => 'number',
                 'name' => $name,
-                'value' => $value
+                'value' => is_null($value) ? $value : $min
             ]),
             new Element('script', [], [
                 "$(function() {
