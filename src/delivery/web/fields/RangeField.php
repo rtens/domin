@@ -32,8 +32,9 @@ class RangeField extends CliRangeField implements WebField {
 
         $value = (int)$value;
         $name = $parameter->getName();
+        $id = str_replace(['[', ']'], ['-', ''], $name);
 
-        return (string)new Element('div', ['class' => 'form-group', 'id' => $name], [
+        return (string)new Element('div', ['class' => 'form-group', 'id' => $id], [
             new Element('div', ['class' => 'slider']),
             new Element('input', [
                 'class' => 'amount form-control',
@@ -43,14 +44,14 @@ class RangeField extends CliRangeField implements WebField {
             ]),
             new Element('script', [], [
                 "$(function() {
-                    $('#$name .slider').slider({
+                    $('#$id .slider').slider({
                       range: 'min',
                       value: $value,
                       min: $min,
                       max: $max,
                       step: $step,
                       slide: function(event, ui) {
-                            $('#$name .amount').val(ui.value);
+                            $('#$id .amount').val(ui.value);
                         }
                     });
                 });"
