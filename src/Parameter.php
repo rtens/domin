@@ -63,4 +63,9 @@ class Parameter {
     public function __toString() {
         return $this->name . ':' . $this->type;
     }
+
+    public function withType(Type $type) {
+        return (new Parameter($this->getName(), $type, $this->isRequired()))
+            ->setDescription($this->getDescription());
+    }
 }
