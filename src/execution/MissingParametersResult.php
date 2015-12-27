@@ -6,16 +6,24 @@ class MissingParametersResult implements ExecutionResult {
     private $parameters;
 
     /**
-     * @param array $parameters Names of missing parameters
+     * @param \Exception[] $parameters
      */
     public function __construct(array $parameters) {
         $this->parameters = $parameters;
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    public function getParameters() {
-        return $this->parameters;
+    public function getMissingNames() {
+        return array_keys($this->parameters);
+    }
+
+    /**
+     * @param string $parameterName
+     * @return \Exception
+     */
+    public function getException($parameterName) {
+        return $this->parameters[$parameterName];
     }
 }

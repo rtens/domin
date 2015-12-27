@@ -38,6 +38,9 @@ class ActionField implements WebField {
      * @throws \Exception
      */
     public function render(Parameter $parameter, $values) {
+        $errors = $values['errors'];
+        $values = $values['inflated'];
+
         $action = $this->actions->getAction($parameter->getName());
         $values = $action->fill($values);
 
@@ -50,19 +53,17 @@ class ActionField implements WebField {
         }
 
         foreach ($action->parameters() as $parameter) {
-            $value = null;
-            if (isset($values[$parameter->getName()])) {
-                $value = $values[$parameter->getName()];
-            }
+            $value = $this->get($parameter, $values);
+            $error = $this->get($parameter, $errors);
 
             $body[] = new Element('div', ['class' => 'form-group'],
-                $this->makeFormGroup($parameter, $value));
+                $this->makeFormGroup($parameter, $value, $error));
         }
 
         return $body ? (string)new Element('div', [], $body) : '';
     }
 
-    private function makeFormGroup(Parameter $parameter, $value) {
+    private function makeFormGroup(Parameter $parameter, $value, \Exception $error = null) {
         $formGroup = [
             new Element('label', [], [
                 $this->makeLabel($parameter) . ($parameter->isRequired() ? '*' : '')
@@ -75,6 +76,12 @@ class ActionField implements WebField {
             ]);
             $formGroup[] = new Element('div', ['class' => 'description-content sr-only'], [
                 $parameter->getDescription()
+            ]);
+        }
+
+        if ($error) {
+            $formGroup[] = new Element('div', ['class' => 'alert alert-danger'], [
+                $error->getMessage()
             ]);
         }
 
@@ -139,5 +146,12 @@ class ActionField implements WebField {
                     });
                 });"
         ]);
+    }
+
+    private function get(Parameter $parameter, $array) {
+        if (isset($array[$parameter->getName()])) {
+            return $array[$parameter->getName()];
+        }
+        return null;
     }
 }

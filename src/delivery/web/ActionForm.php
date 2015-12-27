@@ -46,12 +46,20 @@ class ActionForm {
 
     private function readParameters(WebRequest $request, WebApplication $app, Action $action) {
         $reader = new RequestParameterReader($request);
-        $values = [];
+        $values = [
+            'inflated' => [],
+            'errors' => []
+        ];
 
         foreach ($action->parameters() as $parameter) {
             if ($reader->has($parameter)) {
                 $field = $app->fields->getField($parameter);
-                $values[$parameter->getName()] = $field->inflate($parameter, $reader->read($parameter));
+
+                try {
+                    $values['inflated'][$parameter->getName()] = $field->inflate($parameter, $reader->read($parameter));
+                } catch (\Exception $e) {
+                    $values['errors'][$parameter->getName()] = $e;
+                }
             }
         }
         return $values;

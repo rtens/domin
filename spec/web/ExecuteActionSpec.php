@@ -103,10 +103,11 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->given_HasTheParameter('foo', 'two');
 
         $this->givenAWebFieldRenderingWith(function (Parameter $action, $parameters) {
-            array_walk($parameters, function (&$v, $k) {
+            $inflated = $parameters['inflated'];
+            array_walk($inflated, function (&$v, $k) {
                 $v ="$k:$v";
             });
-            return $action->getName() . ' - ' . implode(',', $parameters);
+            return $action->getName() . ' - ' . implode(',', $inflated);
         });
 
         $this->whenIExecute_With('foo', ['two' => 'dos', 'three' => 'not a parameter']);

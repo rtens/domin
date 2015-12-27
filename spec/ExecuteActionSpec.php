@@ -53,7 +53,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenTheParameter_Is('one', 'uno');
 
         $this->whenIExecute('foo');
-        $this->thenTheResultShouldBeTheError('No field found to handle [one:type of one]');
+        $this->then_ShouldBeMissingWith('one', 'No field found to handle [one:type of one]');
     }
 
     function inflateParameters() {
@@ -202,7 +202,13 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenTheResultShouldBeThatParameters_AreMissing($names) {
         $this->assert->isInstanceOf($this->result, MissingParametersResult::class);
-        $this->assert($this->result->getParameters(), $names);
+        $this->assert($this->result->getMissingNames(), $names);
 
+    }
+
+    private function then_ShouldBeMissingWith($param, $message) {
+        $this->assert->isInstanceOf($this->result, MissingParametersResult::class);
+        $this->assert->contains($this->result->getMissingNames(), $param);
+        $this->assert($this->result->getException($param)->getMessage(), $message);
     }
 }

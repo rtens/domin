@@ -122,6 +122,17 @@ class ActionFieldSpec extends StaticTestSuite {
         $this->assert->contains($rendered, 'This is "foo"');
     }
 
+    function showError() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_HasTheParameter('foo', 'one');
+        $this->givenAWebFieldRenderingWith(function () {
+            return '...';
+        });
+
+        $rendered = $this->whenIRenderWithErrors('foo', ['one' => new \Exception('Foo!')]);
+        $this->assert->contains($rendered, '<div class="alert alert-danger">Foo!</div>');
+    }
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -153,9 +164,6 @@ class ActionFieldSpec extends StaticTestSuite {
         $this->fields->add(Mockster::mock($field));
 
         Mockster::stub($field->handles(Arg::any()))->will()->return_(true);
-//        Mockster::stub($field->inflate(Arg::any(), Arg::any()))->will()->forwardTo(function (Parameter $p, $s) {
-//            return $p->getName() . '_' . $s . '(inflated)';
-//        });
         Mockster::stub($field->render(Arg::any(), Arg::any()))->will()->forwardTo($callback);
     }
 
@@ -168,6 +176,15 @@ class ActionFieldSpec extends StaticTestSuite {
     }
 
     private function whenIRenderWith($action, $parameters) {
-        return $this->actionField->render(new Parameter($action, new UnknownType()), $parameters);
+        return $this->whenIRenderWithParameters_AndErrors($action, $parameters, []);
+    }
+
+    private function whenIRenderWithErrors($action, $errors) {
+        return $this->whenIRenderWithParameters_AndErrors($action, [], $errors);
+    }
+
+    private function whenIRenderWithParameters_AndErrors($action, $parameters, $errors) {
+        return $this->actionField->render(new Parameter($action, new UnknownType()), [
+            'inflated' => $parameters, 'errors' => $errors]);
     }
 }

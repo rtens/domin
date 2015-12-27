@@ -64,14 +64,12 @@ class ExecuteResource extends Resource {
 
     private function doExecute($actionId, WebRequest $request, $mayBeModifying = false) {
         $action = $this->getAction($actionId);
+        $headElements = self::baseHeadElements();
 
         $crumbs = new BreadCrumbs($this->cookies, $request);
-        $form = new ActionForm($request, $this->app, $action, $actionId);
 
-        $headElements = array_merge(
-            self::baseHeadElements(),
-            $form->getHeadElements()
-        );
+        $form = new ActionForm($request, $this->app, $action, $actionId);
+        $headElements = array_merge($headElements, $form->getHeadElements());
 
         if ($mayBeModifying || !$action->isModifying()) {
             $result = new ActionResult($request, $this->app, $action, $actionId, $crumbs);
@@ -86,6 +84,7 @@ class ExecuteResource extends Resource {
             'action' => $form->getModel(),
             'result' => isset($result) ? $result->getModel() : null,
             'headElements' => HeadElements::filter($headElements),
+            'executed' => isset($result) && $result->wasExecuted()
         ];
     }
 

@@ -50,9 +50,24 @@ class ActionResult {
 
         if ($result instanceof FailedResult) {
             $model['error'] = htmlentities($result->getMessage());
+
+        } else if ($result instanceof MissingParametersResult) {
+            $model['missing'] = $result->getMissingNames();
+
         } else if ($result instanceof NoResult) {
             $model['success'] = true;
             $model['redirect'] = $crumbs->getLastCrumb();
+
+        } else if ($result instanceof NotPermittedResult) {
+            $model['error'] = 'You are not permitted to execute this action.';
+            $model['redirect'] = $app->getAccessControl($request)->acquirePermission();
+
+        } else if ($result instanceof RedirectResult) {
+            $model['success'] = true;
+            $model['redirect'] = $request->getContext()
+                ->appended($result->getActionId())
+                ->withParameters(new Map($result->getParameters()));
+
         } else if ($result instanceof ValueResult) {
             $value = $result->getValue();
             $renderer = $app->renderers->getRenderer($value);
@@ -65,16 +80,6 @@ class ActionResult {
             if (!$action->isModifying()) {
                 $crumbs->updateCrumbs($action, $actionId);
             }
-        } else if ($result instanceof MissingParametersResult) {
-            $model['missing'] = $result->getParameters();
-        } else if ($result instanceof RedirectResult) {
-            $model['success'] = true;
-            $model['redirect'] = $request->getContext()
-                ->appended($result->getActionId())
-                ->withParameters(new Map($result->getParameters()));
-        } else if ($result instanceof NotPermittedResult) {
-            $model['error'] = 'You are not permitted to execute this action.';
-            $model['redirect'] = $app->getAccessControl($request)->acquirePermission();
         }
 
         return $model;
@@ -86,5 +91,9 @@ class ActionResult {
 
     public function getHeadElements() {
         return $this->headElements;
+    }
+
+    public function wasExecuted() {
+        return !$this->model['error'] && !$this->model['missing'];
     }
 }

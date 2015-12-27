@@ -30,8 +30,12 @@
     </ol>
     <? } ?>
 
-    <? if ($resul[error]) { ?>
+    <? if ($result[error]) { ?>
     <div class="alert alert-danger"><?= $result[error] ?></div>
+    <? } ?>
+
+    <? if ($result[missing]) { ?>
+    <div class="alert alert-danger">Missing: <?= implode(', ', $result[missing]) ?></div>
     <? } ?>
 
     <? if ($result[success]) { ?>
@@ -48,7 +52,7 @@
                 <h1 class="panel-title" style="font-size: 22pt">
                     <?= $caption ?>
 
-                    <? if ($result && !$result[missing]) { ?>
+                    <? if ($executed) { ?>
                     <div class="pull-right">
                         <span class="show-form glyphicon glyphicon-chevron-down"></span>
                         <span class="hide-form glyphicon glyphicon-chevron-up" style="display: none;"></span>
@@ -66,7 +70,7 @@
             <div class="collapsed panel-footer">
                 <input type="submit" class="btn btn-primary" value="Execute">
 
-                <? if (!$result || $result[missing]) { ?>
+                <? if (!$executed) { ?>
                 <a href="javascript:history.back()" class="btn btn-default">Back</a>
                 <? } ?>
             </div>
@@ -92,7 +96,7 @@
         };
     </script>
 
-    <? if (!$result || $result[missing]) { ?>
+    <? if (!$executed) { ?>
     <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {

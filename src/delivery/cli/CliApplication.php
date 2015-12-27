@@ -137,7 +137,11 @@ class CliApplication {
             $console->writeLine((string)$this->renderers->getRenderer($value)->render($value));
             return self::OK;
         } else if ($result instanceof MissingParametersResult) {
-            $console->writeLine("Missing parameters " . ValuePrinter::serialize($result->getParameters()));
+            $console->writeLine();
+            $console->writeLine("Missing parameters!");
+            foreach ($result->getMissingNames() as $missing) {
+                $console->writeLine('  ' . $missing . ': ' . $result->getException($missing)->getMessage());
+            }
             return self::ERROR;
         } else if ($result instanceof NotPermittedResult) {
             $console->writeLine('Permission denied');
