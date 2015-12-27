@@ -34,7 +34,7 @@ class EnumerationField implements WebField {
      * @return mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
-        $param = new Parameter($parameter->getName(), $this->getOptionType($parameter));
+        $param = new Parameter($parameter->getName() . '-value', $this->getOptionType($parameter));
         return $this->fields->getField($param)->inflate($param, $serialized);
     }
 
