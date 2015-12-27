@@ -30,7 +30,7 @@ class RangeField extends CliRangeField implements WebField {
         $max = $range->getMax();
         $step = $range->getStep();
 
-        $value = (int)$value;
+        $value = is_null($value) ? $min : (int)$value;
         $name = $parameter->getName();
         $id = str_replace(['[', ']'], ['-', ''], $name);
 
@@ -40,7 +40,7 @@ class RangeField extends CliRangeField implements WebField {
                 'class' => 'amount form-control',
                 'type' => 'number',
                 'name' => $name,
-                'value' => is_null($value) ? $value : $min
+                'value' => $value
             ]),
             new Element('script', [], [
                 "$(function() {
