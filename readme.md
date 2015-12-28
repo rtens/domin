@@ -1,4 +1,4 @@
-# Domin [![Build Status](https://travis-ci.org/rtens/domin.png?branch=master)](https://travis-ci.org/rtens/domin)
+# Domin [![Build Status](https://travis-ci.org/rtens/domin.png?branch=master)](https://travis-ci.org/rtens/domin) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/rtens/domin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/rtens/domin/?branch=master)
 
 *domin* ( **do**main **m**odel **in**terface ) is an administration interface for abstract [Domain Models] using 
 the [Command Object pattern].
