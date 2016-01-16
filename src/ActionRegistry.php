@@ -16,9 +16,11 @@ class ActionRegistry {
         $actions = $this->actions;
 
         if ($this->access) {
-            $actions = array_filter($actions, function ($id) {
-                return $this->access->isVisible($id);
-            }, ARRAY_FILTER_USE_KEY);
+            foreach ($actions as $id => $action) {
+                if (!$this->access->isVisible($id)) {
+                    unset($actions[$id]);
+                }
+            }
         }
 
         return $actions;
