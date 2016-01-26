@@ -41,7 +41,9 @@ class ArrayField implements WebField {
         $itemParameter = $this->makeInnerParameter($parameter);
 
         $serialized = array_values($serialized);
-        $serialized = array_values(array_slice($serialized, 1));
+        if ($serialized[0] == self::EMPTY_LIST_VALUE) {
+            $serialized = array_values(array_slice($serialized, 1));
+        }
         $serialized = array_map(function ($item) use ($itemParameter) {
             return $this->fields->getField($itemParameter)->inflate($itemParameter, $item);
         }, $serialized);
@@ -54,6 +56,10 @@ class ArrayField implements WebField {
      * @return string
      */
     public function render(Parameter $parameter, $value) {
+        if (!$value) {
+            $value = [];
+        }
+
         $id = str_replace(['[', ']'], '-', $parameter->getName());
 
         /** @var WebField $innerField */

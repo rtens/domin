@@ -67,12 +67,12 @@ class ImageField extends FileField {
      * @return \rtens\domin\parameters\Image
      */
     public function inflate(Parameter $parameter, $serialized) {
-        if ($serialized['encoded']) {
+        if (isset($serialized['encoded']) && $serialized['encoded']) {
             list($nameAndType, $data) = explode(';base64,', $serialized['encoded']);
             list($name, $type) = explode(';;data:', $nameAndType);
 
             return new Image(new MemoryFile($name, $type, base64_decode($data)));
-        } else if ($serialized['name']) {
+        } else if (isset($serialized['name']) && $serialized['name']) {
             return new Image($this->createPreservedFile($serialized));
         } else {
             return null;
