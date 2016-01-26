@@ -48,7 +48,9 @@ class ArrayFieldSpec extends StaticTestSuite {
         });
 
         $param = new Parameter('foo', new ArrayType(new StringType()));
-        $this->assert($this->field->inflate($param, ['ignored', 'one', 'two']),
+        $this->assert($this->field->inflate($param, [ArrayField::EMPTY_LIST_VALUE, 'one', 'two']),
+            ['foo_one', 'foo_two']);
+        $this->assert($this->field->inflate($param, ['one', 'two']),
             ['foo_one', 'foo_two']);
     }
 
