@@ -135,7 +135,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
 
         $this->assert->size($actions->getAllActions(), 2);
 
-        $doThis = $actions->getAction('ClassWithSomeMethods:doThis');
+        $doThis = $actions->getAction('ClassWithSomeMethods~doThis');
         $this->assert($doThis->description(), 'My description');
         $this->assert($doThis->caption(), 'My caption');
         $this->assert($doThis->execute([
@@ -150,7 +150,7 @@ class DeriveActionsFromMethodSpec extends StaticTestSuite {
         ]);
         $this->assert($doThis->parameters()[0], new Parameter('one', new ArrayType(new StringType())));
 
-        $doThat = $actions->getAction('ClassWithSomeMethods:doThat');
+        $doThat = $actions->getAction('ClassWithSomeMethods~doThat');
         $this->assert($doThat->description(), '');
         $this->assert($doThat->execute([]), 'foo!');
         $this->assert($doThat->caption(), 'That');

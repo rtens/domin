@@ -8,9 +8,6 @@ use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\menu\MenuGroup;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\delivery\WebRequest;
-use watoki\curir\protocol\Url;
-use watoki\deli\Path;
 
 class ShowMenuSpec extends StaticTestSuite {
 
@@ -26,7 +23,7 @@ class ShowMenuSpec extends StaticTestSuite {
             '<span class="icon-bar"></span>' . "\n" .
             '<span class="icon-bar"></span>' . "\n" .
             '</button>' . "\n" .
-            '<a class="navbar-brand" href="http://example.com/base/">domin</a>' . "\n" .
+            '<a class="navbar-brand" href=".">domin</a>' . "\n" .
             '</div>' . "\n" .
             '<div id="navbar" class="navbar-collapse collapse">' . "\n" .
             '<ul class="nav navbar-nav"></ul>' . "\n" .
@@ -40,7 +37,7 @@ class ShowMenuSpec extends StaticTestSuite {
     function customBrand() {
         $this->menu->setBrand('my Brand');
         $this->whenIRenderTheMenu();
-        $this->assert->contains($this->rendered, '<a class="navbar-brand" href="http://example.com/base/">my Brand</a>');
+        $this->assert->contains($this->rendered, '<a class="navbar-brand" href=".">my Brand</a>');
     }
 
     function menuWithItems() {
@@ -56,8 +53,8 @@ class ShowMenuSpec extends StaticTestSuite {
         $this->whenIRenderTheMenu();
         $this->assert->contains($this->rendered,
             '<ul class="nav navbar-nav">' . "\n" .
-            '<li><a href="http://example.com/base/foo">My Foo</a></li>' . "\n" .
-            '<li><a href="http://example.com/base/bar?one=uno&amp;two=dos">My Bar</a></li>' . "\n" .
+            '<li><a href="foo">My Foo</a></li>' . "\n" .
+            '<li><a href="bar?one=uno&amp;two=dos">My Bar</a></li>' . "\n" .
             '</ul>');
     }
 
@@ -70,7 +67,7 @@ class ShowMenuSpec extends StaticTestSuite {
             '<ul class="nav navbar-nav"></ul>');
         $this->assert->contains($this->rendered,
             '<ul class="nav navbar-nav navbar-right">' .
-            '<li><a href="http://example.com/base/foo">My Foo</a></li>' .
+            '<li><a href="foo">My Foo</a></li>' .
             '</ul>');
     }
 
@@ -90,8 +87,8 @@ class ShowMenuSpec extends StaticTestSuite {
             '<span class="caret"></span>' . "\n" .
             '</a>' . "\n" .
             '<ul class="dropdown-menu">' . "\n" .
-            '<li><a href="http://example.com/base/foo?foo=bar">My Foo</a></li>' . "\n" .
-            '<li><a href="http://example.com/base/bar?one=two">My Bar</a></li>' . "\n" .
+            '<li><a href="foo?foo=bar">My Foo</a></li>' . "\n" .
+            '<li><a href="bar?one=two">My Bar</a></li>' . "\n" .
             '</ul>' . "\n" .
             '</li>');
     }
@@ -110,7 +107,7 @@ class ShowMenuSpec extends StaticTestSuite {
     }
 
     private function whenIRenderTheMenu() {
-        $this->rendered = (string)$this->menu->render(new WebRequest(Url::fromString('http://example.com/base'), new Path()));
+        $this->rendered = (string)$this->menu->render();
     }
 
     private function givenTheAction($id) {

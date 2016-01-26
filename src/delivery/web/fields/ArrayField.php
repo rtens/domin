@@ -7,8 +7,6 @@ use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebField;
-use watoki\collections\Liste;
-use watoki\collections\Map;
 use watoki\reflect\type\ArrayType;
 
 class ArrayField implements WebField {
@@ -36,19 +34,18 @@ class ArrayField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param Liste|Map $serialized
+     * @param array $serialized
      * @return array
      */
     public function inflate(Parameter $parameter, $serialized) {
-        if ($serialized instanceof Map) {
-            $serialized = $serialized->asList();
-        }
-
         $itemParameter = $this->makeInnerParameter($parameter);
 
-        return $serialized->slice(1)->map(function ($item) use ($itemParameter) {
+        $serialized = array_values($serialized);
+        $serialized = array_values(array_slice($serialized, 1));
+        $serialized = array_map(function ($item) use ($itemParameter) {
             return $this->fields->getField($itemParameter)->inflate($itemParameter, $item);
-        })->toArray();
+        }, $serialized);
+        return $serialized;
     }
 
     /**

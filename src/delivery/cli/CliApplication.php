@@ -44,7 +44,6 @@ use rtens\domin\Executor;
 use rtens\domin\reflection\CommentParser;
 use rtens\domin\reflection\types\TypeFactory;
 use watoki\factory\Factory;
-use watoki\reflect\ValuePrinter;
 
 class CliApplication {
 

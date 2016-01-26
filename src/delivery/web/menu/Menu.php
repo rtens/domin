@@ -2,7 +2,6 @@
 namespace rtens\domin\delivery\web\menu;
 
 use rtens\domin\delivery\web\Element;
-use watoki\curir\delivery\WebRequest;
 
 class Menu {
 
@@ -34,9 +33,9 @@ class Menu {
         return $this;
     }
 
-    public function render(WebRequest $request) {
-        $render = function (MenuItem $item) use ($request) {
-            return $item->render($request);
+    public function render() {
+        $render = function (MenuItem $item) {
+            return $item->render();
         };
 
         return new Element('nav', ['class' => 'navbar navbar-default'], [
@@ -55,7 +54,7 @@ class Menu {
                         new Element('span', ['class' => 'icon-bar']),
                         new Element('span', ['class' => 'icon-bar']),
                     ]),
-                    new Element('a', ['class' => 'navbar-brand', 'href' => $request->getContext()->appended('')->toString()], [$this->brand])
+                    new Element('a', ['class' => 'navbar-brand', 'href' => '.'], [$this->brand])
                 ]),
                 new Element('div', ['id' => 'navbar', 'class' => 'navbar-collapse collapse'], [
                     new Element('ul', ['class' => 'nav navbar-nav'],

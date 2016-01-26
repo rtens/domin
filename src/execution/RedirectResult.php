@@ -3,29 +3,33 @@ namespace rtens\domin\execution;
 
 class RedirectResult implements ExecutionResult {
 
-    private $actionId;
+    /** @var string */
+    private $target;
+
+    /** @var array|\string[] */
     private $parameters;
 
     /**
-     * @param string $actionId
-     * @param array $parameters
+     * @param string $target
+     * @param string[] $parameters
      */
-    public function __construct($actionId, $parameters = []) {
-        $this->actionId = $actionId;
+    public function __construct($target, array $parameters = []) {
+        $this->target = $target;
         $this->parameters = $parameters;
     }
 
     /**
      * @return string
      */
-    public function getActionId() {
-        return $this->actionId;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters() {
-        return $this->parameters;
+    public function getUrl() {
+        $url = $this->target;
+        if ($this->parameters) {
+            $keyValues = [];
+            foreach ($this->parameters as $key => $value) {
+                $keyValues[] = urlencode($key) . '=' . urlencode($value);
+            }
+            $url .= '?' . implode('&', $keyValues);
+        }
+        return $url;
     }
 }

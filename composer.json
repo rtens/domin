@@ -19,10 +19,12 @@
     }
   ],
   "require": {
-    "watoki/reflect": "dev-master",
-    "watoki/curir": "dev-master"
+    "watoki/factory": "dev-master",
+    "watoki/reflect": "dev-master"
   },
   "suggest": {
+    "watoki/curir": "Supported delivery system.",
+    "silex/silex": "Supported delivery system",
     "mobiledetect/mobiledetectlib": "To enable mobile-specific client-side code only when on mobile.",
     "erusev/parsedown": "To parse Action and Parameter descriptions for HTML output.",
     "league/climate": "Used by some CLI components"

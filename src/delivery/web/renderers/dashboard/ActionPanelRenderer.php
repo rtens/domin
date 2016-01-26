@@ -9,8 +9,6 @@ use rtens\domin\delivery\web\renderers\dashboard\types\ActionPanel;
 use rtens\domin\delivery\web\renderers\dashboard\types\Panel;
 use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\Parameter;
-use watoki\collections\Map;
-use watoki\curir\protocol\Url;
 
 class ActionPanelRenderer implements WebRenderer {
 
@@ -19,9 +17,6 @@ class ActionPanelRenderer implements WebRenderer {
 
     /** @var ActionRegistry */
     private $actions;
-
-    /** @var Url */
-    private $baseUrl;
 
     private $results = [];
 
@@ -32,12 +27,10 @@ class ActionPanelRenderer implements WebRenderer {
      * @param RendererRegistry $renderers
      * @param ActionRegistry $actions
      * @param FieldRegistry $fields
-     * @param Url $baseUrl
      */
-    public function __construct(RendererRegistry $renderers, ActionRegistry $actions, FieldRegistry $fields, Url $baseUrl) {
+    public function __construct(RendererRegistry $renderers, ActionRegistry $actions, FieldRegistry $fields) {
         $this->renderers = $renderers;
         $this->actions = $actions;
-        $this->baseUrl = $baseUrl;
         $this->fields = $fields;
     }
 
@@ -58,11 +51,23 @@ class ActionPanelRenderer implements WebRenderer {
         return (string)(new Panel($heading, $this->getContent($value)))
             ->setMaxHeight($value->getMaxHeight())
             ->setRightHeading([new Element('a', [
-                'href' => $this->baseUrl
-                    ->appended($value->getActionId())
-                    ->withParameters(Map::toCollections($value->getParameters()))
+                'href' => $this->makeUrl($value)
             ], [new Element('span', ['class' => 'glyphicon glyphicon-circle-arrow-right'])])])
             ->render($this->renderers);
+    }
+
+    private function makeUrl(ActionPanel $panel) {
+        $url = $panel->getActionId();
+
+        if ($panel->getParameters()) {
+            $keyValues = [];
+            foreach ($panel->getParameters() as $key => $value) {
+                $keyValues[] = urlencode($key) . '=' . urlencode($value);
+            }
+            $url .= '?' . implode('&', $keyValues);
+        }
+
+        return $url;
     }
 
     /**

@@ -6,6 +6,8 @@ use rtens\domin\reflection\types\TypeFactory;
 
 class MethodActionGenerator {
 
+    const SEPERATOR = '~';
+
     private $actions;
     private $types;
     private $parser;
@@ -41,7 +43,7 @@ class MethodActionGenerator {
     }
 
     private static function getId(\ReflectionMethod $method) {
-        return $method->getDeclaringClass()->getShortName() . ':' . $method->name;
+        return $method->getDeclaringClass()->getShortName() . self::SEPERATOR . $method->name;
     }
 
     public static function actionId($class, $method) {

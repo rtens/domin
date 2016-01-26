@@ -21,7 +21,6 @@ use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\TextRenderer;
-use rtens\domin\execution\access\NoneAccessControl;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
@@ -49,8 +48,6 @@ use rtens\domin\delivery\web\fields\MultiField;
 use rtens\domin\delivery\web\fields\NullableField;
 use rtens\domin\delivery\web\fields\ObjectField;
 use rtens\domin\delivery\web\fields\StringField;
-use watoki\curir\delivery\WebRequest;
-use watoki\curir\protocol\Url;
 use watoki\factory\Factory;
 
 class WebApplication {
@@ -88,9 +85,6 @@ class WebApplication {
     /** @var WebCommentParser */
     public $parser;
 
-    /** @var null|callable */
-    private $accessFactory;
-
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -117,8 +111,6 @@ class WebApplication {
         $this->detector = $detect;
         $this->parser = $parser;
         $this->menu = new Menu($actions);
-
-        $this->accessFactory = WebAccessControl::factory(new NoneAccessControl());
     }
 
     /**
@@ -147,22 +139,13 @@ class WebApplication {
         $this->menu->setBrand($name);
     }
 
-    public function prepare(WebRequest $request) {
-        $this->registerRenderers($request->getContext());
+    public function prepare() {
+        $this->registerRenderers();
         $this->registerFields();
-        $this->actions->restrictAccess($this->getAccessControl($request));
     }
 
-    /**
-     * @param WebRequest $request
-     * @return WebAccessControl
-     */
-    public function getAccessControl(WebRequest $request) {
-        return call_user_func($this->accessFactory, $request);
-    }
-
-    private function registerRenderers(Url $baseUrl) {
-        $links = new LinkPrinter($baseUrl, $this->links, $this->actions, $this->parser);
+    private function registerRenderers() {
+        $links = new LinkPrinter($this->links, $this->actions, $this->parser);
 
         $this->renderers->add(new ElementRenderer());
         $this->renderers->add(new BooleanRenderer());
@@ -179,7 +162,7 @@ class WebApplication {
         $this->renderers->add(new ChartRenderer());
         $this->renderers->add(new DelayedOutputRenderer());
         $this->renderers->add(new DashboardItemRenderer($this->renderers));
-        $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $this->fields, $baseUrl));
+        $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $this->fields));
         $this->renderers->add(new DataTableRenderer($this->renderers));
         $this->renderers->add(new TableRenderer($this->renderers, $links));
         $this->renderers->add(new ListRenderer($this->renderers, $links));

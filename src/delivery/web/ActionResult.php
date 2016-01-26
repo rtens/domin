@@ -2,16 +2,12 @@
 namespace rtens\domin\delivery\web;
 
 use rtens\domin\Action;
-use rtens\domin\execution\ExecutionResult;
+use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
-use rtens\domin\execution\NoResult;
-use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\execution\ValueResult;
 use rtens\domin\Executor;
-use watoki\collections\Map;
-use watoki\curir\delivery\WebRequest;
 
 class ActionResult {
 
@@ -21,26 +17,54 @@ class ActionResult {
     /** @var Element[] */
     private $headElements = [];
 
-    /**
-     * @param WebRequest $request
-     * @param WebApplication $app
-     * @param Action $action
-     * @param string $actionId
-     * @param BreadCrumbs $crumbs
-     */
-    public function __construct(WebRequest $request, WebApplication $app, Action $action, $actionId, BreadCrumbs $crumbs) {
-        $reader = new RequestParameterReader($request);
+    /** @var Action */
+    private $action;
 
-        $executor = new Executor($app->actions, $app->fields, $reader);
-        $executor->restrictAccess($app->getAccessControl($request));
-        $result = $executor->execute($actionId);
+    /** @var string */
+    private $actionId;
 
-        $this->model = $this->assembleResult($result, $app, $request, $crumbs, $action, $actionId);
+    /** @var BreadCrumbsTrail */
+    private $crumbs;
+
+    /** @var Executor */
+    private $executor;
+
+    /** @var RendererRegistry */
+    private $renderers;
+
+    public function __construct(Executor $executor, RendererRegistry $renderers, Action $action, $actionId, BreadCrumbsTrail $crumbs) {
+        $this->action = $action;
+        $this->actionId = $actionId;
+        $this->crumbs = $crumbs;
+        $this->executor = $executor;
+        $this->renderers = $renderers;
     }
 
-    private function assembleResult(ExecutionResult $result, WebApplication $app, WebRequest $request,
-                                    BreadCrumbs $crumbs, Action $action, $actionId) {
-        $model = [
+    public function getModel() {
+        $this->executeFirst();
+        return $this->model;
+    }
+
+    public function getHeadElements() {
+        $this->executeFirst();
+        return $this->headElements;
+    }
+
+    public function wasExecuted() {
+        $this->executeFirst();
+        return !$this->model['error'] && !$this->model['missing'];
+    }
+
+    private function executeFirst() {
+        if (!$this->model) {
+            $this->execute();
+        }
+    }
+
+    private function execute() {
+        $result = $this->executor->execute($this->actionId);
+
+        $this->model = [
             'error' => null,
             'missing' => null,
             'success' => null,
@@ -48,52 +72,45 @@ class ActionResult {
             'output' => null
         ];
 
-        if ($result instanceof FailedResult) {
-            $model['error'] = htmlentities($result->getMessage());
+        call_user_func([$this, 'handle' . (new \ReflectionClass($result))->getShortName()], $result);
+    }
 
-        } else if ($result instanceof MissingParametersResult) {
-            $model['missing'] = $result->getMissingNames();
+    protected function handleFailedResult(FailedResult $result) {
+        $this->model['error'] = htmlentities($result->getMessage());
+    }
 
-        } else if ($result instanceof NoResult) {
-            $model['success'] = true;
-            $model['redirect'] = $crumbs->getLastCrumb();
+    protected function handleMissingParametersResult(MissingParametersResult $result) {
+        $this->model['missing'] = $result->getMissingNames();
+    }
 
-        } else if ($result instanceof NotPermittedResult) {
-            $model['error'] = 'You are not permitted to execute this action.';
-            $model['redirect'] = $app->getAccessControl($request)->acquirePermission();
+    protected function handleNoResult() {
+        $this->model['success'] = true;
 
-        } else if ($result instanceof RedirectResult) {
-            $model['success'] = true;
-            $model['redirect'] = $request->getContext()
-                ->appended($result->getActionId())
-                ->withParameters(new Map($result->getParameters()));
-
-        } else if ($result instanceof ValueResult) {
-            $value = $result->getValue();
-            $renderer = $app->renderers->getRenderer($value);
-
-            if ($renderer instanceof WebRenderer) {
-                $this->headElements = $renderer->headElements($value);
-            }
-            $model['output'] = $renderer->render($value);
-
-            if (!$action->isModifying()) {
-                $crumbs->updateCrumbs($action, $actionId);
-            }
+        if ($this->crumbs->hasCrumbs()) {
+            $this->model['redirect'] = $this->crumbs->getLastCrumb()->getTarget();
         }
-
-        return $model;
     }
 
-    public function getModel() {
-        return $this->model;
+    protected function handleNotPermittedResult() {
+        $this->model['error'] = 'You are not permitted to execute this action.';
     }
 
-    public function getHeadElements() {
-        return $this->headElements;
+    protected function handleRedirectResult(RedirectResult $result) {
+        $this->model['success'] = true;
+        $this->model['redirect'] = $result->getUrl();
     }
 
-    public function wasExecuted() {
-        return !$this->model['error'] && !$this->model['missing'];
+    protected function handleValueResult(ValueResult $result) {
+        $value = $result->getValue();
+        $renderer = $this->renderers->getRenderer($value);
+
+        if ($renderer instanceof WebRenderer) {
+            $this->headElements = $renderer->headElements($value);
+        }
+        $this->model['output'] = $renderer->render($value);
+
+        if (!$this->action->isModifying()) {
+            $this->crumbs->updateCrumbs($this->action, $this->actionId);
+        }
     }
 }

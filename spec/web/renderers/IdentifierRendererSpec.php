@@ -11,7 +11,6 @@ use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\parameters\Identifier;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\protocol\Url;
 
 class IdentifierRendererSpec extends StaticTestSuite {
 
@@ -27,7 +26,7 @@ class IdentifierRendererSpec extends StaticTestSuite {
     protected function before() {
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
-        $printer = new LinkPrinter(Url::fromString('http://example.com/base'), $this->links, $this->actions, new WebCommentParser());
+        $printer = new LinkPrinter($this->links, $this->actions, new WebCommentParser());
         $this->renderer = new IdentifierRenderer($printer);
     }
 
@@ -43,7 +42,7 @@ class IdentifierRendererSpec extends StaticTestSuite {
         $this->assert->contains($rendered, "DateTime\n<span class=\"caret\"></span>");
         $this->assert->contains($rendered,
             '<ul class="dropdown-menu">' .
-            '<li><a class="" href="http://example.com/base/foo?id=foo-id"></a></li>' .
+            '<li><a class="" href="foo?id=foo-id"></a></li>' .
             '</ul>');
     }
 }
