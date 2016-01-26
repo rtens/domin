@@ -5,7 +5,6 @@ use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\WebField;
 use rtens\domin\Parameter;
-use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\reflect\Property;
@@ -55,7 +54,7 @@ class ObjectField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param \watoki\collections\Map $serialized
+     * @param array $serialized
      * @return object
      */
     public function inflate(Parameter $parameter, $serialized) {
@@ -93,12 +92,12 @@ class ObjectField implements WebField {
         return $instance;
     }
 
-    private function inflateProperties(Parameter $parameter, Map $serialized) {
+    private function inflateProperties(Parameter $parameter, array $serialized) {
         $reader = new PropertyReader($this->types, $this->getClass($parameter));
 
         $properties = [];
         foreach ($reader->readInterface() as $property) {
-            if ($serialized->has($property->name())) {
+            if (array_key_exists($property->name(), $serialized)) {
                 $param = $this->makePropertyParameter($parameter, $property);
                 $properties[$property->name()] = $this->inflateProperty($serialized[$property->name()], $param);
             }

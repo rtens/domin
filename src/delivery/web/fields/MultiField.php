@@ -2,11 +2,10 @@
 namespace rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebField;
-use watoki\collections\Map;
+use rtens\domin\Parameter;
 use watoki\reflect\Type;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\MultiType;
@@ -33,12 +32,12 @@ class MultiField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param Map $serialized
+     * @param array $serialized
      * @return mixed
      */
     public function inflate(Parameter $parameter, $serialized) {
         foreach ($this->getTypes($parameter) as $i => $type) {
-            if ($serialized->has("multi-$i")) {
+            if (array_key_exists("multi-$i", $serialized)) {
                 $optionParameter = new Parameter($parameter->getName(), $type);
                 return $this->getField($optionParameter)->inflate($optionParameter, $serialized["multi-$i"]);
             }

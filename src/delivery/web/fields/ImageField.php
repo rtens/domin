@@ -63,7 +63,7 @@ class ImageField extends FileField {
 
     /**
      * @param Parameter $parameter
-     * @param \watoki\collections\Map|string[] $serialized
+     * @param string[] $serialized
      * @return \rtens\domin\parameters\Image
      */
     public function inflate(Parameter $parameter, $serialized) {

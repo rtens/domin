@@ -3,8 +3,6 @@ namespace rtens\domin\delivery\web\renderers\tables\types;
 
 use rtens\domin\delivery\web\renderers\tables\Table;
 use rtens\domin\reflection\types\TypeFactory;
-use watoki\collections\Map;
-use watoki\collections\Set;
 use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 
@@ -13,10 +11,10 @@ class ObjectTable implements Table {
     /** @var object[] */
     private $objects;
 
-    /** @var Map|Property[] */
+    /** @var Property[] */
     private $properties;
 
-    /** @var array|string[] */
+    /** @var string[] */
     private $headers = [];
 
     /** @var callable[] */
@@ -24,7 +22,7 @@ class ObjectTable implements Table {
 
     public function __construct(array $objects, TypeFactory $types) {
         $this->objects = $objects;
-        $this->properties = new Map();
+        $this->properties = [];
 
         if ($objects) {
             $reader = new PropertyReader($types, get_class($objects[0]));
@@ -73,7 +71,11 @@ class ObjectTable implements Table {
     }
 
     public function selectProperties($names) {
-        $this->properties = $this->properties->select(new Set($names));
+        foreach ($this->properties as $name => $value) {
+            if (!in_array($name, $names)) {
+                unset($this->properties[$name]);
+            }
+        }
         return $this;
     }
 
