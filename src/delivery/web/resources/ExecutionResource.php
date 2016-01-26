@@ -54,7 +54,7 @@ class ExecutionResource {
      * @return string
      * @throws \Exception
      */
-    public function doPost($actionId) {
+    public function handlePost($actionId) {
         return $this->doExecute($actionId, true);
     }
 

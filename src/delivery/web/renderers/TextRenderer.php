@@ -20,7 +20,7 @@ class TextRenderer implements Renderer {
      */
     public function render($value) {
         return (string)new Element('div', ['style' => 'border: 1px solid silver; padding: 5pt;'], [
-            $value->getContent()
+            nl2br(htmlentities($value->getContent()))
         ]);
     }
 }

@@ -5,84 +5,84 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $model['name'] ?> | <?= $model['caption'] ?></title>
+    <title><?php echo $model['name'] ?> | <?php echo $model['caption'] ?></title>
 
-    <? if ($model['result']['redirect']) { ?>
-    <meta http-equiv="refresh" content="2; URL=<?= $model['result']['redirect'] ?>">
-    <? } ?>
+    <?php if ($model['result']['redirect']) { ?>
+    <meta http-equiv="refresh" content="2; URL=<?php echo $model['result']['redirect'] ?>">
+    <?php } ?>
 
-    <? foreach ($model['headElements'] as $element) { ?>
-    <?= $element ?>
+    <?php foreach ($model['headElements'] as $element) { ?>
+    <?php echo $element ?>
 
-    <? } ?>
+    <?php } ?>
 
 </head>
 <body>
 
-<?= $model['menu'] ?>
+<?php echo $model['menu'] ?>
 
 <div class="container">
 
-    <? if ($model['breadcrumbs']) { ?>
+    <?php if ($model['breadcrumbs']) { ?>
     <ol class="breadcrumb">
-        <? foreach ($model['breadcrumbs'] as $crumb) { ?>
-        <li><a href="<?= $crumb['target'] ?>"><?= $crumb['caption'] ?></a></li>
-        <? } ?>
+        <?php foreach ($model['breadcrumbs'] as $crumb) { ?>
+        <li><a href="<?php echo $crumb['target'] ?>"><?php echo $crumb['caption'] ?></a></li>
+        <?php } ?>
     </ol>
-    <? } ?>
+    <?php } ?>
 
-    <? if ($model['result']['error']) { ?>
-    <div class="alert alert-danger"><?= $model['result']['error'] ?></div>
-    <? } ?>
+    <?php if ($model['result']['error']) { ?>
+    <div class="alert alert-danger"><?php echo $model['result']['error'] ?></div>
+    <?php } ?>
 
-    <? if ($model['result']['missing']) { ?>
-    <div class="alert alert-danger">Missing: <?= implode(', ', $model['result']['missing']) ?></div>
-    <? } ?>
+    <?php if ($model['result']['missing']) { ?>
+    <div class="alert alert-danger">Missing: <?php echo implode(', ', $model['result']['missing']) ?></div>
+    <?php } ?>
 
-    <? if ($model['result']['success']) { ?>
-    <div class="alert alert-success">Action "<?= $model['caption'] ?>" was successfully executed</div>
-    <? } ?>
+    <?php if ($model['result']['success']) { ?>
+    <div class="alert alert-success">Action "<?php echo $model['caption'] ?>" was successfully executed</div>
+    <?php } ?>
 
-    <? if ($model['result']['redirect']) { ?>
-    <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $model['result']['redirect']?>">click here</a></div>
-    <? } else { ?>
+    <?php if ($model['result']['redirect']) { ?>
+    <div class="alert alert-info">You are redirected. Please wait or <a href="<?php echo $model['result']['redirect']?>">click here</a></div>
+    <?php } else { ?>
 
     <form id="form" method="post" action="?" enctype="multipart/form-data">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h1 class="panel-title" style="font-size: 22pt">
-                    <?= $model['caption'] ?>
+                    <?php echo $model['caption'] ?>
 
-                    <? if ($model['executed']) { ?>
+                    <?php if ($model['executed']) { ?>
                     <div class="pull-right">
                         <span class="show-form glyphicon glyphicon-chevron-down"></span>
                         <span class="hide-form glyphicon glyphicon-chevron-up" style="display: none;"></span>
                     </div>
-                    <? } ?>
+                    <?php } ?>
                 </h1>
             </div>
 
-            <? if ($model['action']) { ?>
+            <?php if ($model['action']) { ?>
             <div class="collapsed panel-body">
-                <?= $model['action'] ?>
+                <?php echo $model['action'] ?>
             </div>
-            <? } ?>
+            <?php } ?>
 
             <div class="collapsed panel-footer">
                 <input type="submit" class="btn btn-primary" value="Execute">
 
-                <? if (!$model['executed']) { ?>
+                <?php if (!$model['executed']) { ?>
                 <a href="javascript:history.back()" class="btn btn-default">Back</a>
-                <? } ?>
+                <?php } ?>
             </div>
         </div>
     </form>
 
-    <? } ?>
+    <?php } ?>
 
-    <? if ($model['result']['output']) { ?>
-    <div><?= $model['result']['output'] ?></div>
-    <? } ?>
+    <?php if ($model['result']['output']) { ?>
+    <div><?php echo $model['result']['output'] ?></div>
+    <?php } ?>
 
     <script>
         document.onsubmit = function () {
@@ -97,7 +97,7 @@
         };
     </script>
 
-    <? if (!$model['executed']) { ?>
+    <?php if (!$model['executed']) { ?>
     <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {
@@ -105,7 +105,7 @@
             };
         };
     </script>
-    <? } else { ?>
+    <?php } else { ?>
     <script>
         var panel = $('form > .panel');
         var showForm = panel.find('.show-form');
@@ -124,7 +124,7 @@
             hidden = !hidden;
         });
     </script>
-    <? } ?>
+    <?php } ?>
 </div>
 
 </body>

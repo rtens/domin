@@ -41,7 +41,7 @@ class MethodActionGenerator {
     }
 
     private static function getId(\ReflectionMethod $method) {
-        return $method->getDeclaringClass()->getShortName() . ':' . $method->name;
+        return $method->getDeclaringClass()->getShortName() . '_' . $method->name;
     }
 
     public static function actionId($class, $method) {

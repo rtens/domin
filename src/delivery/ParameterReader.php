@@ -6,6 +6,8 @@ use rtens\domin\Parameter;
 interface ParameterReader {
 
     /**
+     * IMPORTANT: files must be properly merged into the parameters
+     *
      * @param Parameter $parameter
      * @return mixed The serialized paramater
      */
