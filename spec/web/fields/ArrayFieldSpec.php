@@ -2,16 +2,15 @@
 namespace spec\rtens\domin\delivery\web\fields;
 
 use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\web\MobileDetector;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\fields\ArrayField;
 use rtens\domin\delivery\web\HeadElements;
+use rtens\domin\delivery\web\MobileDetector;
 use rtens\domin\delivery\web\WebField;
+use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\collections\Liste;
 use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\StringType;
 use watoki\reflect\type\UnknownType;
@@ -49,7 +48,7 @@ class ArrayFieldSpec extends StaticTestSuite {
         });
 
         $param = new Parameter('foo', new ArrayType(new StringType()));
-        $this->assert($this->field->inflate($param, new Liste(['ignored', 'one', 'two'])),
+        $this->assert($this->field->inflate($param, ['ignored', 'one', 'two']),
             ['foo_one', 'foo_two']);
     }
 

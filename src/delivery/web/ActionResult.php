@@ -85,7 +85,10 @@ class ActionResult {
 
     protected function handleNoResult() {
         $this->model['success'] = true;
-        $this->model['redirect'] = $this->crumbs->getLastCrumb();
+
+        if ($this->crumbs->hasCrumbs()) {
+            $this->model['redirect'] = $this->crumbs->getLastCrumb()->getTarget();
+        }
     }
 
     protected function handleNotPermittedResult() {

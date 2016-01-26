@@ -82,7 +82,10 @@ class ExecutionResource {
             'headElements' => HeadElements::filter($headElements),
             'executed' => isset($result) && $result->wasExecuted()
         ];
-        return eval('?>' . file_get_contents(__DIR__ . '/ExecutionTemplate.html.php'));
+
+        ob_start();
+        include __DIR__ . '/ExecutionTemplate.html.php';
+        return ob_get_clean();
     }
 
     /**

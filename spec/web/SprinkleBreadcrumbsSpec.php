@@ -2,49 +2,42 @@
 namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\Action;
-use rtens\domin\delivery\web\BreadCrumbs;
+use rtens\domin\delivery\web\BreadCrumb;
+use rtens\domin\delivery\web\BreadCrumbsTrail;
 use rtens\domin\delivery\web\fields\ActionField;
 use rtens\domin\delivery\web\fields\StringField;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
-use rtens\domin\delivery\web\root\ExecuteResource;
-use rtens\domin\delivery\web\root\IndexResource;
+use rtens\domin\delivery\web\resources\ActionListResource;
+use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\collections\Map;
-use watoki\curir\cookie\Cookie;
-use watoki\curir\cookie\CookieStore;
-use watoki\curir\delivery\WebRequest;
-use watoki\curir\protocol\Url;
-use watoki\deli\Path;
+use spec\rtens\domin\fixtures\FakeParameterReader;
 use watoki\factory\Factory;
 use watoki\reflect\type\StringType;
 
 class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
+    /** @var BreadCrumbsTrail */
+    private $crumbs;
+
     /** @var Action */
     private $action;
-
-    /** @var CookieStore */
-    private $cookies;
-
-    /** @var ExecuteResource */
-    private $resource;
 
     /** @var WebApplication */
     private $app;
 
-    private $model;
+    private $response;
+
+    /** @var BreadCrumb[] */
+    private $crumbSource = [];
 
     protected function before() {
-        $this->cookies = Mockster::of(CookieStore::class);
-
         $factory = new Factory();
         $this->app = $factory->getInstance(WebApplication::class);
-
-        $this->resource = new ExecuteResource(new Factory(), $this->app, Mockster::mock($this->cookies));
+        $this->app->prepare();
 
         $this->app->fields->add(new ActionField($this->app->fields, $this->app->actions));
         $this->app->renderers->add(new PrimitiveRenderer());
@@ -56,7 +49,7 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
         $this->whenIExecute_With('foo', ['one' => 'uno']);
         $this->thenTheCrumbs_ShouldBeSaved([
-            ['target' => 'http://example.com/base/foo?one=uno', 'caption' => 'My Foo']
+            new BreadCrumb('My Foo', 'foo?one=uno')
         ]);
     }
 
@@ -80,30 +73,33 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->givenANonModifyingAction('foo');
 
         $this->whenIExecute('foo');
-        $this->assert->size($this->model['breadcrumbs'], 0);
+        $this->assert->contains($this->response, '
+        <ol class="breadcrumb">
+                <li><a href="foo">My Foo</a></li>
+            </ol>');
     }
 
     function displayCrumbs() {
         $this->givenTheSavedCrumbs([
-            ['target' => 'foo', 'caption' => 'My Foo'],
-            ['target' => 'bar', 'caption' => 'My Bar'],
+            new BreadCrumb('My Foo', 'foo'),
+            new BreadCrumb('My Bar', 'bar'),
         ]);
 
         $this->app->actions->add('foo', Mockster::mock(Action::class));
 
         $this->whenIExecute('foo');
         $this->thenTheBreadCrumbsShouldBe([
-            ['target' => 'foo', 'caption' => 'My Foo'],
-            ['target' => 'bar', 'caption' => 'My Bar']
+            new BreadCrumb('My Foo', 'foo'),
+            new BreadCrumb('My Bar', 'bar')
         ]);
     }
 
     function jumpBack() {
         $this->givenTheSavedCrumbs([
-            ['target' => 'http://example.com/base/bar', 'caption' => 'My Foo'],
-            ['target' => 'http://example.com/base/foo?one=uno', 'caption' => 'My Foo'],
-            ['target' => 'http://example.com/base/foo', 'caption' => 'My Foo'],
-            ['target' => 'http://example.com/base/foo?one=not', 'caption' => 'My Foo'],
+            new BreadCrumb('My Foo', 'bar'),
+            new BreadCrumb('My Foo', 'foo?one=uno'),
+            new BreadCrumb('My Foo', 'foo'),
+            new BreadCrumb('My Foo', 'foo?one=not'),
         ]);
 
         $this->givenANonModifyingAction('foo');
@@ -111,8 +107,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->whenIExecute_With('foo', ['one' => 'uno']);
 
         $this->thenTheCrumbs_ShouldBeSaved([
-            ['target' => 'http://example.com/base/bar', 'caption' => 'My Foo'],
-            ['target' => 'http://example.com/base/foo?one=uno', 'caption' => 'My Foo']
+            new BreadCrumb('My Foo', 'bar'),
+            new BreadCrumb('My Foo', 'foo?one=uno')
         ]);
     }
 
@@ -120,8 +116,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->app->fields->add(new ActionField($this->app->fields, $this->app->actions));
 
         $this->givenTheSavedCrumbs([
-            ['target' => 'path/to/bar', 'caption' => 'My Bar'],
-            ['target' => 'path/to/foo', 'caption' => 'My Foo'],
+            new BreadCrumb('My Bar', 'path/to/bar'),
+            new BreadCrumb('My Foo', 'path/to/foo'),
         ]);
 
         $action = Mockster::of(Action::class);
@@ -129,7 +125,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->app->actions->add('foo', Mockster::mock($action));
 
         $this->whenIExecute('foo');
-        $this->assert($this->model['result']['redirect'], 'path/to/foo');
+        $this->assert->contains($this->response,
+            '<meta http-equiv="refresh" content="2; URL=path/to/foo">');
     }
 
     function doNotRedirectIfNoCrumbsSprinkled() {
@@ -140,7 +137,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
         $this->app->actions->add('foo', Mockster::mock($action));
 
         $this->whenIExecute('foo');
-        $this->assert->isNull($this->model['result']['redirect']);
+        $this->assert->not()->contains($this->response,
+            '<meta http-equiv="refresh"');
     }
 
     function overviewResetsCrumbs() {
@@ -153,47 +151,46 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     private function whenIExecute_With($action, $parameters) {
-        $this->model = $this->resource->doGet($this->makeRequest($parameters), $action);
+        $reader = new FakeParameterReader($parameters);
+        $this->crumbs = new BreadCrumbsTrail($reader, $this->crumbSource);
+
+        $resource = new ExecutionResource($this->app, $reader, $this->crumbs);
+
+        $this->response = $resource->handleGet($action);
     }
 
-    private function makeRequest($parameters = []) {
-        return new WebRequest(Url::fromString('http://example.com/base'), new Path(), null, new Map($parameters));
-    }
-
-    private function thenTheCrumbs_ShouldBeSaved($payload) {
-        /** @noinspection PhpVoidFunctionResultUsedInspection */
-        $stub = Mockster::stub($this->cookies->create(Arg::any(), Arg::any()));
-        $this->assert($stub->has()->beenCalled());
-        $this->assert($stub->has()->inCall(0)->argument(0)->payload, $payload);
+    private function thenTheCrumbs_ShouldBeSaved($crumbs) {
+        $this->assert($this->crumbs->getCrumbs(), $crumbs);
     }
 
     private function thenNoCrumbsShouldBeSaved() {
-        /** @noinspection PhpVoidFunctionResultUsedInspection */
-        $this->assert->not(Mockster::stub($this->cookies->create(Arg::any(), BreadCrumbs::COOKIE_KEY))
-            ->has()->beenCalled());
+        $this->thenTheCrumbs_ShouldBeSaved([]);
     }
 
-    private function givenTheSavedCrumbs($payload) {
-        Mockster::stub($this->cookies->hasKey(BreadCrumbs::COOKIE_KEY))->will()->return_(true);
-        Mockster::stub($this->cookies->read(BreadCrumbs::COOKIE_KEY))
-            ->will()->return_(new Cookie($payload));
+    private function givenTheSavedCrumbs($crumbs) {
+        $this->crumbSource = $crumbs;
     }
 
     private function givenThereAreNoSavedCrumbs() {
-        Mockster::stub($this->cookies->hasKey(BreadCrumbs::COOKIE_KEY))->will()->return_(false);
+        $this->givenTheSavedCrumbs([]);
     }
 
     private function whenIListAllActions() {
-        $resource = new IndexResource(
-            new Factory(),
-            $this->app,
-            Mockster::mock($this->cookies));
+        $reader = new FakeParameterReader();
+        $this->crumbs = new BreadCrumbsTrail($reader, $this->crumbSource);
 
-        $resource->doGet($this->makeRequest());
+        $execution = new ActionListResource($this->app, $this->crumbs);
+        $execution->handleGet();
     }
 
+    /**
+     * @param BreadCrumb[] $crumbs
+     */
     private function thenTheBreadCrumbsShouldBe($crumbs) {
-        $this->assert($this->model['breadcrumbs'], $crumbs);
+        foreach ($crumbs as $crumb) {
+            $this->assert->contains($this->response,
+                sprintf('<li><a href="%s">%s</a></li>', $crumb->getTarget(), $crumb->getCaption()));
+        }
     }
 
     private function givenANonModifyingAction($actionId) {

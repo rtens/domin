@@ -5,9 +5,9 @@ use rtens\domin\Action;
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
-use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
+use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\tables\types\ObjectTable;
@@ -15,7 +15,6 @@ use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\protocol\Url;
 
 class ObjectTableRendererSpec extends StaticTestSuite {
 
@@ -43,7 +42,7 @@ class ObjectTableRendererSpec extends StaticTestSuite {
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
         $parser = new WebCommentParser();
-        $this->printer = new LinkPrinter(Url::fromString('http://example.com/base'), $this->links, $this->actions, $parser);
+        $this->printer = new LinkPrinter($this->links, $this->actions, $parser);
 
         $this->tableRenderer = new TableRenderer($this->renderers, $this->printer);
     }
@@ -109,8 +108,8 @@ class ObjectTableRendererSpec extends StaticTestSuite {
             '<span class="caret"></span>' . "\n" .
             '</button>' . "\n" .
             '<ul class="dropdown-menu">' . "\n" .
-            '<li><a class="" href="http://example.com/base/foo"></a></li>' . "\n" .
-            '<li><a class="" href="http://example.com/base/bar"></a></li>' . "\n" .
+            '<li><a class="" href="foo"></a></li>' . "\n" .
+            '<li><a class="" href="bar"></a></li>' . "\n" .
             '</ul>' . "\n" .
             '</div>');
     }

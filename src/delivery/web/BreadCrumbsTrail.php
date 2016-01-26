@@ -43,7 +43,7 @@ class BreadCrumbsTrail {
         if (!$this->hasCrumbs()) {
             throw new \Exception("There are no crumbs");
         }
-        return $this->crumbs[count($this->crumbs - 1)];
+        return $this->crumbs[count($this->crumbs) - 1];
     }
 
     /**

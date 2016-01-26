@@ -6,19 +6,18 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
-use rtens\domin\delivery\web\WebCommentParser;
-use rtens\domin\delivery\web\WebRenderer;
-use rtens\domin\reflection\types\TypeFactory;
-use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\link\Link;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
+use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\renderers\ObjectRenderer;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
+use rtens\domin\delivery\web\WebCommentParser;
+use rtens\domin\delivery\web\WebRenderer;
+use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\protocol\Url;
 
 class ObjectRendererSpec extends StaticTestSuite {
 
@@ -39,7 +38,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
         $this->renderer = new ObjectRenderer($this->renderers, new TypeFactory(),
-            new LinkPrinter(Url::fromString('baser/url'), $this->links, $this->actions, new WebCommentParser()));
+            new LinkPrinter($this->links, $this->actions, new WebCommentParser()));
     }
 
     function handlesObjects() {
@@ -165,7 +164,7 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' .
-            '<a class="btn btn-xs btn-primary" href="baser/url/foo" title="\'Foo\' description">Foo</a>' .
+            '<a class="btn btn-xs btn-primary" href="foo" title="\'Foo\' description">Foo</a>' .
             '</small>');
     }
 
@@ -190,7 +189,7 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' .
-            '<a class="btn btn-xs btn-primary" href="baser/url/foo?bas=bar"></a>' .
+            '<a class="btn btn-xs btn-primary" href="foo?bas=bar"></a>' .
             '</small>');
     }
 
@@ -225,8 +224,8 @@ class ObjectRendererSpec extends StaticTestSuite {
 
         $this->assert->contains($this->renderer->render($object),
             '<small class="pull-right">' . "\n" .
-            '<a class="btn btn-xs btn-primary" href="baser/url/one"></a>' . "\n" .
-            '<a class="btn btn-xs btn-primary" href="baser/url/two"></a>' . "\n" .
+            '<a class="btn btn-xs btn-primary" href="one"></a>' . "\n" .
+            '<a class="btn btn-xs btn-primary" href="two"></a>' . "\n" .
             '</small>');
     }
 
@@ -245,7 +244,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $object->foo = 'bar';
 
         $this->assert->contains($this->renderer->render($object),
-            '<a class="btn btn-xs btn-primary" href="baser/url/" onclick="return confirm(\'Foo?\');"></a>');
+            '<a class="btn btn-xs btn-primary" href="" onclick="return confirm(\'Foo?\');"></a>');
     }
 
     function useClassLink() {

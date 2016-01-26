@@ -30,7 +30,7 @@ class FileField implements WebField {
 
         if ($file && !$file['error']) {
             return new SavedFile($file['tmp_name'], $file['name'], $file['type']);
-        } else if ($serialized['name']) {
+        } else if (isset($serialized['name']) && $serialized['name']) {
             return $this->createPreservedFile($serialized);
         } else {
             return null;

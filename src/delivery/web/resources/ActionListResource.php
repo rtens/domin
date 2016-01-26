@@ -36,7 +36,10 @@ class ActionListResource {
                 (string)HeadElements::bootstrapJs(),
             ]
         ];
-        return eval('?>' . file_get_contents(__DIR__ . '/ActionListTemplate.html.php'));
+
+        ob_start();
+        include __DIR__ . '/ActionListTemplate.html.php';
+        return ob_get_clean();
     }
 
     private function assembleActions() {

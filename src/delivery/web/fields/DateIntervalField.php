@@ -14,11 +14,26 @@ class DateIntervalField extends CliDateIntervalField implements WebField {
      */
     public function render(Parameter $parameter, $value) {
         return (string)new Element('div', ['class' => 'form-inline'], [
-            new Element('input', ['class' => 'form-control', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[d]', 'value' => $value->d]),
+            new Element('input', [
+                'class' => 'form-control',
+                'type' => 'number',
+                'size' => 3,
+                'name' => $parameter->getName() . '[d]',
+                'value' => $value ? $value->d : null]),
             new Element('span', [], ['days']),
-            new Element('input', ['class' => 'form-control', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[h]', 'value' => $value->h]),
+            new Element('input', [
+                'class' => 'form-control',
+                'type' => 'number',
+                'size' => 3,
+                'name' => $parameter->getName() . '[h]',
+                'value' => $value ? $value->h : null]),
             new Element('span', [], ['hours']),
-            new Element('input', ['class' => 'form-control', 'type' => 'number', 'size' => 3, 'name' => $parameter->getName() . '[i]', 'value' => $value->i]),
+            new Element('input', [
+                'class' => 'form-control',
+                'type' => 'number',
+                'size' => 3,
+                'name' => $parameter->getName() . '[i]',
+                'value' => $value ? $value->i : null]),
             new Element('span', [], ['minutes']),
         ]);
     }

@@ -7,7 +7,6 @@ use rtens\domin\parameters\file\SavedFile;
 use rtens\domin\Parameter;
 use rtens\domin\delivery\web\fields\FileField;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\protocol\UploadedFile;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\StringType;
@@ -30,15 +29,20 @@ class FileFieldSpec extends StaticTestSuite {
     function inflateUploadedFile() {
         $field = new FileField();
         $param = new Parameter('foo', new StringType());
-        $this->assert($field->inflate($param, ['file' => new UploadedFile('foo', 'foo/type', 'tmp/name', 0, 100)]),
-            new SavedFile('tmp/name', 'foo', 'foo/type'));
+        $this->assert($field->inflate($param, ['file' => [
+            'name' => 'foo',
+            'type' => 'foo/type',
+            'tmp_name' => 'tmp/name',
+            'error' => 0,
+            'size' => 100
+        ]]), new SavedFile('tmp/name', 'foo', 'foo/type'));
     }
 
     function inflatePreservedFile() {
         $field = new FileField();
         $param = new Parameter('foo', new StringType());
         $this->assert($field->inflate($param, [
-            'file' => new UploadedFile('', '', '', 1, 0),
+            'file' => ['name' => '', 'type' => '', 'tmp_name' => '', 'error' => 1, 'size' => 0],
             'name' => 'foo.file',
             'type' => 'foo/type',
             'data' => 'Zm9v'

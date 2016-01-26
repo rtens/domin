@@ -7,23 +7,22 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
-use rtens\domin\delivery\web\renderers\link\types\GenericLink;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
+use rtens\domin\delivery\web\renderers\link\types\GenericLink;
 use rtens\domin\delivery\web\renderers\ObjectRenderer;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
-use rtens\domin\delivery\web\renderers\tables\types\ArrayTable;
-use rtens\domin\delivery\web\renderers\tables\types\DataTable;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
 use rtens\domin\delivery\web\renderers\tables\Table;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
+use rtens\domin\delivery\web\renderers\tables\types\ArrayTable;
+use rtens\domin\delivery\web\renderers\tables\types\DataTable;
 use rtens\domin\delivery\web\WebCommentParser;
 use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\curir\protocol\Url;
 
 /**
  * @property \rtens\scrut\fixtures\ExceptionFixture try <-
@@ -57,7 +56,7 @@ class TableRendererSpec extends StaticTestSuite {
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
         $parser = new WebCommentParser();
-        $this->printer = new LinkPrinter(Url::fromString('http://example.com/base'), $this->links, $this->actions, $parser);
+        $this->printer = new LinkPrinter($this->links, $this->actions, $parser);
 
         $this->objectRenderer = new ObjectRenderer($this->renderers, $this->types, $this->printer);
 
@@ -227,7 +226,7 @@ class TableRendererSpec extends StaticTestSuite {
             '<span class="caret"></span>' . "\n" .
             '</button>' . "\n" .
             '<ul class="dropdown-menu">' .
-            '<li><a class="" href="http://example.com/base/foo"></a></li>' .
+            '<li><a class="" href="foo"></a></li>' .
             '</ul>' . "\n" .
             '</div>' . "\n" .
             '</td>' . "\n" .
@@ -240,8 +239,8 @@ class TableRendererSpec extends StaticTestSuite {
             '<span class="caret"></span>' . "\n" .
             '</button>' . "\n" .
             '<ul class="dropdown-menu">' . "\n" .
-            '<li><a class="" href="http://example.com/base/bar"></a></li>' . "\n" .
-            '<li><a class="" href="http://example.com/base/baz"></a></li>' . "\n" .
+            '<li><a class="" href="bar"></a></li>' . "\n" .
+            '<li><a class="" href="baz"></a></li>' . "\n" .
             '</ul>' . "\n" .
             '</div>' . "\n" .
             '</td>' . "\n" .

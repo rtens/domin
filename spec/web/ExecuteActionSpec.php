@@ -1,30 +1,28 @@
 <?php
 namespace spec\rtens\domin\delivery\web;
 
-use rtens\domin\AccessControl;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\BreadCrumbsTrail;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\menu\Menu;
-use rtens\domin\delivery\web\root\IndexResource;
-use rtens\domin\delivery\web\WebAccessControl;
+use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\delivery\web\WebField;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
-use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\arguments\Argument;
+use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\fixtures\ExceptionFixture;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\collections\Map;
-use watoki\curir\delivery\WebRequest;
+use spec\rtens\domin\fixtures\FakeParameterReader;
+use watoki\factory\Factory;
 
 /**
  * @property \spec\rtens\domin\fixtures\ActionFixture action <-
- * @property \spec\rtens\domin\fixtures\WebFixture web <-
  * @property ExceptionFixture try <-
  */
 class ExecuteActionSpec extends StaticTestSuite {
@@ -67,13 +65,13 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->givenTheAction_Returning('foo', new RedirectResult('bar', ['one' => 'two']));
         $this->action->given_HasTheParameter('foo', 'one');
 
-        $this->givenAWebFieldRenderingWith(function (Parameter $p, $value) {
-            return $p->getName() . ($p->isRequired() ? '*' : '') . ':' . $value;
+        $this->givenAWebFieldRenderingWith(function () {
+            return 'rendered';
         });
 
         $this->whenIExecute('foo');
         $this->thenThereShouldBeASuccessMessageFor('Foo');
-        $this->thenIShouldBeRedirectedTo('http://example.com/base/bar?one=two');
+        $this->thenIShouldBeRedirectedTo('bar?one=two');
     }
 
     function collectHeadElements() {
@@ -88,13 +86,12 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $this->whenIExecute('foo');
 
-        $this->thenThereShouldBe_HeadElements(6);
-        $this->thenHeadElement_ShouldBe(1, HeadElements::jquery());
-        $this->thenHeadElement_ShouldBe(2, HeadElements::jqueryUi());
-        $this->thenHeadElement_ShouldBe(3, HeadElements::bootstrap());
-        $this->thenHeadElement_ShouldBe(4, HeadElements::bootstrapJs());
-        $this->thenHeadElement_ShouldBe(5, '<one></one>');
-        $this->thenHeadElement_ShouldBe(6, '<foo></foo>');
+        $this->thenThereShouldBeAHeadElement(HeadElements::jquery());
+        $this->thenThereShouldBeAHeadElement(HeadElements::jqueryUi());
+        $this->thenThereShouldBeAHeadElement(HeadElements::bootstrap());
+        $this->thenThereShouldBeAHeadElement(HeadElements::bootstrapJs());
+        $this->thenThereShouldBeAHeadElement('<one></one>');
+        $this->thenThereShouldBeAHeadElement('<foo></foo>');
     }
 
     function passParametersToActionField() {
@@ -105,60 +102,13 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->givenAWebFieldRenderingWith(function (Parameter $action, $parameters) {
             $inflated = $parameters['inflated'];
             array_walk($inflated, function (&$v, $k) {
-                $v ="$k:$v";
+                $v = "$k:$v";
             });
             return $action->getName() . ' - ' . implode(',', $inflated);
         });
 
         $this->whenIExecute_With('foo', ['two' => 'dos', 'three' => 'not a parameter']);
         $this->thenTheActionShouldBeRenderedAs('foo - two:two_dos(inflated)');
-    }
-
-    function denyInvisibleAction() {
-        $this->action->givenTheAction('foo');
-
-        $access = Mockster::of(AccessControl::class);
-
-        WebApplication::init(function (WebApplication $app) use ($access) {
-            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access)));
-        }, $this->web->factory);
-
-        $this->whenITryToExecute('foo');
-        $this->thenItShouldFailWith('Action [foo] is not registered.');
-    }
-
-    /**
-     *
-     */
-    function denyExecution() {
-        $this->action->givenTheAction('foo');
-
-        $access = Mockster::of(AccessControl::class);
-        Mockster::stub($access->isVisible('foo'))->will()->return_(true);
-
-        WebApplication::init(function (WebApplication $app) use ($access) {
-            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access)));
-        }, $this->web->factory);
-
-        $this->whenIExecute('foo');
-        $this->thenItShouldDisplayTheError('You are not permitted to execute this action.');
-        $this->thenIShouldNotBeRedirected();
-    }
-
-    function redirectToAcquirePermission() {
-        $this->action->givenTheAction('foo');
-
-        $access = Mockster::of(AccessControl::class);
-        Mockster::stub($access->isVisible('foo'))->will()->return_(true);
-
-        WebApplication::init(function (WebApplication $app) use ($access) {
-            $app->restrictAccess(WebAccessControl::factory(Mockster::mock($access), function (WebRequest $request) {
-                return $request->getContext()->appended('acquire_this');
-            }));
-        }, $this->web->factory);
-
-        $this->whenIExecute('foo');
-        $this->thenIShouldBeRedirectedTo('http://example.com/base/acquire_this');
     }
 
     function renderResult() {
@@ -191,6 +141,12 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     ####################################################################################################
 
+    /** @var string */
+    private $response;
+
+    /** @var Factory */
+    private $factory;
+
     /** @var RendererRegistry */
     private $renderers;
 
@@ -198,13 +154,14 @@ class ExecuteActionSpec extends StaticTestSuite {
     public $fields;
 
     protected function before() {
+        $this->factory = new Factory();
         $this->renderers = new RendererRegistry();
         $this->fields = new FieldRegistry();
 
-        $this->web->factory->setSingleton($this->action->registry);
-        $this->web->factory->setSingleton($this->fields);
-        $this->web->factory->setSingleton($this->renderers);
-        $this->web->factory->setSingleton(new Menu($this->action->registry));
+        $this->factory->setSingleton($this->action->registry);
+        $this->factory->setSingleton($this->fields);
+        $this->factory->setSingleton($this->renderers);
+        $this->factory->setSingleton(new Menu($this->action->registry));
     }
 
     private function givenAllValuesAreRenderedWith($callback) {
@@ -260,41 +217,42 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function whenIExecute_With($id, $parameters) {
-        $this->web->request = $this->web->request->withArguments(new Map($parameters));
-        $this->web->whenIGet_From($id, IndexResource::class);
+        /** @var WebApplication $app */
+        $app = $this->factory->getInstance(WebApplication::class);
+        $app->prepare();
+
+        $reader = new FakeParameterReader($parameters);
+        $execution = new ExecutionResource($app, $reader, new BreadCrumbsTrail($reader, []));
+        $this->response = $execution->handlePost($id);
     }
 
     private function thenItShouldDisplayTheError($message) {
-        $this->assert($this->web->model['result']['error'], $message);
+        $this->assert->contains($this->response,
+            sprintf('<div class="alert alert-danger">%s</div>', $message));
     }
 
     private function thenThereShouldBeASuccessMessageFor($actionId) {
-        $this->assert($this->web->model['result']['success']);
-        $this->assert($this->web->model['caption'], $actionId);
+        $this->assert->contains($this->response,
+            sprintf('<div class="alert alert-success">Action "%s" was successfully executed</div>', $actionId));
     }
 
     private function thenItShouldShow($value) {
-        $this->assert($this->web->model['result']['output'], $value);
+        $this->assert->contains($this->response, $value);
     }
 
-    private function thenThereShouldBe_HeadElements($int) {
-        $this->assert->size($this->web->model['headElements'], $int);
-    }
-
-    private function thenHeadElement_ShouldBe($pos, $string) {
-        $this->assert($this->web->model['headElements'][$pos - 1], $string);
-    }
-
-    private function thenIShouldNotBeRedirected() {
-        $this->thenIShouldBeRedirectedTo(null);
+    private function thenThereShouldBeAHeadElement($string) {
+        $this->assert->contains($this->response, (string)$string);
     }
 
     private function thenIShouldBeRedirectedTo($url) {
-        $this->assert($this->web->model['result']['redirect'], $url);
+        $this->assert->contains($this->response,
+            sprintf('<div class="alert alert-info">You are redirected. Please wait or <a href="%s">click here</a></div>', $url));
+        $this->assert->contains($this->response,
+            sprintf('<meta http-equiv="refresh" content="2; URL=%s">', $url));
     }
 
     private function thenTheActionShouldBeRenderedAs($string) {
-        $this->assert($this->web->model['action'], $string);
+        $this->assert->contains($this->response, $string);
     }
 
     private function thenItShouldFailWith($message) {
@@ -302,6 +260,6 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function thenTheOutputShouldBe($output) {
-        $this->assert($this->web->model['result']['output'], $output);
+        $this->assert->contains($this->response, $output);
     }
 }
