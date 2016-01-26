@@ -55,6 +55,23 @@ WebDelivery::quickResponse(IndexResource::class,
         })));
 ```
 
+To run *domin* with [sliex], past this code into `index.php`
+
+```php
+use rtens\domin\delivery\web\adapters\silex\SilexControllerProvider;
+use rtens\domin\delivery\web\WebApplication;
+use Silex\Application;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$app = new Application();
+$app->mount('/', new SilexControllerProvider(
+    WebApplication::init(function (WebApplication $app) {
+        // Set-up $app here (e.g. $app->actions->add('foo', ...))
+    })));
+$app->run();
+```
+
 And then start a development server to access the application on [localhost:8000](http://localhost:8000)
 
     $ php -S localhost:8000 index.php
@@ -74,7 +91,7 @@ and run it with
     $ php cli.php
 
 [curir]: http://github.com/watoki/curir
-
+[silex]: http://silex.sensiolabs.org/
 
 ## Action! ##
 
