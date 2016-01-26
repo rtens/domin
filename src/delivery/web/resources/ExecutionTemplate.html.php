@@ -1,16 +1,17 @@
+<?php global $model ?>
 <!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $name ?> | <?= $caption ?></title>
+    <title><?= $model['name'] ?> | <?= $model['caption'] ?></title>
 
-    <? if ($result[redirect]) { ?>
-    <meta http-equiv="refresh" content="2; URL=<?= $result[redirect] ?>">
+    <? if ($model['result']['redirect']) { ?>
+    <meta http-equiv="refresh" content="2; URL=<?= $model['result']['redirect'] ?>">
     <? } ?>
 
-    <? foreach ($headElements as $element) { ?>
+    <? foreach ($model['headElements'] as $element) { ?>
     <?= $element ?>
 
     <? } ?>
@@ -18,41 +19,41 @@
 </head>
 <body>
 
-<?= $menu ?>
+<?= $model['menu'] ?>
 
 <div class="container">
 
-    <? if ($breadcrumbs) { ?>
+    <? if ($model['breadcrumbs']) { ?>
     <ol class="breadcrumb">
-        <? foreach ($breadcrumbs as $crumb) { ?>
-        <li><a href="<?= $crumb[target] ?>"><?= $crumb[caption] ?></a></li>
+        <? foreach ($model['breadcrumbs'] as $crumb) { ?>
+        <li><a href="<?= $crumb['target'] ?>"><?= $crumb['caption'] ?></a></li>
         <? } ?>
     </ol>
     <? } ?>
 
-    <? if ($result[error]) { ?>
-    <div class="alert alert-danger"><?= $result[error] ?></div>
+    <? if ($model['result']['error']) { ?>
+    <div class="alert alert-danger"><?= $model['result']['error'] ?></div>
     <? } ?>
 
-    <? if ($result[missing]) { ?>
-    <div class="alert alert-danger">Missing: <?= implode(', ', $result[missing]) ?></div>
+    <? if ($model['result']['missing']) { ?>
+    <div class="alert alert-danger">Missing: <?= implode(', ', $model['result']['missing']) ?></div>
     <? } ?>
 
-    <? if ($result[success]) { ?>
-    <div class="alert alert-success">Action "<?= $caption ?>" was successfully executed</div>
+    <? if ($model['result']['success']) { ?>
+    <div class="alert alert-success">Action "<?= $model['caption'] ?>" was successfully executed</div>
     <? } ?>
 
-    <? if ($result[redirect]) { ?>
-    <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $result[redirect ]?>">click here</a></div>
+    <? if ($model['result']['redirect']) { ?>
+    <div class="alert alert-info">You are redirected. Please wait or <a href="<?= $model['result']['redirect']?>">click here</a></div>
     <? } else { ?>
 
     <form id="form" method="post" action="?" enctype="multipart/form-data">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h1 class="panel-title" style="font-size: 22pt">
-                    <?= $caption ?>
+                    <?= $model['caption'] ?>
 
-                    <? if ($executed) { ?>
+                    <? if ($model['executed']) { ?>
                     <div class="pull-right">
                         <span class="show-form glyphicon glyphicon-chevron-down"></span>
                         <span class="hide-form glyphicon glyphicon-chevron-up" style="display: none;"></span>
@@ -61,16 +62,16 @@
                 </h1>
             </div>
 
-            <? if ($action) { ?>
+            <? if ($model['action']) { ?>
             <div class="collapsed panel-body">
-                <?= $action ?>
+                <?= $model['action'] ?>
             </div>
             <? } ?>
 
             <div class="collapsed panel-footer">
                 <input type="submit" class="btn btn-primary" value="Execute">
 
-                <? if (!$executed) { ?>
+                <? if (!$model['executed']) { ?>
                 <a href="javascript:history.back()" class="btn btn-default">Back</a>
                 <? } ?>
             </div>
@@ -79,8 +80,8 @@
 
     <? } ?>
 
-    <? if ($result[output]) { ?>
-    <div><?= $result[output] ?></div>
+    <? if ($model['result']['output']) { ?>
+    <div><?= $model['result']['output'] ?></div>
     <? } ?>
 
     <script>
@@ -96,7 +97,7 @@
         };
     </script>
 
-    <? if (!$executed) { ?>
+    <? if (!$model['executed']) { ?>
     <script>
         document.onkeyup = function () {
             window.onbeforeunload = function () {

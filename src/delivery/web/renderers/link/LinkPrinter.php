@@ -3,15 +3,10 @@ namespace rtens\domin\delivery\web\renderers\link;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
-use rtens\domin\delivery\web\root\ExecuteResource;
+use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebCommentParser;
-use watoki\collections\Map;
-use watoki\curir\protocol\Url;
 
 class LinkPrinter {
-
-    /** @var \watoki\curir\protocol\Url */
-    private $baseUrl;
 
     /** @var LinkRegistry */
     private $links;
@@ -22,8 +17,7 @@ class LinkPrinter {
     /** @var WebCommentParser */
     private $parser;
 
-    public function __construct(Url $baseUrl, LinkRegistry $links, ActionRegistry $actions, WebCommentParser $parser) {
-        $this->baseUrl = $baseUrl;
+    public function __construct(LinkRegistry $links, ActionRegistry $actions, WebCommentParser $parser) {
         $this->links = $links;
         $this->actions = $actions;
         $this->parser = $parser;
@@ -79,15 +73,12 @@ class LinkPrinter {
         return array_map(function (Link $link) use ($object, $classes) {
             $action = $this->actions->getAction($link->actionId());
 
-            $url = $this->baseUrl
-                ->appended($link->actionId())
-                ->withParameters(new Map($link->parameters($object)));
-
+            $parameters = $link->parameters($object);
             if ($link->force()) {
-                $url = $url->withParameter(ExecuteResource::FORCE_ARG, true);
+                $parameters[ExecutionResource::FORCE_ARG] = true;
             }
 
-            $attributes = ['class' => $classes, 'href' => $url];
+            $attributes = ['class' => $classes, 'href' => $this->makeUrl($link->actionId(), $parameters)];
             if ($link->confirm() !== null) {
                 $attributes['onclick'] = "return confirm('{$link->confirm()}');";
             }
@@ -99,5 +90,19 @@ class LinkPrinter {
                 $action->caption()
             ]);
         }, $this->links->getLinks($object));
+    }
+
+    private function makeUrl($actionId, array $parameters) {
+        $url = $actionId;
+
+        if ($parameters) {
+            $keyValues = [];
+            foreach ($parameters as $key => $value) {
+                $keyValues[] = urlencode($key) . '=' . urlencode($value);
+            }
+            $url .= '?' . implode('&', $keyValues);
+        }
+
+        return $url;
     }
 }

@@ -1,7 +1,6 @@
 <?php namespace rtens\domin\delivery\web\menu;
 
 use rtens\domin\delivery\web\Element;
-use watoki\curir\delivery\WebRequest;
 
 class CustomMenuItem implements MenuItem {
 
@@ -10,7 +9,7 @@ class CustomMenuItem implements MenuItem {
 
     /**
      * CustomMenuItem constructor.
-     * @param \rtens\domin\delivery\web\Element|string|callable $content The callable will be called with WebRequest
+     * @param Element|string|callable $content
      */
     public function __construct($content) {
         if (!is_callable($content)) {
@@ -21,9 +20,9 @@ class CustomMenuItem implements MenuItem {
         $this->content = $content;
     }
 
-    public function render(WebRequest $request) {
+    public function render() {
         return new Element('li', [], [
-            call_user_func($this->content, $request)
+            call_user_func($this->content)
         ]);
     }
 }

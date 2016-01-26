@@ -2,7 +2,6 @@
 namespace rtens\domin\delivery\web\menu;
 
 use rtens\domin\delivery\web\Element;
-use watoki\curir\delivery\WebRequest;
 
 class MenuGroup implements MenuItem {
 
@@ -20,7 +19,7 @@ class MenuGroup implements MenuItem {
         return $this;
     }
 
-    public function render(WebRequest $request) {
+    public function render() {
         return new Element('li', ['class' => 'dropdown'], [
             new Element('a', [
                 'href' => '#',
@@ -34,8 +33,8 @@ class MenuGroup implements MenuItem {
                 new Element('span', ['class' => 'caret'])
             ]),
             new Element('ul', ['class' => 'dropdown-menu'],
-                array_map(function (MenuItem $item) use ($request) {
-                    return $item->render($request);
+                array_map(function (MenuItem $item) {
+                    return $item->render();
                 }, $this->items)
             )
         ]);

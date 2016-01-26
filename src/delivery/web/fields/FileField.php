@@ -1,15 +1,13 @@
 <?php
 namespace rtens\domin\delivery\web\fields;
 
-use rtens\domin\parameters\File;
-use rtens\domin\parameters\file\MemoryFile;
-use rtens\domin\parameters\file\SavedFile;
-use rtens\domin\Parameter;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\FileRenderer;
 use rtens\domin\delivery\web\WebField;
-use watoki\collections\Map;
-use watoki\curir\protocol\UploadedFile;
+use rtens\domin\Parameter;
+use rtens\domin\parameters\File;
+use rtens\domin\parameters\file\MemoryFile;
+use rtens\domin\parameters\file\SavedFile;
 use watoki\reflect\type\ClassType;
 
 class FileField implements WebField {
@@ -24,14 +22,14 @@ class FileField implements WebField {
 
     /**
      * @param Parameter $parameter
-     * @param Map|UploadedFile[]|string[] $serialized
+     * @param array[]|string[] $serialized
      * @return null|File
      */
     public function inflate(Parameter $parameter, $serialized) {
         $file = $serialized['file'];
 
-        if ($file && !$file->getError()) {
-            return new SavedFile($file->getTemporaryName(), $file->getName(), $file->getType());
+        if ($file && !$file['error']) {
+            return new SavedFile($file['tmp_name'], $file['name'], $file['type']);
         } else if ($serialized['name']) {
             return $this->createPreservedFile($serialized);
         } else {

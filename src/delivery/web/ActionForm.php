@@ -2,8 +2,9 @@
 namespace rtens\domin\delivery\web;
 
 use rtens\domin\Action;
+use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\delivery\ParameterReader;
 use rtens\domin\Parameter;
-use watoki\curir\delivery\WebRequest;
 use watoki\reflect\type\ClassType;
 
 class ActionForm {
@@ -14,11 +15,11 @@ class ActionForm {
     /** @var array|Element[] */
     private $headElements = [];
 
-    public function __construct(WebRequest $request, WebApplication $app, Action $action, $actionId) {
+    public function __construct(ParameterReader $reader, FieldRegistry $fields, Action $action, $actionId) {
         $actionParameter = new Parameter($actionId, new ClassType(get_class($action)));
-        $actionField = $this->getActionField($actionParameter, $app);
+        $actionField = $this->getActionField($actionParameter, $fields);
 
-        $this->model = $actionField->render($actionParameter, $this->readParameters($request, $app, $action));
+        $this->model = $actionField->render($actionParameter, $this->readParameters($reader, $fields, $action));
         $this->headElements = $actionField->headElements($actionParameter);
     }
 
@@ -32,20 +33,19 @@ class ActionForm {
 
     /**
      * @param Parameter $actionParameter
-     * @param WebApplication $app
+     * @param FieldRegistry $fields
      * @return WebField
      * @throws \Exception
      */
-    private function getActionField(Parameter $actionParameter, WebApplication $app) {
-        $actionField = $app->fields->getField($actionParameter);
+    private function getActionField(Parameter $actionParameter, FieldRegistry $fields) {
+        $actionField = $fields->getField($actionParameter);
         if ($actionField instanceof WebField) {
             return $actionField;
         }
         throw new \Exception(get_class($actionField) . " must implement WebField");
     }
 
-    private function readParameters(WebRequest $request, WebApplication $app, Action $action) {
-        $reader = new RequestParameterReader($request);
+    private function readParameters(ParameterReader $reader, FieldRegistry $fields, Action $action) {
         $values = [
             'inflated' => [],
             'errors' => []
@@ -53,7 +53,7 @@ class ActionForm {
 
         foreach ($action->parameters() as $parameter) {
             if ($reader->has($parameter)) {
-                $field = $app->fields->getField($parameter);
+                $field = $fields->getField($parameter);
 
                 try {
                     $values['inflated'][$parameter->getName()] = $field->inflate($parameter, $reader->read($parameter));
