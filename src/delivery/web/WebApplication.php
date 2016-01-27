@@ -92,6 +92,9 @@ class WebApplication {
     /** @var ActionGroups */
     public $groups;
 
+    /** @var null|ExecutionToken */
+    public $token;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -154,7 +157,7 @@ class WebApplication {
     }
 
     private function registerRenderers() {
-        $links = new LinkPrinter($this->links, $this->actions, $this->parser);
+        $links = new LinkPrinter($this->links, $this->actions, $this->parser, $this->token);
 
         $this->renderers->add(new ElementRenderer());
         $this->renderers->add(new BooleanRenderer());

@@ -47,7 +47,15 @@
     <div class="alert alert-info">You are redirected. Please wait or <a href="<?php echo $model['result']['redirect']?>">click here</a></div>
     <?php } else { ?>
 
+    <?php if ($model['confirmationRequired']) { ?>
+    <div class="alert alert-info">Please confirm the execution of this action.</div>
+    <?php } ?>
+
     <form id="form" method="post" action="?" enctype="multipart/form-data">
+        <?php if ($model['token']) { ?>
+            <input type="hidden" name="<?php echo $model['token']['name'] ?>" value="<?php echo $model['token']['value'] ?>"/>
+        <?php } ?>
+
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h1 class="panel-title" style="font-size: 22pt">

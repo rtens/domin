@@ -8,33 +8,49 @@ use rtens\domin\delivery\web\WebApplication;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\Resource;
+use watoki\factory\Factory;
 
 class ExecuteResource extends Resource {
 
     const ACTION_ARG = '__action';
 
+    /** @var WebApplication */
+    private $app;
+
+    /** @var CookieStore */
+    private $cookies;
+
     /**
+     * @param Factory $factory <-
      * @param WebApplication $app <-
      * @param CookieStore $cookies <-
-     * @param WebRequest $request <-
-     * @param string $__action
-     * @return string
      */
-    public function doGet(WebApplication $app, CookieStore $cookies, WebRequest $request, $__action) {
-        $execution = $this->getExecutionResource($app, $cookies, $request);
-        return $execution->handleGet($__action);
+    public function __construct(Factory $factory, WebApplication $app, CookieStore $cookies) {
+        parent::__construct($factory);
+        $this->app = $app;
+        $this->cookies = $cookies;
     }
 
     /**
-     * @param WebApplication $app <-
-     * @param CookieStore $cookies <-
      * @param WebRequest $request <-
      * @param string $__action
+     * @param null|string $__token
      * @return string
      */
-    public function doPost(WebApplication $app, CookieStore $cookies, WebRequest $request, $__action) {
-        $execution = $this->getExecutionResource($app, $cookies, $request);
-        return $execution->handlePost($__action);
+    public function doGet(WebRequest $request, $__action, $__token = null) {
+        $execution = $this->getExecutionResource($this->app, $this->cookies, $request);
+        return $execution->handleGet($__action, $__token);
+    }
+
+    /**
+     * @param WebRequest $request <-
+     * @param string $__action
+     * @param null|string $__token
+     * @return string
+     */
+    public function doPost(WebRequest $request, $__action, $__token = null) {
+        $execution = $this->getExecutionResource($this->app, $this->cookies, $request);
+        return $execution->handlePost($__action, $__token);
     }
 
     private function getExecutionResource(WebApplication $app, CookieStore $cookies, WebRequest $request) {

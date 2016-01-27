@@ -6,6 +6,7 @@ use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\BreadCrumbsTrail;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\ExecutionToken;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
@@ -140,6 +141,42 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheOutputShouldBe('this is bar with bar');
     }
 
+    function modifyingActionRequiresConfirmation() {
+        $this->action->givenTheAction_Returning('foo', 'my output');
+        $this->action->given_IsModifying('foo');
+
+        $this->whenIExecute('foo');
+        $this->thenThereShouldBeNoOutput('my output');
+        $this->thenAMessage_ShouldBeDisplayed('Please confirm the execution of this action.');
+    }
+
+    function includeTokenInForm() {
+        $this->action->givenTheAction_Returning('foo', 'my output');
+        $this->action->given_IsModifying('foo');
+
+        $this->whenIExecute_WithAnExpiredToken('foo');
+        $this->thenThereShouldBeNoOutput('my output');
+        $this->thenAMessage_ShouldBeDisplayed('Please confirm the execution of this action.');
+        $this->thenANewTokenShouldBeIncluded();
+    }
+
+    function executeActionWithToken() {
+        $this->action->givenTheAction_Returning('foo', 'my output');
+        $this->action->given_IsModifying('foo');
+
+        $this->whenIExecute_WithAToken('foo');
+        $this->thenTheOutputShouldBe('my output');
+        $this->thenThereShouldBeNoMessage();
+    }
+
+    function confirmExecutionIfTokenExpired() {
+        $this->action->givenTheAction_Returning('foo', 'my output');
+        $this->action->given_IsModifying('foo');
+
+        $this->whenIExecute_WithAnExpiredToken('foo');
+        $this->thenThereShouldBeNoOutput('my output');
+    }
+
     function denyAccess() {
         $this->action->givenTheAction('foo');
         $this->action->given_IsModifying('foo');
@@ -166,6 +203,9 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var AccessControl */
     private $access;
 
+    /** @var WebApplication $app */
+    private $app;
+
     protected function before() {
         $this->factory = new Factory();
         $this->renderers = $this->factory->setSingleton(new RendererRegistry());
@@ -173,6 +213,8 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->access = $this->factory->setSingleton(new AccessControl());
 
         $this->factory->setSingleton($this->action->registry);
+
+        $this->app = $this->factory->getInstance(WebApplication::class);
     }
 
     private function givenAllValuesAreRenderedWith($callback) {
@@ -227,13 +269,28 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->whenIExecute_With($id, []);
     }
 
+    private function whenIExecute_WithAToken($id) {
+        $this->whenIExecute_WithATokenExpiringIn_Seconds($id, 10);
+    }
+
+    private function whenIExecute_WithAnExpiredToken($id) {
+        $this->whenIExecute_WithATokenExpiringIn_Seconds($id, -10);
+    }
+
+    private function whenIExecute_WithATokenExpiringIn_Seconds($id, $timeout) {
+        $this->app->token = (new ExecutionToken('my secret'))->setTimeout($timeout);
+        $this->app->prepare();
+
+        $reader = new FakeParameterReader([]);
+        $execution = new ExecutionResource($this->app, $reader, new BreadCrumbsTrail($reader, []));
+        $this->response = $execution->handleGet($id, $this->app->token->generate($id));
+    }
+
     private function whenIExecute_With($id, $parameters) {
-        /** @var WebApplication $app */
-        $app = $this->factory->getInstance(WebApplication::class);
-        $app->prepare();
+        $this->app->prepare();
 
         $reader = new FakeParameterReader($parameters);
-        $execution = new ExecutionResource($app, $reader, new BreadCrumbsTrail($reader, []));
+        $execution = new ExecutionResource($this->app, $reader, new BreadCrumbsTrail($reader, []));
         $this->response = $execution->handleGet($id);
     }
 
@@ -272,5 +329,21 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenTheOutputShouldBe($output) {
         $this->assert->contains($this->response, $output);
+    }
+
+    private function thenThereShouldBeNoOutput($output) {
+        $this->assert->not()->contains($this->response, $output);
+    }
+
+    private function thenAMessage_ShouldBeDisplayed($string) {
+        $this->assert->contains($this->response, '<div class="alert alert-info">' . $string);
+    }
+
+    private function thenThereShouldBeNoMessage() {
+        $this->assert->not()->contains($this->response, '<div class="alert alert-info">');
+    }
+
+    private function thenANewTokenShouldBeIncluded() {
+        $this->assert->contains($this->response, '<input type="hidden" name="__token"');
     }
 }

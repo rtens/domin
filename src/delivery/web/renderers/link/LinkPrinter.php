@@ -3,6 +3,8 @@ namespace rtens\domin\delivery\web\renderers\link;
 
 use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\ExecutionToken;
+use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebCommentParser;
 
 class LinkPrinter {
@@ -16,10 +18,15 @@ class LinkPrinter {
     /** @var WebCommentParser */
     private $parser;
 
-    public function __construct(LinkRegistry $links, ActionRegistry $actions, WebCommentParser $parser) {
+    /** @var ExecutionToken */
+    private $token;
+
+    public function __construct(LinkRegistry $links, ActionRegistry $actions, WebCommentParser $parser,
+                                ExecutionToken $token = null) {
         $this->links = $links;
         $this->actions = $actions;
         $this->parser = $parser;
+        $this->token = $token;
     }
 
     /**
@@ -72,7 +79,12 @@ class LinkPrinter {
         return array_map(function (Link $link) use ($object, $classes) {
             $action = $this->actions->getAction($link->actionId());
 
-            $url = $this->makeUrl($link->actionId(), $link->parameters($object));
+            $parameters = $link->parameters($object);
+            if ($action->isModifying() && $this->token) {
+                $parameters[ExecutionResource::TOKEN_ARG] = $this->token->generate($link->actionId());
+            }
+
+            $url = $this->makeUrl($link->actionId(), $parameters);
 
             $attributes = ['class' => $classes, 'href' => $url];
             if ($link->confirm() !== null) {

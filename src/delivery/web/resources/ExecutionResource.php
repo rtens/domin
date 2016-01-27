@@ -13,6 +13,8 @@ use rtens\domin\Executor;
 
 class ExecutionResource {
 
+    const TOKEN_ARG = '__token';
+
     /** @var WebApplication */
     private $app;
 
@@ -39,19 +41,22 @@ class ExecutionResource {
 
     /**
      * @param string $actionId
+     * @param null|string $token
      * @return string
+     * @throws \Exception
      */
-    public function handleGet($actionId) {
-        return $this->doExecute($actionId, false);
+    public function handleGet($actionId, $token = null) {
+        return $this->doExecute($actionId, $this->checkToken($actionId, $token));
     }
 
     /**
      * @param string $actionId
+     * @param null|string $token
      * @return string
      * @throws \Exception
      */
-    public function handlePost($actionId) {
-        return $this->doExecute($actionId, true);
+    public function handlePost($actionId, $token = null) {
+        return $this->doExecute($actionId, $this->checkToken($actionId, $token, true));
     }
 
     private function doExecute($actionId, $mayBeModifying) {
@@ -69,6 +74,9 @@ class ExecutionResource {
             $executor = new Executor($this->app->actions, $this->app->fields, $this->reader, $this->app->access);
             $result = new ActionResult($executor, $this->app->renderers, $action, $actionId, $this->crumbs);
             $headElements = array_merge($headElements, $result->getHeadElements());
+            $confirm = false;
+        } else {
+            $confirm = true;
         }
 
         return (new Template(__DIR__ . '/ExecutionTemplate.html.php'))
@@ -80,7 +88,12 @@ class ExecutionResource {
                 'action' => $form->getModel(),
                 'result' => isset($result) ? $result->getModel() : null,
                 'headElements' => HeadElements::filter($headElements),
-                'executed' => isset($result) && $result->wasExecuted()
+                'executed' => isset($result) && $result->wasExecuted(),
+                'confirmationRequired' => $confirm,
+                'token' => $action->isModifying() && $this->app->token ? [
+                    'name' => self::TOKEN_ARG,
+                    'value' => $this->app->token->generate($actionId)
+                ]: null
             ]);
     }
 
@@ -104,5 +117,12 @@ class ExecutionResource {
                 'caption' => $crumb->getCaption()
             ];
         }, $this->crumbs->getCrumbs());
+    }
+
+    private function checkToken($actionId, $token, $default = false) {
+        if (!$this->app->token) {
+            return $default;
+        }
+        return $token && $this->app->token->isValid($token, $actionId);
     }
 }

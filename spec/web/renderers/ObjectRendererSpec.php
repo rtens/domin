@@ -6,6 +6,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\Renderer;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\ExecutionToken;
 use rtens\domin\delivery\web\renderers\link\Link;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
@@ -37,8 +38,7 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->renderers = new RendererRegistry();
         $this->links = new LinkRegistry();
         $this->actions = new ActionRegistry();
-        $this->renderer = new ObjectRenderer($this->renderers, new TypeFactory(),
-            new LinkPrinter($this->links, $this->actions, new WebCommentParser()));
+        $this->renderer = $this->renderer();
     }
 
     function handlesObjects() {
@@ -142,9 +142,6 @@ class ObjectRendererSpec extends StaticTestSuite {
         );
     }
 
-    /**
-     * @throws \Exception
-     */
     function renderLinkedAction() {
         $this->renderers->add(new PrimitiveRenderer());
 
@@ -166,6 +163,34 @@ class ObjectRendererSpec extends StaticTestSuite {
             '<small class="pull-right">' .
             '<a class="btn btn-xs btn-primary" href="foo" title="\'Foo\' description">Foo</a>' .
             '</small>');
+    }
+
+    function renderLinksWithTokens() {
+        $this->renderers->add(new PrimitiveRenderer());
+
+        $link = Mockster::of(Link::class);
+        $this->links->add(Mockster::mock($link));
+
+        Mockster::stub($link->handles(Argument::any()))->will()->return_(true);
+        Mockster::stub($link->actionId())->will()->return_('foo');
+
+        $action = Mockster::of(Action::class);
+        Mockster::stub($action->isModifying())->will()->return_(true);
+        $this->actions->add('foo', Mockster::mock($action));
+
+        $object = new \StdClass();
+        $object->foo = 'bar';
+
+        $token = new ExecutionToken('secret');
+        $renderer = $this->renderer($token);
+
+        $matches = [];
+        $matched = preg_match('/foo\?__token=(.+?)"/', $renderer->render($object), $matches);
+
+        $this->assert($matched);
+        $this->assert($token->isValid($matches[1], 'foo'));
+        $this->assert->not($token->isValid($matches[1], 'bar'));
+
     }
 
     function renderLinkedActionWithParameters() {
@@ -284,5 +309,10 @@ class ObjectRendererSpec extends StaticTestSuite {
         $this->assert->size($elements, 2);
         $this->assert((string)$elements[0], '<one></one>');
         $this->assert((string)$elements[1], '<foo></foo>');
+    }
+
+    private function renderer(ExecutionToken $token = null) {
+        return new ObjectRenderer($this->renderers, new TypeFactory(),
+            new LinkPrinter($this->links, $this->actions, new WebCommentParser(), $token));
     }
 } 

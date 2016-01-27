@@ -42,13 +42,13 @@ class SilexControllerProvider implements ControllerProviderInterface {
         $controller->get('/{action}', function ($action, Request $request) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
-                return $execution->handleGet($action);
+                return $execution->handleGet($action, $request->get(ExecutionResource::TOKEN_ARG));
             });
         });
         $controller->post('/{action}', function ($action, Request $request) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
-                return $execution->handlePost($action);
+                return $execution->handlePost($action, $request->get(ExecutionResource::TOKEN_ARG));
             });
         });
 
