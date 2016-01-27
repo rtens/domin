@@ -13,8 +13,6 @@ use rtens\domin\Executor;
 
 class ExecutionResource {
 
-    const FORCE_ARG = '__force';
-
     /** @var WebApplication */
     private $app;
 
@@ -41,12 +39,10 @@ class ExecutionResource {
 
     /**
      * @param string $actionId
-     * @param bool $force
      * @return string
-     * @throws \Exception
      */
-    public function handleGet($actionId, $force = false) {
-        return $this->doExecute($actionId, $force);
+    public function handleGet($actionId) {
+        return $this->doExecute($actionId, false);
     }
 
     /**
@@ -58,7 +54,7 @@ class ExecutionResource {
         return $this->doExecute($actionId, true);
     }
 
-    private function doExecute($actionId, $mayBeModifying = false) {
+    private function doExecute($actionId, $mayBeModifying) {
         $action = $this->getAction($actionId);
         $headElements = self::baseHeadElements();
 

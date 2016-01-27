@@ -25,9 +25,4 @@ interface Link {
      * @return string|null
      */
     public function confirm();
-
-    /**
-     * @return boolean Whether to force execution
-     */
-    public function force();
 }

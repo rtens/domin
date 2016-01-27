@@ -42,8 +42,7 @@ class SilexControllerProvider implements ControllerProviderInterface {
         $controller->get('/{action}', function ($action, Request $request) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
-                $force = !!$request->get(ExecutionResource::FORCE_ARG, false);
-                return $execution->handleGet($action, $force);
+                return $execution->handleGet($action);
             });
         });
         $controller->post('/{action}', function ($action, Request $request) {

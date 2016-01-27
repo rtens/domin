@@ -18,12 +18,11 @@ class ExecuteResource extends Resource {
      * @param CookieStore $cookies <-
      * @param WebRequest $request <-
      * @param string $__action
-     * @param bool $__force
      * @return string
      */
-    public function doGet(WebApplication $app, CookieStore $cookies, WebRequest $request, $__action, $__force = false) {
+    public function doGet(WebApplication $app, CookieStore $cookies, WebRequest $request, $__action) {
         $execution = $this->getExecutionResource($app, $cookies, $request);
-        return $execution->handleGet($__action, $__force);
+        return $execution->handleGet($__action);
     }
 
     /**
