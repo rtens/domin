@@ -33,8 +33,6 @@ class IndexResource extends Container {
      * @return string
      */
     public function doGet(WebRequest $request, WebApplication $app, CookieStore $cookies) {
-        $app->prepare();
-
         $crumbs = new CurirBreadCrumbsTrail(new CurirParameterReader($request), $cookies);
         $actionList = new ActionListResource($app, $crumbs);
 

@@ -39,8 +39,6 @@ class ExecuteResource extends Resource {
     }
 
     private function getExecutionResource(WebApplication $app, CookieStore $cookies, WebRequest $request) {
-        $app->prepare();
-
         $reader = new CurirParameterReader($request);
         return new ExecutionResource($app, $reader, new CurirBreadCrumbsTrail($reader, $cookies));
     }

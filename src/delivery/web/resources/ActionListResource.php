@@ -22,7 +22,6 @@ class ActionListResource {
      * @return string
      */
     public function handleGet() {
-        $this->app->prepare();
         $this->crumbs->reset();
 
         global $model;

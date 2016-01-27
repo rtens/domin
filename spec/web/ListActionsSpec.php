@@ -46,7 +46,6 @@ class ListActionsSpec extends StaticTestSuite {
     private function whenIListTheActions() {
         /** @var WebApplication $app */
         $app = $this->factory->getInstance(WebApplication::class);
-        $app->prepare();
 
         $execution = new ActionListResource($app, new BreadCrumbsTrail(new FakeParameterReader(), []));
         $this->response = $execution->handleGet();

@@ -20,7 +20,6 @@ class SilexControllerProvider implements ControllerProviderInterface {
 
     public function __construct(Factory $factory) {
         $this->domin = $factory->getInstance(WebApplication::class);
-        $this->domin->prepare();
     }
 
     /**

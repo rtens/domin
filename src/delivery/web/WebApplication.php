@@ -120,7 +120,12 @@ class WebApplication {
      */
     public static function init(callable $callback, Factory $factory = null) {
         $factory = $factory ?: new Factory();
-        $callback($factory->setSingleton($factory->getInstance(self::class)));
+
+        /** @var self $instance */
+        $instance = $factory->getInstance(self::class);
+        $callback($factory->setSingleton($instance));
+        $instance->prepare();
+
         return $factory;
     }
 
