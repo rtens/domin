@@ -89,6 +89,7 @@ class ActionFixture extends Fixture {
         $this->params[$id][count($this->params)]->setDescription($description);
     }
 
-    public function givenTheAction_WithTheDescription($string, $string1) {
+    public function given_IsModifying($id) {
+        Mockster::stub($this->actions[$id]->isModifying())->will()->return_(true);
     }
 }

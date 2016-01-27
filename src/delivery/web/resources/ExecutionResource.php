@@ -55,6 +55,10 @@ class ExecutionResource {
     }
 
     private function doExecute($actionId, $mayBeModifying) {
+        if (!$this->app->access->isPermitted($actionId)) {
+            throw new \Exception('Permission denied.');
+        }
+
         $action = $this->getAction($actionId);
         $headElements = self::baseHeadElements();
 
@@ -62,7 +66,7 @@ class ExecutionResource {
         $headElements = array_merge($headElements, $form->getHeadElements());
 
         if ($mayBeModifying || !$action->isModifying()) {
-            $executor = new Executor($this->app->actions, $this->app->fields, $this->reader);
+            $executor = new Executor($this->app->actions, $this->app->fields, $this->reader, $this->app->access);
             $result = new ActionResult($executor, $this->app->renderers, $action, $actionId, $this->crumbs);
             $headElements = array_merge($headElements, $result->getHeadElements());
         }

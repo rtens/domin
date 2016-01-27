@@ -7,14 +7,15 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\BreadCrumbsTrail;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
-use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\delivery\web\WebField;
+use rtens\domin\execution\access\AccessControl;
+use rtens\domin\execution\access\GenericAccessPolicy;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
-use rtens\mockster\arguments\Argument;
 use rtens\mockster\arguments\Argument as Arg;
+use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\fixtures\ExceptionFixture;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -139,6 +140,15 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheOutputShouldBe('this is bar with bar');
     }
 
+    function denyAccess() {
+        $this->action->givenTheAction('foo');
+        $this->action->given_IsModifying('foo');
+
+        $this->access->add((new GenericAccessPolicy('foo'))->denyAccess());
+        $this->whenITryToExecute('foo');
+        $this->thenItShouldFailWith('Permission denied.');
+    }
+
     ####################################################################################################
 
     /** @var string */
@@ -153,15 +163,16 @@ class ExecuteActionSpec extends StaticTestSuite {
     /** @var FieldRegistry */
     public $fields;
 
+    /** @var AccessControl */
+    private $access;
+
     protected function before() {
         $this->factory = new Factory();
-        $this->renderers = new RendererRegistry();
-        $this->fields = new FieldRegistry();
+        $this->renderers = $this->factory->setSingleton(new RendererRegistry());
+        $this->fields = $this->factory->setSingleton(new FieldRegistry());
+        $this->access = $this->factory->setSingleton(new AccessControl());
 
         $this->factory->setSingleton($this->action->registry);
-        $this->factory->setSingleton($this->fields);
-        $this->factory->setSingleton($this->renderers);
-        $this->factory->setSingleton(new Menu($this->action->registry));
     }
 
     private function givenAllValuesAreRenderedWith($callback) {
@@ -223,7 +234,7 @@ class ExecuteActionSpec extends StaticTestSuite {
 
         $reader = new FakeParameterReader($parameters);
         $execution = new ExecutionResource($app, $reader, new BreadCrumbsTrail($reader, []));
-        $this->response = $execution->handlePost($id);
+        $this->response = $execution->handleGet($id);
     }
 
     private function thenItShouldDisplayTheError($message) {

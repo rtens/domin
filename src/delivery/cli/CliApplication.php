@@ -33,6 +33,7 @@ use rtens\domin\delivery\cli\renderers\tables\TableRenderer;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\execution\access\AccessControl;
 use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
@@ -68,6 +69,9 @@ class CliApplication {
     /** @var CommentParser */
     public $parser;
 
+    /** @var AccessControl */
+    public $access;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -75,9 +79,11 @@ class CliApplication {
      * @param RendererRegistry $renderers <-
      * @param TypeFactory $types <-
      * @param CommentParser $parser <-
+     * @param AccessControl $access <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
-                                RendererRegistry $renderers, TypeFactory $types, CommentParser $parser) {
+                                RendererRegistry $renderers, TypeFactory $types, CommentParser $parser,
+                                AccessControl $access) {
         $this->factory = $factory;
 
         $this->actions = $actions;
@@ -85,6 +91,7 @@ class CliApplication {
         $this->renderers = $renderers;
         $this->types = $types;
         $this->parser = $parser;
+        $this->access = $access;
     }
 
     /**
@@ -126,7 +133,7 @@ class CliApplication {
         $this->registerFields($reader);
         $this->registerRenderers();
 
-        $executor = new Executor($this->actions, $this->fields, $reader);
+        $executor = new Executor($this->actions, $this->fields, $reader, $this->access);
         return $this->printResult($console, $executor->execute($actionId));
     }
 

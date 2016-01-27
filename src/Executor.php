@@ -3,10 +3,12 @@ namespace rtens\domin;
 
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\ParameterReader;
+use rtens\domin\execution\access\AccessControl;
 use rtens\domin\execution\ExecutionResult;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
+use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\ValueResult;
 
 class Executor {
@@ -20,15 +22,14 @@ class Executor {
     /** @var ParameterReader */
     private $paramReader;
 
-    /**
-     * @param ActionRegistry $actions <-
-     * @param FieldRegistry $fields <-
-     * @param ParameterReader $reader <-
-     */
-    public function __construct(ActionRegistry $actions, FieldRegistry $fields, ParameterReader $reader) {
+    /** @var AccessControl */
+    private $access;
+
+    public function __construct(ActionRegistry $actions, FieldRegistry $fields, ParameterReader $reader, AccessControl $access) {
         $this->actions = $actions;
         $this->fields = $fields;
         $this->paramReader = $reader;
+        $this->access = $access;
     }
 
     /**
@@ -36,6 +37,10 @@ class Executor {
      * @return ExecutionResult
      */
     public function execute($id) {
+        if (!$this->access->isPermitted($id)) {
+            return new NotPermittedResult();
+        }
+
         try {
             $action = $this->actions->getAction($id);
 
@@ -43,6 +48,10 @@ class Executor {
 
             if (!empty($missing)) {
                 return new MissingParametersResult($missing);
+            }
+
+            if (!$this->access->isExecutionPermitted($id, $params)) {
+                return new NotPermittedResult();
             }
 
             $returned = $action->execute($params);

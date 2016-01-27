@@ -21,6 +21,7 @@ use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
 use rtens\domin\delivery\web\renderers\tables\TableRenderer;
 use rtens\domin\delivery\web\renderers\TextRenderer;
+use rtens\domin\execution\access\AccessControl;
 use rtens\domin\parameters\IdentifiersProvider;
 use rtens\domin\reflection\types\TypeFactory;
 use rtens\domin\delivery\web\fields\ImageField;
@@ -85,6 +86,9 @@ class WebApplication {
     /** @var WebCommentParser */
     public $parser;
 
+    /** @var AccessControl */
+    public $access;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -95,10 +99,12 @@ class WebApplication {
      * @param TypeFactory $types <-
      * @param MobileDetector $detect <-
      * @param WebCommentParser $parser <-
+     * @param AccessControl $access <-
      */
     public function __construct(Factory $factory, ActionRegistry $actions, FieldRegistry $fields,
                                 RendererRegistry $renderers, LinkRegistry $links, IdentifiersProvider $identifiers,
-                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser) {
+                                TypeFactory $types, MobileDetector $detect, WebCommentParser $parser,
+                                AccessControl $access) {
         $factory->setSingleton($this);
 
         $this->factory = $factory;
@@ -110,6 +116,7 @@ class WebApplication {
         $this->identifiers = $identifiers;
         $this->detector = $detect;
         $this->parser = $parser;
+        $this->access = $access;
         $this->menu = new Menu($actions);
     }
 

@@ -2,9 +2,10 @@
 namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\delivery\web\BreadCrumbsTrail;
-use rtens\domin\delivery\web\menu\Menu;
 use rtens\domin\delivery\web\resources\ActionListResource;
 use rtens\domin\delivery\web\WebApplication;
+use rtens\domin\execution\access\AccessControl;
+use rtens\domin\execution\access\GenericAccessPolicy;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use spec\rtens\domin\fixtures\FakeParameterReader;
 use watoki\factory\Factory;
@@ -30,17 +31,32 @@ class ListActionsSpec extends StaticTestSuite {
         $this->thenThereShouldBeAnAction('bar');
     }
 
+    function hideDeniedActions() {
+        $this->action->givenTheAction('foo');
+        $this->action->givenTheAction('bar');
+
+        $this->access->add((new GenericAccessPolicy('foo'))->denyAccess());
+
+        $this->whenIListTheActions();
+
+        $this->thenThereShouldBe_Actions(1);
+        $this->thenThereShouldBeAnAction('bar');
+    }
+
     ################################################################################
 
     /** @var Factory */
     private $factory;
+
+    /** @var AccessControl */
+    private $access;
 
     private $response;
 
     protected function before() {
         $this->factory = new Factory();
         $this->factory->setSingleton($this->action->registry);
-        $this->factory->setSingleton(new Menu($this->action->registry));
+        $this->access = $this->factory->setSingleton(new AccessControl());
     }
 
     private function whenIListTheActions() {

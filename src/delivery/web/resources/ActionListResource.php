@@ -40,11 +40,13 @@ class ActionListResource {
     private function assembleActions() {
         $actions = [];
         foreach ($this->app->actions->getAllActions() as $id => $action) {
-            $actions[] = [
-                'caption' => $action->caption(),
-                'description' => $this->app->parser->shorten($action->description()),
-                'link' => ['href' => $id]
-            ];
+            if ($this->app->access->isPermitted($id)) {
+                $actions[] = [
+                    'caption' => $action->caption(),
+                    'description' => $this->app->parser->shorten($action->description()),
+                    'link' => ['href' => $id]
+                ];
+            }
         }
         return $actions;
     }

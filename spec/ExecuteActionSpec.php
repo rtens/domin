@@ -3,9 +3,12 @@ namespace spec\rtens\domin;
 
 use rtens\domin\delivery\Field;
 use rtens\domin\delivery\FieldRegistry;
+use rtens\domin\execution\access\AccessControl;
+use rtens\domin\execution\access\GenericAccessPolicy;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
+use rtens\domin\execution\NotPermittedResult;
 use rtens\domin\execution\ValueResult;
 use rtens\domin\Executor;
 use rtens\domin\Parameter;
@@ -126,13 +129,45 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheResultShouldBe('one_uno? two_dos!');
     }
 
+    function denyExecution() {
+        $this->action->givenTheAction('foo');
+        $this->givenAccessOf_IsNotPermitted('foo');
+
+        $this->whenIExecute('foo');
+        $this->thenItShouldNotBePermitted();
+    }
+
+    function denyExecutionWithSpecificParameters() {
+        $this->action->givenTheAction('foo');
+
+        $this->action->given_HasTheParameter_OfType('foo', 'one', 'bar');
+        $this->givenAFieldHandling_InflatingWith('bar', function (Parameter $p, $s) {
+            return $s . '!';
+        });
+
+        $this->givenExeutionOf_With_IsNotPermitted('foo', ['one' => 'uno!']);
+
+        $this->whenIExecute_With('foo', ['one' => 'not']);
+        $this->thenThereShouldBeNoResult();
+
+        $this->whenIExecute_With('foo', ['one' => 'uno']);
+        $this->thenItShouldNotBePermitted();
+    }
+
     /** @var Field[] */
     private $fields = [];
+
+    /** @var AccessControl */
+    private $access;
 
     /** @var ValueResult|FailedResult|MissingParametersResult */
     private $result;
 
     private $parameters = [];
+
+    public function before() {
+        $this->access = new AccessControl();
+    }
 
     private function givenAFieldInflatingWith($callback) {
         $this->givenAFieldHandling_InflatingWith(null, $callback);
@@ -153,14 +188,26 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->parameters[$key] = $value;
     }
 
+    private function givenAccessOf_IsNotPermitted($action) {
+        $this->access->add((new GenericAccessPolicy($action))->denyAccess());
+    }
+
+    private function givenExeutionOf_With_IsNotPermitted($action, $params) {
+        $this->access->add((new GenericAccessPolicy($action))->denyExecutionWith($params));
+    }
+
     private function whenIExecute($id) {
+        $this->whenIExecute_With($id, $this->parameters);
+    }
+
+    private function whenIExecute_With($id, $params) {
         $fields = new FieldRegistry();
         foreach ($this->fields as $field) {
             $fields->add(Mockster::mock($field));
         }
 
-        $reader = new FakeParameterReader($this->parameters);
-        $executor = new Executor($this->action->registry, $fields, $reader);
+        $reader = new FakeParameterReader($params);
+        $executor = new Executor($this->action->registry, $fields, $reader, $this->access);
         $this->result = $executor->execute($id);
     }
 
@@ -188,5 +235,9 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->assert->isInstanceOf($this->result, MissingParametersResult::class);
         $this->assert->contains($this->result->getMissingNames(), $param);
         $this->assert($this->result->getException($param)->getMessage(), $message);
+    }
+
+    private function thenItShouldNotBePermitted() {
+        $this->assert->isInstanceOf($this->result, NotPermittedResult::class);
     }
 }
