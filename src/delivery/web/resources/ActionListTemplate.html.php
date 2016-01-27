@@ -19,18 +19,47 @@
 
 <div class="container">
 
-<div class="list-group">
-    <?php foreach ($model['action'] as $anAction) { ?>
-        <a href="<?php echo $anAction['link']['href'] ?>" class="list-group-item">
-            <?php echo $anAction['caption'] ?>
-            <?php if ($anAction['description']) { ?>
-            <small class="text-muted">- <?php echo $anAction['description'] ?></small>
-            <?php } ?>
-        </a>
+<?php foreach ($model['actions'] as $group => $actions) { ?>
+<div class="action-group">
+    <?php if (count($model['actions']) > 1) { ?>
+        <h2 class="group-name">
+            <small>
+                <span class="toggle-group glyphicon glyphicon-chevron-right"></span>
+                <span class="toggle-group glyphicon glyphicon-chevron-down" style="display: none;"></span>
+            </small>
+            <?php echo $group ?>
+        </h2>
     <?php } ?>
+
+    <div class="list-group">
+        <?php foreach ($actions as $action) { ?>
+            <a href="<?php echo $action['link']['href'] ?>" class="list-group-item">
+                <?php echo $action['caption'] ?>
+                <?php if ($action['description']) { ?>
+                <small class="text-muted">- <?php echo $action['description'] ?></small>
+                <?php } ?>
+            </a>
+        <?php } ?>
+    </div>
 </div>
+<?php } ?>
 
 </div>
+
+<?php if (count($model['actions']) > 1) { ?>
+<script>
+    $('.list-group').hide();
+
+    var groupName = $('.group-name');
+    groupName.css('cursor', 'pointer');
+    groupName.click(function () {
+        $(this).closest('.action-group').find('.list-group').toggle();
+        $(this).find('.toggle-group').toggle();
+    });
+
+    groupName[0].click();
+</script>
+<?php } ?>
 
 </body>
 </html>

@@ -89,6 +89,9 @@ class WebApplication {
     /** @var AccessControl */
     public $access;
 
+    /** @var ActionGroups */
+    public $groups;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -118,6 +121,7 @@ class WebApplication {
         $this->parser = $parser;
         $this->access = $access;
         $this->menu = new Menu($actions);
+        $this->groups = new ActionGroups($actions);
     }
 
     /**
@@ -134,13 +138,6 @@ class WebApplication {
         $instance->prepare();
 
         return $factory;
-    }
-
-    /**
-     * @param callable $accessControlFactory Received the current WebRequest
-     */
-    public function restrictAccess(callable $accessControlFactory) {
-        $this->accessFactory = $accessControlFactory;
     }
 
     /**

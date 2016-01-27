@@ -43,6 +43,22 @@ class ListActionsSpec extends StaticTestSuite {
         $this->thenThereShouldBeAnAction('bar');
     }
 
+    function actionsInGroups() {
+        $this->action->givenTheAction('foo');
+        $this->action->givenTheAction('bar');
+
+        $this->app->groups->put('foo', 'A');
+        $this->app->groups->put('bar', 'A');
+        $this->app->groups->put('bar', 'B');
+
+        $this->whenIListTheActions();
+
+        $this->thenThereShouldBe_Actions(5);
+        $this->thenThereShouldBeAnActionGroup('All');
+        $this->thenThereShouldBeAnActionGroup('A');
+        $this->thenThereShouldBeAnActionGroup('B');
+    }
+
     ################################################################################
 
     /** @var Factory */
@@ -53,17 +69,19 @@ class ListActionsSpec extends StaticTestSuite {
 
     private $response;
 
+    /** @var WebApplication */
+    private $app;
+
     protected function before() {
         $this->factory = new Factory();
         $this->factory->setSingleton($this->action->registry);
         $this->access = $this->factory->setSingleton(new AccessControl());
+
+        $this->app = $this->factory->getInstance(WebApplication::class);
     }
 
     private function whenIListTheActions() {
-        /** @var WebApplication $app */
-        $app = $this->factory->getInstance(WebApplication::class);
-
-        $execution = new ActionListResource($app, new BreadCrumbsTrail(new FakeParameterReader(), []));
+        $execution = new ActionListResource($this->app, new BreadCrumbsTrail(new FakeParameterReader(), []));
         $this->response = $execution->handleGet();
     }
 
@@ -72,7 +90,11 @@ class ListActionsSpec extends StaticTestSuite {
     }
 
     private function thenThereShouldBeAnAction($id) {
-        $this->assert->contains($this->response,
-            sprintf('<a href="%s" class="list-group-item">' . "\n" . '            %s', $id, ucfirst($id)));
+        $this->assert->contains(preg_replace("/\n\s+/", "", $this->response),
+            sprintf('<a href="%s" class="list-group-item">%s', $id, ucfirst($id)));
+    }
+
+    private function thenThereShouldBeAnActionGroup($name) {
+        $this->assert->contains($this->response, "$name        </h2>");
     }
 }
