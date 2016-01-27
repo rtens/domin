@@ -3,9 +3,6 @@ namespace spec\rtens\domin;
 
 use rtens\domin\delivery\Field;
 use rtens\domin\delivery\FieldRegistry;
-use rtens\domin\delivery\ParameterReader;
-use rtens\domin\delivery\Renderer;
-use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
@@ -15,6 +12,7 @@ use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use spec\rtens\domin\fixtures\FakeParameterReader;
 use watoki\reflect\type\UnknownType;
 
 /**
@@ -128,29 +126,13 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->thenTheResultShouldBe('one_uno? two_dos!');
     }
 
-    /** @var Renderer[] */
-    private $renderers = [];
-
     /** @var Field[] */
     private $fields = [];
-
-    /** @var ParameterReader */
-    private $reader;
 
     /** @var ValueResult|FailedResult|MissingParametersResult */
     private $result;
 
     private $parameters = [];
-
-    protected function before() {
-        $this->reader = Mockster::of(ParameterReader::class);
-        Mockster::stub($this->reader->read(Argument::any()))->will()->forwardTo(function (Parameter $parameter) {
-            return $this->parameters[$parameter->getName()];
-        });
-        Mockster::stub($this->reader->has(Argument::any()))->will()->forwardTo(function (Parameter $parameter) {
-            return array_key_exists($parameter->getName(), $this->parameters);
-        });
-    }
 
     private function givenAFieldInflatingWith($callback) {
         $this->givenAFieldHandling_InflatingWith(null, $callback);
@@ -177,12 +159,8 @@ class ExecuteActionSpec extends StaticTestSuite {
             $fields->add(Mockster::mock($field));
         }
 
-        $renderers = new RendererRegistry();
-        foreach ($this->renderers as $renderer) {
-            $renderers->add(Mockster::mock($renderer));
-        }
-
-        $executor = new Executor($this->action->registry, $fields, Mockster::mock($this->reader));
+        $reader = new FakeParameterReader($this->parameters);
+        $executor = new Executor($this->action->registry, $fields, $reader);
         $this->result = $executor->execute($id);
     }
 
