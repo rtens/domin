@@ -7,7 +7,7 @@ use rtens\domin\delivery\web\WebApplication;
 
 class ActionListResource {
 
-    /** @var WebApplication  */
+    /** @var WebApplication */
     private $app;
 
     /** @var BreadCrumbsTrail */
@@ -24,21 +24,17 @@ class ActionListResource {
     public function handleGet() {
         $this->crumbs->reset();
 
-        global $model;
-        $model = [
-            'name' => $this->app->name,
-            'menu' => $this->app->menu->render(),
-            'action' => $this->assembleActions(),
-            'headElements' => [
-                (string)HeadElements::jquery(),
-                (string)HeadElements::bootstrap(),
-                (string)HeadElements::bootstrapJs(),
-            ]
-        ];
-
-        ob_start();
-        include __DIR__ . '/ActionListTemplate.html.php';
-        return ob_get_clean();
+        return (new Template(__DIR__ . '/ActionListTemplate.html.php'))
+            ->render([
+                'name' => $this->app->name,
+                'menu' => $this->app->menu->render(),
+                'action' => $this->assembleActions(),
+                'headElements' => [
+                    (string)HeadElements::jquery(),
+                    (string)HeadElements::bootstrap(),
+                    (string)HeadElements::bootstrapJs(),
+                ]
+            ]);
     }
 
     private function assembleActions() {

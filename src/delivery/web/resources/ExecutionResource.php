@@ -71,21 +71,17 @@ class ExecutionResource {
             $headElements = array_merge($headElements, $result->getHeadElements());
         }
 
-        global $model;
-        $model = [
-            'name' => $this->app->name,
-            'caption' => $action->caption(),
-            'menu' => $this->app->menu->render(),
-            'breadcrumbs' => $this->assembleBreadCrumbs(),
-            'action' => $form->getModel(),
-            'result' => isset($result) ? $result->getModel() : null,
-            'headElements' => HeadElements::filter($headElements),
-            'executed' => isset($result) && $result->wasExecuted()
-        ];
-
-        ob_start();
-        include __DIR__ . '/ExecutionTemplate.html.php';
-        return ob_get_clean();
+        return (new Template(__DIR__ . '/ExecutionTemplate.html.php'))
+            ->render([
+                'name' => $this->app->name,
+                'caption' => $action->caption(),
+                'menu' => $this->app->menu->render(),
+                'breadcrumbs' => $this->assembleBreadCrumbs(),
+                'action' => $form->getModel(),
+                'result' => isset($result) ? $result->getModel() : null,
+                'headElements' => HeadElements::filter($headElements),
+                'executed' => isset($result) && $result->wasExecuted()
+            ]);
     }
 
     /**
