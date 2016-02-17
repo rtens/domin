@@ -32,24 +32,24 @@ class ExecuteResource extends Resource {
     }
 
     /**
-     * @param WebRequest $request <-
+     * @param WebRequest $__request <-
      * @param string $__action
      * @param null|string $__token
      * @return string
      */
-    public function doGet(WebRequest $request, $__action, $__token = null) {
-        $execution = $this->getExecutionResource($this->app, $this->cookies, $request);
+    public function doGet(WebRequest $__request, $__action, $__token = null) {
+        $execution = $this->getExecutionResource($this->app, $this->cookies, $__request);
         return $execution->handleGet($__action, $__token);
     }
 
     /**
-     * @param WebRequest $request <-
+     * @param WebRequest $__request <-
      * @param string $__action
      * @param null|string $__token
      * @return string
      */
-    public function doPost(WebRequest $request, $__action, $__token = null) {
-        $execution = $this->getExecutionResource($this->app, $this->cookies, $request);
+    public function doPost(WebRequest $__request, $__action, $__token = null) {
+        $execution = $this->getExecutionResource($this->app, $this->cookies, $__request);
         return $execution->handlePost($__action, $__token);
     }
 
