@@ -19,8 +19,8 @@
     }
   ],
   "require": {
-    "watoki/factory": "*",
-    "watoki/reflect": "*"
+    "watoki/factory": "1.*",
+    "watoki/reflect": "1.*"
   },
   "suggest": {
     "watoki/curir": "Supported delivery system.",
@@ -30,8 +30,8 @@
     "league/climate": "Used by some CLI components"
   },
   "require-dev": {
-    "rtens/scrut": "*",
-    "rtens/mockster": "*"
+    "rtens/scrut": "1.*",
+    "rtens/mockster": "3.*"
   },
   "autoload": {
     "psr-4": {
