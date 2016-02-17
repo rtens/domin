@@ -55,7 +55,7 @@ WebDelivery::quickResponse(IndexResource::class,
         })));
 ```
 
-To run *domin* with [sliex], past this code into `index.php`
+To run *domin* with [silex], past this code into `index.php`
 
 ```php
 use rtens\domin\delivery\web\adapters\silex\SilexControllerProvider;
