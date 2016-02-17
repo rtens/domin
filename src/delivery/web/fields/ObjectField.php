@@ -42,10 +42,8 @@ class ObjectField implements WebField {
      * @return array|\rtens\domin\delivery\web\Element[]
      */
     public function headElements(Parameter $parameter) {
-        $reader = new PropertyReader($this->types, $this->getClass($parameter));
-
         $headElements = [];
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->getProperties($parameter) as $property) {
             $param = $this->makePropertyParameter($parameter, $property);
             $headElements = array_merge($headElements, $this->getField($param)->headElements($param));
         }
@@ -83,20 +81,15 @@ class ObjectField implements WebField {
             return false;
         });
 
-        $reader = new PropertyReader($this->types, $this->getClass($parameter));
-        foreach ($reader->readInterface() as $property) {
-            if ($property->canSet()) {
-                $property->set($instance, $properties[$property->name()]);
-            }
+        foreach ($this->getProperties($parameter) as $property) {
+            $property->set($instance, $properties[$property->name()]);
         }
         return $instance;
     }
 
     private function inflateProperties(Parameter $parameter, array $serialized) {
-        $reader = new PropertyReader($this->types, $this->getClass($parameter));
-
         $properties = [];
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->getProperties($parameter) as $property) {
             if (array_key_exists($property->name(), $serialized)) {
                 $param = $this->makePropertyParameter($parameter, $property);
                 $properties[$property->name()] = $this->inflateProperty($serialized[$property->name()], $param);
@@ -110,14 +103,8 @@ class ObjectField implements WebField {
     }
 
     private function renderPropertyFields(Parameter $parameter, $object) {
-        $reader = new PropertyReader($this->types, $this->getClass($parameter));
-
         $fields = [];
-        foreach ($reader->readInterface($object) as $property) {
-            if (!$property->canSet()) {
-                continue;
-            }
-
+        foreach ($this->getProperties($parameter, $object) as $property) {
             $param = $this->makePropertyParameter($parameter, $property);
             $fields[] = $this->renderPropertyField($property, $param, $object);
         }
@@ -149,5 +136,15 @@ class ObjectField implements WebField {
 
     private function makePropertyParameter(Parameter $parameter, Property $property) {
         return new Parameter($parameter->getName() . '[' . $property->name() . ']', $property->type(), $property->isRequired());
+    }
+
+    private function getProperties(Parameter $parameter, $object = null) {
+        $reader = new PropertyReader($this->types, $this->getClass($parameter));
+
+        foreach ($reader->readInterface($object) as $property) {
+            if ($property->canSet()) {
+                yield $property;
+            }
+        }
     }
 }
