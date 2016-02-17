@@ -30,8 +30,8 @@
     "league/climate": "Used by some CLI components"
   },
   "require-dev": {
-    "rtens/scrut": "*",
-    "rtens/mockster": "*"
+    "rtens/scrut": "3.*",
+    "rtens/mockster": "1.*"
   },
   "autoload": {
     "psr-4": {
