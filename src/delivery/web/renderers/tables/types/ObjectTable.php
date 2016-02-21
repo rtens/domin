@@ -71,11 +71,11 @@ class ObjectTable implements Table {
     }
 
     public function selectProperties($names) {
-        foreach ($this->properties as $name => $value) {
-            if (!in_array($name, $names)) {
-                unset($this->properties[$name]);
-            }
+        $selected = [];
+        foreach ($names as $name) {
+            $selected[$name] = $this->properties[$name];
         }
+        $this->properties = $selected;
         return $this;
     }
 

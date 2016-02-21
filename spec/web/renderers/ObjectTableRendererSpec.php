@@ -124,14 +124,14 @@ class ObjectTableRendererSpec extends StaticTestSuite {
         ];
 
         $table = (new ObjectTable($data, $this->types))
-            ->selectProperties(['one', 'three'])
+            ->selectProperties(['three', 'one'])
             ->setHeader('one', '1')
             ->setFilter('three', function ($s) {
                 return strtoupper($s);
             });
 
-        $this->assert->contains($this->tableRenderer->render($table), "<th>1</th>\n<th>Three</th>");
-        $this->assert->contains($this->tableRenderer->render($table), "<td>uno</td>\n<td>TRES</td>");
-        $this->assert->contains($this->tableRenderer->render($table), "<td>un</td>\n<td>TROIS</td>");
+        $this->assert->contains($this->tableRenderer->render($table), "<th>Three</th>\n<th>1</th>");
+        $this->assert->contains($this->tableRenderer->render($table), "<td>TRES</td>\n<td>uno</td>");
+        $this->assert->contains($this->tableRenderer->render($table), "<td>TROIS</td>\n<td>un</td>");
     }
 }
