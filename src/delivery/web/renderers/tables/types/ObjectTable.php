@@ -73,7 +73,9 @@ class ObjectTable implements Table {
     public function selectProperties($names) {
         $selected = [];
         foreach ($names as $name) {
-            $selected[$name] = $this->properties[$name];
+            if (isset($this->properties[$name])) {
+                $selected[$name] = $this->properties[$name];
+            }
         }
         $this->properties = $selected;
         return $this;
