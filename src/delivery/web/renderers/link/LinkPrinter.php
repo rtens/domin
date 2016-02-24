@@ -5,6 +5,7 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\ExecutionToken;
 use rtens\domin\delivery\web\resources\ExecutionResource;
+use rtens\domin\delivery\web\Url;
 use rtens\domin\delivery\web\WebCommentParser;
 
 class LinkPrinter {
@@ -84,7 +85,7 @@ class LinkPrinter {
                 $parameters[ExecutionResource::TOKEN_ARG] = $this->token->generate($link->actionId());
             }
 
-            $url = $this->makeUrl($link->actionId(), $parameters);
+            $url = (string)Url::relative($link->actionId(), $parameters);
 
             $attributes = ['class' => $classes, 'href' => $url];
             if ($link->confirm() !== null) {
@@ -98,19 +99,5 @@ class LinkPrinter {
                 $action->caption()
             ]);
         }, $this->links->getLinks($object));
-    }
-
-    private function makeUrl($actionId, array $parameters) {
-        $url = $actionId;
-
-        if ($parameters) {
-            $keyValues = [];
-            foreach ($parameters as $key => $value) {
-                $keyValues[] = urlencode($key) . '=' . urlencode($value);
-            }
-            $url .= '?' . implode('&', $keyValues);
-        }
-
-        return $url;
     }
 }

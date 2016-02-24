@@ -1,6 +1,8 @@
 <?php
 namespace rtens\domin\execution;
 
+use rtens\domin\delivery\web\Url;
+
 class RedirectResult implements ExecutionResult {
 
     /** @var string */
@@ -22,14 +24,6 @@ class RedirectResult implements ExecutionResult {
      * @return string
      */
     public function getUrl() {
-        $url = $this->target;
-        if ($this->parameters) {
-            $keyValues = [];
-            foreach ($this->parameters as $key => $value) {
-                $keyValues[] = urlencode($key) . '=' . urlencode($value);
-            }
-            $url .= '?' . implode('&', $keyValues);
-        }
-        return $url;
+        return (string)Url::relative($this->target, $this->parameters);
     }
 }

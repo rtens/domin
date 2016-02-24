@@ -1,6 +1,7 @@
 <?php namespace rtens\domin\delivery\web\menu;
 
 use rtens\domin\delivery\web\Element;
+use rtens\domin\delivery\web\Url;
 
 class ActionMenuItem implements MenuItem {
 
@@ -21,20 +22,8 @@ class ActionMenuItem implements MenuItem {
 
     public function render() {
         return new Element('li', [], [
-            new Element('a', ['href' => $this->getTarget()], [$this->getCaption()])
+            new Element('a', ['href' => (string)Url::relative($this->actionId, $this->parameters)], [$this->getCaption()])
         ]);
-    }
-
-    private function getTarget() {
-        $target = $this->actionId;
-        if ($this->parameters) {
-            $keyValues = [];
-            foreach ($this->parameters as $key => $value) {
-                $keyValues[] = urlencode($key) . '=' . urlencode($value);
-            }
-            $target .= '?' . implode('&', $keyValues);
-        }
-        return $target;
     }
 
     private function getCaption() {

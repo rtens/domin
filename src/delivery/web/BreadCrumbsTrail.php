@@ -52,7 +52,7 @@ class BreadCrumbsTrail {
      * @return array|BreadCrumb[]
      */
     public function updateCrumbs(Action $action, $actionId) {
-        $current = new BreadCrumb($action->caption(), $this->makeTarget($actionId, $action));
+        $current = new BreadCrumb($action->caption(), (string)Url::relative($actionId, $this->readRawParameters($action)));
 
         $newCrumbs = [];
         foreach ($this->crumbs as $crumb) {
@@ -69,21 +69,6 @@ class BreadCrumbsTrail {
 
     public function reset() {
         $this->crumbs = [];
-    }
-
-    private function makeTarget($actionId, Action $action) {
-        $target = $actionId;
-
-        $parameters = $this->readRawParameters($action);
-        if ($parameters) {
-            $keyValues = [];
-            foreach ($parameters as $key => $value) {
-                $keyValues[] = urlencode($key) . '=' . urlencode($value);
-            }
-            $target .= '?' . implode('&', $keyValues);
-        }
-
-        return $target;
     }
 
     private function readRawParameters(Action $action) {

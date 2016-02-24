@@ -7,6 +7,7 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\dashboard\types\ActionPanel;
 use rtens\domin\delivery\web\renderers\dashboard\types\Panel;
+use rtens\domin\delivery\web\Url;
 use rtens\domin\delivery\web\WebRenderer;
 use rtens\domin\Parameter;
 
@@ -51,23 +52,9 @@ class ActionPanelRenderer implements WebRenderer {
         return (string)(new Panel($heading, $this->getContent($value)))
             ->setMaxHeight($value->getMaxHeight())
             ->setRightHeading([new Element('a', [
-                'href' => $this->makeUrl($value)
+                'href' => (string)Url::relative($value)
             ], [new Element('span', ['class' => 'glyphicon glyphicon-circle-arrow-right'])])])
             ->render($this->renderers);
-    }
-
-    private function makeUrl(ActionPanel $panel) {
-        $url = $panel->getActionId();
-
-        if ($panel->getParameters()) {
-            $keyValues = [];
-            foreach ($panel->getParameters() as $key => $value) {
-                $keyValues[] = urlencode($key) . '=' . urlencode($value);
-            }
-            $url .= '?' . implode('&', $keyValues);
-        }
-
-        return $url;
     }
 
     /**
