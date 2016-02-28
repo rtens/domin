@@ -42,10 +42,8 @@ class ObjectField implements CliField {
      * @return object
      */
     public function inflate(Parameter $parameter, $serialized) {
-        $reader = new PropertyReader($this->types, $this->getClass($parameter));
-
         $properties = [];
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->getProperties($parameter) as $property) {
             $propertyParameter = new Parameter($parameter->getName() . '-' . $property->name(), $property->type());
 
             $field = $this->getField($propertyParameter);
@@ -57,7 +55,7 @@ class ObjectField implements CliField {
             return false;
         });
 
-        foreach ($reader->readInterface() as $property) {
+        foreach ($this->getProperties($parameter) as $property) {
             $value = $properties[$property->name()];
             if (!is_null($value) && $property->canSet()) {
                 $property->set($instance, $value);
@@ -89,5 +87,15 @@ class ObjectField implements CliField {
      */
     public function getDescription(Parameter $parameter) {
         return '(press enter)';
+    }
+
+    private function getProperties(Parameter $parameter, $object = null) {
+        $reader = new PropertyReader($this->types, $this->getClass($parameter));
+
+        foreach ($reader->readInterface($object) as $property) {
+            if ($property->canSet()) {
+                yield $property;
+            }
+        }
     }
 }
