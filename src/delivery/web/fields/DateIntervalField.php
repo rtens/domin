@@ -48,9 +48,9 @@ class DateIntervalField extends CliDateIntervalField implements WebField {
             return $parameter->isRequired() ? new \DateInterval('P0D') : null;
         }
 
-        $days = intval($serialized['d']);
-        $hours = intval($serialized['h']);
-        $minutes = intval($serialized['i']);
+        $days = isset($serialized['d']) ? intval($serialized['d']) : 0;
+        $hours = isset($serialized['h']) ? intval($serialized['h']) : 0;
+        $minutes = isset($serialized['i']) ? intval($serialized['i']) : 0;
 
         return new \DateInterval("P{$days}DT{$hours}H{$minutes}M");
     }
