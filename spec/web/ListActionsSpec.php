@@ -2,7 +2,8 @@
 namespace spec\rtens\domin\delivery\web;
 
 use rtens\domin\delivery\web\BreadCrumbsTrail;
-use rtens\domin\delivery\web\resources\ActionListResource;
+use rtens\domin\delivery\web\home\ListActions;
+use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\execution\access\AccessControl;
 use rtens\domin\execution\access\GenericAccessPolicy;
@@ -78,11 +79,17 @@ class ListActionsSpec extends StaticTestSuite {
         $this->access = $this->factory->setSingleton(new AccessControl());
 
         $this->app = $this->factory->getInstance(WebApplication::class);
+        $this->app->prepare();
     }
 
     private function whenIListTheActions() {
-        $execution = new ActionListResource($this->app, new BreadCrumbsTrail(new FakeParameterReader(), []));
-        $this->response = $execution->handleGet();
+        $this->app->actions->add('index', new ListActions($this->app->actions, $this->app->groups, $this->app->access, $this->app->parser));
+
+        $reader = new FakeParameterReader();
+        $crumbs = new BreadCrumbsTrail($reader, []);
+
+        $resource = new ExecutionResource($this->app, $reader, $crumbs);
+        $this->response = $resource->handleGet('index');
     }
 
     private function thenThereShouldBe_Actions($count) {
@@ -95,6 +102,6 @@ class ListActionsSpec extends StaticTestSuite {
     }
 
     private function thenThereShouldBeAnActionGroup($name) {
-        $this->assert->contains($this->response, "$name        </h2>");
+        $this->assert->contains($this->response, "$name\n</h2>");
     }
 }

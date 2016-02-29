@@ -67,7 +67,10 @@ class ActionListRenderer implements WebRenderer {
     private function renderList($actions) {
         $items = [];
         foreach ($actions as $action) {
-            $items[] = new Element('a', ['class' => 'list-group-item', 'href' => $action->getId()], [
+            $items[] = new Element('a', [
+                'href' => $action->getId(),
+                'class' => 'list-group-item'
+            ], [
                 $action->getCaption()
             ]);
         }

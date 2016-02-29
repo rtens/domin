@@ -6,8 +6,8 @@ use rtens\domin\delivery\web\BreadCrumb;
 use rtens\domin\delivery\web\BreadCrumbsTrail;
 use rtens\domin\delivery\web\fields\ActionField;
 use rtens\domin\delivery\web\fields\StringField;
+use rtens\domin\delivery\web\home\ListActions;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
-use rtens\domin\delivery\web\resources\ActionListResource;
 use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\Parameter;
@@ -143,7 +143,9 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
 
     function overviewResetsCrumbs() {
         $this->whenIListAllActions();
-        $this->thenTheCrumbs_ShouldBeSaved([]);
+        $this->thenTheCrumbs_ShouldBeSaved([
+            new BreadCrumb('Actions', 'index')
+        ]);
     }
 
     private function whenIExecute($action) {
@@ -176,11 +178,8 @@ class SprinkleBreadcrumbsSpec extends StaticTestSuite {
     }
 
     private function whenIListAllActions() {
-        $reader = new FakeParameterReader();
-        $this->crumbs = new BreadCrumbsTrail($reader, $this->crumbSource);
-
-        $execution = new ActionListResource($this->app, $this->crumbs);
-        $execution->handleGet();
+        $this->app->actions->add('index', new ListActions($this->app->actions, $this->app->groups, $this->app->access, $this->app->parser));
+        $this->whenIExecute_With('index', []);
     }
 
     /**
