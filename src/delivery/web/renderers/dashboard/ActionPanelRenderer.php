@@ -52,7 +52,7 @@ class ActionPanelRenderer implements WebRenderer {
         return (string)(new Panel($heading, $this->getContent($value)))
             ->setMaxHeight($value->getMaxHeight())
             ->setRightHeading([new Element('a', [
-                'href' => (string)Url::relative($value)
+                'href' => (string)Url::relative($value->getActionId(), $value->getParameters())
             ], [new Element('span', ['class' => 'glyphicon glyphicon-circle-arrow-right'])])])
             ->render($this->renderers);
     }
