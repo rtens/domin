@@ -3,7 +3,6 @@ namespace rtens\domin\delivery\web\adapters\silex;
 
 use rtens\domin\delivery\ParameterReader;
 use rtens\domin\delivery\web\BreadCrumbsTrail;
-use rtens\domin\delivery\web\resources\ActionListResource;
 use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use Silex\Application;
@@ -33,19 +32,13 @@ class SilexControllerProvider implements ControllerProviderInterface {
         /** @var ControllerCollection $controller */
         $controller = $app['controllers_factory'];
 
-        $controller->get('/', function (Request $request) {
-            return $this->respond($request, function (BreadCrumbsTrail $crumbs) {
-                $actionList = new ActionListResource($this->domin, $crumbs);
-                return $actionList->handleGet();
-            });
-        });
-        $controller->get('/{action}', function ($action, Request $request) {
+        $controller->get('/{action?}', function (Request $request, $action = null) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
                 return $execution->handleGet($action, $request->get(ExecutionResource::TOKEN_ARG));
             });
         });
-        $controller->post('/{action}', function ($action, Request $request) {
+        $controller->post('/{action}', function (Request $request, $action) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
                 return $execution->handlePost($action, $request->get(ExecutionResource::TOKEN_ARG));

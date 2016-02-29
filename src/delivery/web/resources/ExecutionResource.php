@@ -40,26 +40,30 @@ class ExecutionResource {
     }
 
     /**
-     * @param string $actionId
+     * @param null|string $actionId
      * @param null|string $token
      * @return string
      * @throws \Exception
      */
-    public function handleGet($actionId, $token = null) {
+    public function handleGet($actionId = null, $token = null) {
         return $this->doExecute($actionId, $this->checkToken($actionId, $token));
     }
 
     /**
-     * @param string $actionId
+     * @param null|string $actionId
      * @param null|string $token
      * @return string
      * @throws \Exception
      */
-    public function handlePost($actionId, $token = null) {
+    public function handlePost($actionId = null, $token = null) {
         return $this->doExecute($actionId, $this->checkToken($actionId, $token, true));
     }
 
-    private function doExecute($actionId, $mayBeModifying) {
+    private function doExecute($actionId = null, $mayBeModifying = false) {
+        if (!$actionId) {
+            $actionId = $this->app->defaultAction;
+        }
+
         if (!$this->app->access->isPermitted($actionId)) {
             throw new \Exception('Permission denied.');
         }

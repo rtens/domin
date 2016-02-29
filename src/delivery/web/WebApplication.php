@@ -9,6 +9,8 @@ use rtens\domin\delivery\web\fields\ColorField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
 use rtens\domin\delivery\web\fields\RangeField;
 use rtens\domin\delivery\web\fields\TextField;
+use rtens\domin\delivery\web\home\ActionListRenderer;
+use rtens\domin\delivery\web\home\ListActions;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
 use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
 use rtens\domin\delivery\web\renderers\ColorRenderer;
@@ -53,6 +55,8 @@ use watoki\factory\Factory;
 
 class WebApplication {
 
+    const INDEX_ACTION = 'index';
+
     /** @var string */
     public $name = 'domin';
 
@@ -95,6 +99,9 @@ class WebApplication {
     /** @var null|ExecutionToken */
     public $token;
 
+    /** @var string */
+    public $defaultAction = self::INDEX_ACTION;
+
     /**
      * @param Factory $factory <-
      * @param ActionRegistry $actions <-
@@ -133,11 +140,14 @@ class WebApplication {
      * @return Factory
      */
     public static function init(callable $callback, Factory $factory = null) {
-        $factory = $factory ?: new Factory();
-
         /** @var self $instance */
+        $factory = $factory ?: new Factory();
         $instance = $factory->getInstance(self::class);
+
+        $instance->registerDefaultAction();
+
         $callback($factory->setSingleton($instance));
+
         $instance->prepare();
 
         return $factory;
@@ -149,6 +159,10 @@ class WebApplication {
     public function setNameAndBrand($name) {
         $this->name = $name;
         $this->menu->setBrand($name);
+    }
+
+    private function registerDefaultAction() {
+        $this->actions->add(self::INDEX_ACTION , new ListActions($this->actions, $this->groups, $this->access, $this->parser));
     }
 
     public function prepare() {
@@ -174,6 +188,7 @@ class WebApplication {
         $this->renderers->add(new ChartRenderer());
         $this->renderers->add(new DelayedOutputRenderer());
         $this->renderers->add(new DashboardItemRenderer($this->renderers));
+        $this->renderers->add(new ActionListRenderer());
         $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $this->fields));
         $this->renderers->add(new DataTableRenderer($this->renderers));
         $this->renderers->add(new TableRenderer($this->renderers, $links));
