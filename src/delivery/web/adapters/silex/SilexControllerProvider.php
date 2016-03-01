@@ -32,7 +32,13 @@ class SilexControllerProvider implements ControllerProviderInterface {
         /** @var ControllerCollection $controller */
         $controller = $app['controllers_factory'];
 
-        $controller->get('/{action?}', function (Request $request, $action = null) {
+        $controller->get('/', function (Request $request) {
+            return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) {
+                $execution = new ExecutionResource($this->domin, $reader, $crumbs);
+                return $execution->handleGet(null);
+            });
+        });
+        $controller->get('/{action}', function (Request $request, $action) {
             return $this->respond($request, function (BreadCrumbsTrail $crumbs, ParameterReader $reader) use ($action, $request) {
                 $execution = new ExecutionResource($this->domin, $reader, $crumbs);
                 return $execution->handleGet($action, $request->get(ExecutionResource::TOKEN_ARG));
