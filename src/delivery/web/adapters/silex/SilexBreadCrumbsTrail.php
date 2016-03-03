@@ -32,7 +32,7 @@ class SilexBreadCrumbsTrail extends BreadCrumbsTrail {
         $serialized = json_decode($cookies->get(self::COOKIE_NAME), true);
         return array_map(function ($item) {
             return new BreadCrumb($item['caption'], $item['target']);
-        }, $serialized);
+        }, (array)$serialized);
     }
 
     public function getCookie() {
