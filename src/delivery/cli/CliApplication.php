@@ -142,6 +142,7 @@ class CliApplication {
             $value = $result->getValue();
             $console->writeLine((string)$this->renderers->getRenderer($value)->render($value));
             return self::OK;
+
         } else if ($result instanceof MissingParametersResult) {
             $console->writeLine();
             $console->writeLine("Missing parameters!");
@@ -149,9 +150,11 @@ class CliApplication {
                 $console->writeLine('  ' . $missing . ': ' . $result->getException($missing)->getMessage());
             }
             return self::ERROR;
+
         } else if ($result instanceof NotPermittedResult) {
             $console->writeLine('Permission denied');
             return self::ERROR;
+
         } else if ($result instanceof FailedResult) {
             $console->writeLine("Error: " . $result->getMessage());
 
@@ -162,8 +165,10 @@ class CliApplication {
                 $exception->getTraceAsString()
             );
             return $exception->getCode() ?: self::ERROR;
+
         } else if ($result instanceof NoResult || $result instanceof RedirectResult) {
             return self::OK;
+
         } else {
             $console->writeLine('Cannot print [' . (new \ReflectionClass($result))->getShortName() . ']');
             return self::OK;

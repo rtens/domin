@@ -44,11 +44,9 @@ class InteractiveCliParameterReader implements ParameterReader {
             $prompt .= ' ' . $description;
         }
 
-        $value = $this->console->read($prompt . ':');
-        if ($parameter->isRequired()) {
-            while (!$value) {
-                $value = $this->console->read($prompt . ':');
-            }
+        $value = $this->console->read($prompt . ': ');
+        while ($parameter->isRequired() && !$value) {
+            $value = $this->console->read($prompt . ': ');
         }
         return $value;
     }
