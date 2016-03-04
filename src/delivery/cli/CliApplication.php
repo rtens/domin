@@ -221,6 +221,7 @@ class CliApplication {
         foreach ($this->actions->getAllActions() as $id => $action) {
             $console->writeLine($id . ' - ' . $action->caption() . $this->shortDescription($action));
         }
+        $console->writeLine();
     }
 
     private function registerFields(ParameterReader $reader) {
