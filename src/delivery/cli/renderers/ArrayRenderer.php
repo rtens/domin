@@ -26,11 +26,13 @@ class ArrayRenderer implements Renderer {
      * @return mixed
      */
     public function render($value) {
-        $delimiter = PHP_EOL;
+        $delimiter = PHP_EOL . PHP_EOL;
+
+        $isList = array_keys($value) == range(0, count($value) - 1);
 
         $lines = [];
         foreach ($value as $key => $item) {
-            $lines[] = $key . ': ' . $this->renderers->getRenderer($item)->render($item);
+            $lines[] = ($isList ? '' : ($key . ': ')) . $this->renderers->getRenderer($item)->render($item);
         }
 
         return PHP_EOL . implode($delimiter, $lines) . PHP_EOL;
