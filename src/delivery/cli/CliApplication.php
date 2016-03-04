@@ -48,6 +48,8 @@ use watoki\factory\Factory;
 
 class CliApplication {
 
+    const INTERACTIVE_MODE = '!';
+
     const OK = 0;
     const ERROR = 1;
 
@@ -114,8 +116,12 @@ class CliApplication {
     }
 
     private function doRun(Console $console) {
+        $outFile = null;
+
         if ($console->getArguments()) {
-            if ($console->getArguments()[0] == '!') {
+            if ($console->getArguments()[0] == self::INTERACTIVE_MODE) {
+                $outFile = $console->getOption('out', null);
+
                 $actionId = $this->selectAction($console);
                 $reader = new InteractiveCliParameterReader($this->fields, $console);
 
@@ -134,13 +140,20 @@ class CliApplication {
         $this->registerRenderers();
 
         $executor = new Executor($this->actions, $this->fields, $reader, $this->access);
-        return $this->printResult($console, $executor->execute($actionId));
+        return $this->printResult($console, $executor->execute($actionId), $outFile);
     }
 
-    private function printResult(Console $console, ExecutionResult $result) {
+    private function printResult(Console $console, ExecutionResult $result, $outFile) {
         if ($result instanceof ValueResult) {
             $value = $result->getValue();
-            $console->writeLine((string)$this->renderers->getRenderer($value)->render($value));
+            $rendered = (string)$this->renderers->getRenderer($value)->render($value);
+
+            if ($outFile) {
+                file_put_contents($outFile, $rendered);
+                $console->writeLine("Output written to [$outFile]");
+            } else {
+                $console->writeLine($rendered);
+            }
             return self::OK;
 
         } else if ($result instanceof MissingParametersResult) {

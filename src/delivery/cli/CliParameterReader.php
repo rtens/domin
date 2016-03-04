@@ -26,11 +26,6 @@ class CliParameterReader implements ParameterReader {
      * @return boolean
      */
     public function has(Parameter $parameter) {
-        try {
-            $this->read($parameter);
-            return true;
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
+        return $this->console->hasOption($parameter->getName());
     }
 }

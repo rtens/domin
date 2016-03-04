@@ -32,15 +32,28 @@ class Console {
         return array_values(array_slice($this->argv, 1));
     }
 
-    public function getOption($name) {
+    public function getOption($name, $default = null) {
+        if (!$this->hasOption($name)) {
+            return $default;
+        }
+
+        return $this->getArguments()[$this->optionPosition($name)];
+    }
+
+    private function optionPosition($name) {
         $arguments = $this->getArguments();
 
         foreach ($arguments as $i => $arg) {
             if (substr($arg, 0, 1) == '-' && ltrim($arg, '-') == $name && array_key_exists($i + 1, $arguments)) {
-                return $arguments[$i + 1];
+                return $i + 1;
             }
         }
-        throw new \InvalidArgumentException("No option [$name] given");
+
+        return -1;
+    }
+
+    public function hasOption($name) {
+        return $this->optionPosition($name) > -1;
     }
 
     public function getScriptName() {
