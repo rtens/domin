@@ -3,16 +3,16 @@ namespace rtens\domin\execution\access;
 
 class AccessControl {
 
-    /** @var AccessPolicy[] */
-    private $policies = [];
+    /** @var AccessRestriction[] */
+    private $restrictions = [];
 
-    public function add(AccessPolicy $policy) {
-        $this->policies[] = $policy;
+    public function add(AccessRestriction $restriction) {
+        $this->restrictions[] = $restriction;
     }
 
     public function isPermitted($actionId) {
-        foreach ($this->policies as $policy) {
-            if (!$policy->isPermitted($actionId)) {
+        foreach ($this->restrictions as $policy) {
+            if ($policy->isRestricted($actionId)) {
                 return false;
             }
         }
@@ -20,8 +20,8 @@ class AccessControl {
     }
 
     public function isExecutionPermitted($actionId, array $parameters) {
-        foreach ($this->policies as $policy) {
-            if (!$policy->isExecutionPemitted($actionId, $parameters)) {
+        foreach ($this->restrictions as $policy) {
+            if ($policy->isExecutionRestricted($actionId, $parameters)) {
                 return false;
             }
         }

@@ -4,7 +4,7 @@ namespace spec\rtens\domin;
 use rtens\domin\delivery\Field;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\execution\access\AccessControl;
-use rtens\domin\execution\access\GenericAccessPolicy;
+use rtens\domin\execution\access\GenericAccessRestriction;
 use rtens\domin\execution\FailedResult;
 use rtens\domin\execution\MissingParametersResult;
 use rtens\domin\execution\NoResult;
@@ -189,11 +189,11 @@ class ExecuteActionSpec extends StaticTestSuite {
     }
 
     private function givenAccessOf_IsNotPermitted($action) {
-        $this->access->add((new GenericAccessPolicy($action))->denyAccess());
+        $this->access->add((new GenericAccessRestriction($action))->denyAccess());
     }
 
     private function givenExeutionOf_With_IsNotPermitted($action, $params) {
-        $this->access->add((new GenericAccessPolicy($action))->denyExecutionWith($params));
+        $this->access->add((new GenericAccessRestriction($action))->denyExecutionWith($params));
     }
 
     private function whenIExecute($id) {

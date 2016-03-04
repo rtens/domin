@@ -1,13 +1,13 @@
 <?php
 namespace rtens\domin\execution\access;
 
-class GenericAccessPolicy implements AccessPolicy {
+class GenericAccessRestriction implements AccessRestriction {
 
     /** @var string */
     private $actionId;
 
     /** @var bool */
-    private $accessPermitted = true;
+    private $accessRestricted = false;
 
     /** @var array[] */
     private $forbiddenParameters = [];
@@ -23,8 +23,8 @@ class GenericAccessPolicy implements AccessPolicy {
      * @param string $actionId
      * @return boolean
      */
-    public function isPermitted($actionId) {
-        return $this->accessPermitted || $actionId != $this->actionId;
+    public function isRestricted($actionId) {
+        return $actionId == $this->actionId && $this->accessRestricted;
     }
 
     /**
@@ -32,15 +32,15 @@ class GenericAccessPolicy implements AccessPolicy {
      * @param array $parameters
      * @return bool
      */
-    public function isExecutionPemitted($actionId, array $parameters) {
-        return  $actionId != $this->actionId || !in_array($parameters, $this->forbiddenParameters);
+    public function isExecutionRestricted($actionId, array $parameters) {
+        return  $actionId == $this->actionId && in_array($parameters, $this->forbiddenParameters);
     }
 
     /**
      * @return static
      */
     public function denyAccess() {
-        $this->accessPermitted = false;
+        $this->accessRestricted = true;
         return $this;
     }
 

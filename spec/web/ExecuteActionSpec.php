@@ -12,7 +12,7 @@ use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\delivery\web\WebField;
 use rtens\domin\execution\access\AccessControl;
-use rtens\domin\execution\access\GenericAccessPolicy;
+use rtens\domin\execution\access\GenericAccessRestriction;
 use rtens\domin\execution\RedirectResult;
 use rtens\domin\Parameter;
 use rtens\mockster\arguments\Argument as Arg;
@@ -181,7 +181,7 @@ class ExecuteActionSpec extends StaticTestSuite {
         $this->action->givenTheAction('foo');
         $this->action->given_IsModifying('foo');
 
-        $this->access->add((new GenericAccessPolicy('foo'))->denyAccess());
+        $this->access->add((new GenericAccessRestriction('foo'))->denyAccess());
         $this->whenITryToExecute('foo');
         $this->thenItShouldFailWith('Permission denied.');
     }

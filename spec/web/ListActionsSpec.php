@@ -6,7 +6,7 @@ use rtens\domin\delivery\web\home\ListActions;
 use rtens\domin\delivery\web\resources\ExecutionResource;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\execution\access\AccessControl;
-use rtens\domin\execution\access\GenericAccessPolicy;
+use rtens\domin\execution\access\GenericAccessRestriction;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use spec\rtens\domin\fixtures\FakeParameterReader;
 use watoki\factory\Factory;
@@ -36,7 +36,7 @@ class ListActionsSpec extends StaticTestSuite {
         $this->action->givenTheAction('foo');
         $this->action->givenTheAction('bar');
 
-        $this->access->add((new GenericAccessPolicy('foo'))->denyAccess());
+        $this->access->add((new GenericAccessRestriction('foo'))->denyAccess());
 
         $this->whenIListTheActions();
 
