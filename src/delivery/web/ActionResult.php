@@ -76,7 +76,8 @@ class ActionResult {
     }
 
     protected function handleFailedResult(FailedResult $result) {
-        $this->model['error'] = htmlentities($result->getMessage());
+        $this->model['error']['message'] = htmlentities($result->getMessage());
+        $this->model['error']['details'] = htmlentities($result->getDetails());
     }
 
     protected function handleMissingParametersResult(MissingParametersResult $result) {

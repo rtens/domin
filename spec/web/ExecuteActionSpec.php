@@ -296,7 +296,7 @@ class ExecuteActionSpec extends StaticTestSuite {
 
     private function thenItShouldDisplayTheError($message) {
         $this->assert->contains($this->response,
-            sprintf('<div class="alert alert-danger">%s</div>', $message));
+            sprintf('<div class="alert alert-danger">%s', $message));
     }
 
     private function thenThereShouldBeASuccessMessageFor($actionId) {

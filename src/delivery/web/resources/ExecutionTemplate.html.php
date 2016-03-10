@@ -32,7 +32,10 @@
     <?php } ?>
 
     <?php if ($model['result']['error']) { ?>
-    <div class="alert alert-danger"><?php echo $model['result']['error'] ?></div>
+    <div class="alert alert-danger"><?php echo $model['result']['error']['message'] ?>
+        <small class="pull-right"><a href="#" onclick="$('#errorDetails').toggle();">Details</a></small>
+        <div id="errorDetails" style="display: none;"><pre><?php echo $model['result']['error']['details'] ?></pre></div>
+    </div>
     <?php } ?>
 
     <?php if ($model['result']['missing']) { ?>
