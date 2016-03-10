@@ -29,7 +29,7 @@ class CurirBreadCrumbsTrail extends BreadCrumbsTrail {
      * @return BreadCrumb[]
      */
     private function readCrumbs(CookieStore $cookies) {
-        if ($cookies->hasKey(self::COOKIE_KEY)) {
+        if ($cookies->has(self::COOKIE_KEY)) {
             return array_map(function ($array) {
                 return new BreadCrumb($array['caption'], $array['target']);
             }, $cookies->read(self::COOKIE_KEY)->payload);
@@ -42,7 +42,7 @@ class CurirBreadCrumbsTrail extends BreadCrumbsTrail {
      * @return BreadCrumb[]
      */
     private function saveCrumbs($crumbs) {
-        $this->cookies->create(new Cookie(array_map(function (BreadCrumb $crumb) {
+        $this->cookies->write(new Cookie(array_map(function (BreadCrumb $crumb) {
             return [
                 'caption' => $crumb->getCaption(),
                 'target' => $crumb->getTarget()
