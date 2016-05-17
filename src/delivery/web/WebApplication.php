@@ -5,52 +5,53 @@ use rtens\domin\ActionRegistry;
 use rtens\domin\delivery\FieldRegistry;
 use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\fields\ActionField;
+use rtens\domin\delivery\web\fields\ArrayField;
+use rtens\domin\delivery\web\fields\BooleanField;
 use rtens\domin\delivery\web\fields\ColorField;
 use rtens\domin\delivery\web\fields\DateIntervalField;
+use rtens\domin\delivery\web\fields\DateTimeField;
+use rtens\domin\delivery\web\fields\EnumerationField;
+use rtens\domin\delivery\web\fields\FileField;
+use rtens\domin\delivery\web\fields\HtmlField;
+use rtens\domin\delivery\web\fields\IdentifierField;
+use rtens\domin\delivery\web\fields\ImageField;
+use rtens\domin\delivery\web\fields\MultiField;
+use rtens\domin\delivery\web\fields\NullableField;
+use rtens\domin\delivery\web\fields\NumberField;
+use rtens\domin\delivery\web\fields\ObjectField;
 use rtens\domin\delivery\web\fields\RangeField;
+use rtens\domin\delivery\web\fields\StringField;
 use rtens\domin\delivery\web\fields\TextField;
 use rtens\domin\delivery\web\home\ActionListRenderer;
 use rtens\domin\delivery\web\home\ListActions;
+use rtens\domin\delivery\web\menu\Menu;
+use rtens\domin\delivery\web\renderers\BooleanRenderer;
 use rtens\domin\delivery\web\renderers\charting\ChartRenderer;
 use rtens\domin\delivery\web\renderers\charting\ScatterChartRenderer;
 use rtens\domin\delivery\web\renderers\ColorRenderer;
 use rtens\domin\delivery\web\renderers\dashboard\ActionPanelRenderer;
 use rtens\domin\delivery\web\renderers\dashboard\DashboardItemRenderer;
 use rtens\domin\delivery\web\renderers\DateIntervalRenderer;
+use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\domin\delivery\web\renderers\DelayedOutputRenderer;
 use rtens\domin\delivery\web\renderers\ElementRenderer;
-use rtens\domin\delivery\web\renderers\MapRenderer;
-use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
-use rtens\domin\delivery\web\renderers\tables\TableRenderer;
-use rtens\domin\delivery\web\renderers\TextRenderer;
-use rtens\domin\execution\access\AccessControl;
-use rtens\domin\parameters\IdentifiersProvider;
-use rtens\domin\reflection\types\TypeFactory;
-use rtens\domin\delivery\web\fields\ImageField;
-use rtens\domin\delivery\web\fields\NumberField;
-use rtens\domin\delivery\web\menu\Menu;
-use rtens\domin\delivery\web\renderers\ListRenderer;
-use rtens\domin\delivery\web\renderers\BooleanRenderer;
-use rtens\domin\delivery\web\renderers\DateTimeRenderer;
 use rtens\domin\delivery\web\renderers\FileRenderer;
 use rtens\domin\delivery\web\renderers\HtmlRenderer;
 use rtens\domin\delivery\web\renderers\IdentifierRenderer;
 use rtens\domin\delivery\web\renderers\ImageRenderer;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\LinkRegistry;
+use rtens\domin\delivery\web\renderers\ListRenderer;
+use rtens\domin\delivery\web\renderers\MapRenderer;
 use rtens\domin\delivery\web\renderers\ObjectRenderer;
 use rtens\domin\delivery\web\renderers\PrimitiveRenderer;
-use rtens\domin\delivery\web\fields\ArrayField;
-use rtens\domin\delivery\web\fields\BooleanField;
-use rtens\domin\delivery\web\fields\DateTimeField;
-use rtens\domin\delivery\web\fields\EnumerationField;
-use rtens\domin\delivery\web\fields\FileField;
-use rtens\domin\delivery\web\fields\HtmlField;
-use rtens\domin\delivery\web\fields\IdentifierField;
-use rtens\domin\delivery\web\fields\MultiField;
-use rtens\domin\delivery\web\fields\NullableField;
-use rtens\domin\delivery\web\fields\ObjectField;
-use rtens\domin\delivery\web\fields\StringField;
+use rtens\domin\delivery\web\renderers\tables\DataTableRenderer;
+use rtens\domin\delivery\web\renderers\tables\TableRenderer;
+use rtens\domin\delivery\web\renderers\TextRenderer;
+use rtens\domin\execution\access\AccessControl;
+use rtens\domin\parameters\IdentifiersProvider;
+use rtens\domin\reflection\CommentParser;
+use rtens\domin\reflection\types\TypeFactory;
 use watoki\factory\Factory;
 
 class WebApplication {
@@ -87,7 +88,7 @@ class WebApplication {
     /** @var MobileDetector */
     public $detector;
 
-    /** @var WebCommentParser */
+    /** @var CommentParser */
     public $parser;
 
     /** @var AccessControl */
@@ -188,7 +189,7 @@ class WebApplication {
         $this->renderers->add(new ChartRenderer());
         $this->renderers->add(new DelayedOutputRenderer());
         $this->renderers->add(new DashboardItemRenderer($this->renderers));
-        $this->renderers->add(new ActionListRenderer());
+        $this->renderers->add(new ActionListRenderer($this->parser));
         $this->renderers->add(new ActionPanelRenderer($this->renderers, $this->actions, $this->fields));
         $this->renderers->add(new DataTableRenderer($this->renderers));
         $this->renderers->add(new TableRenderer($this->renderers, $links));

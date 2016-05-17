@@ -4,8 +4,19 @@ namespace rtens\domin\delivery\web\home;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebRenderer;
+use rtens\domin\reflection\CommentParser;
 
 class ActionListRenderer implements WebRenderer {
+
+    /** @var CommentParser */
+    private $parser;
+
+    /**
+     * @param CommentParser $parser
+     */
+    public function __construct(CommentParser $parser) {
+        $this->parser = $parser;
+    }
 
     /**
      * @param mixed $value
@@ -67,12 +78,18 @@ class ActionListRenderer implements WebRenderer {
     private function renderList($actions) {
         $items = [];
         foreach ($actions as $action) {
+            $caption = [$action->getCaption()];
+
+            if ($action->getDescription()) {
+                $caption[] = new Element('small', [], [
+                    '- ' . $this->parser->shorten($action->getDescription())
+                ]);
+            }
+
             $items[] = new Element('a', [
                 'href' => $action->getId(),
                 'class' => 'list-group-item'
-            ], [
-                $action->getCaption()
-            ]);
+            ], $caption);
         }
         return new Element('div', ['class' => 'list-group'], $items);
     }
