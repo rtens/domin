@@ -197,3 +197,7 @@ There is also a `MethodActionGenerator` to register all methods of an object.
 ```php
 (new MethodActionGenerator($actionRegistry, $typeFactory))->fromObject($handler);
 ```
+
+## License
+
+*domin* is released under the [MIT License](https://opensource.org/licenses/MIT)
