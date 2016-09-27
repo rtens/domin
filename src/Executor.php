@@ -73,29 +73,24 @@ class Executor {
         $params = [];
         foreach ($action->parameters() as $parameter) {
             try {
-                $params[$parameter->getName()] = $this->inflate($parameter);
+                if ($this->paramReader->has($parameter)) {
+                    $inflated = $this->fields->getField($parameter)
+                        ->inflate($parameter, $this->paramReader->read($parameter));
+
+                    if ($parameter->getType()->is($inflated)) {
+                        $params[$parameter->getName()] = $inflated;
+                        continue;
+                    }
+                }
+
+                if ($parameter->isRequired()) {
+                    throw new \Exception("[{$parameter->getName()}] is required.");
+                }
             } catch (\Exception $e) {
                 $failed[$parameter->getName()] = $e;
             }
         }
 
         return [$params, $failed];
-    }
-
-    private function inflate(Parameter $parameter) {
-        if ($this->paramReader->has($parameter)) {
-            $inflated = $this->fields->getField($parameter)
-                ->inflate($parameter, $this->paramReader->read($parameter));
-
-            if ($parameter->getType()->is($inflated)) {
-                return $inflated;
-            }
-        }
-
-        if ($parameter->isRequired()) {
-            throw new \Exception("[{$parameter->getName()}] is required.");
-        }
-
-        return null;
     }
 }
