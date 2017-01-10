@@ -119,7 +119,7 @@ class GenericAction implements Action {
      * @return boolean True if the action modifies the state of the application
      */
     public function isModifying() {
-        return $this->isModifying;
+        return !is_null($this->isModifying) ? $this->isModifying : $this->action->isModifying();
     }
 
     /**
